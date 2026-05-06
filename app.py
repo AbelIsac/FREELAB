@@ -71,7 +71,12 @@ def guardar_rol():
         
         if respuesta.data:
             flash(f'¡Perfil creado! Tu rol es: {rol}', 'success')
-            return redirect(url_for('home'))
+            
+            # 🔥 CAMBIO IMPORTANTE: Redirigir según el rol
+            if rol == 'estudiante':
+                return redirect(url_for('dashboard_estudiante', user_id=user_id))
+            else:
+                return redirect(url_for('dashboard_comprador', user_id=user_id))
         else:
             flash('Error al guardar el perfil', 'error')
             return redirect(url_for('elegir_rol', user_id=user_id))
@@ -79,6 +84,33 @@ def guardar_rol():
     except Exception as e:
         flash(f'Error técnico: {str(e)}', 'error')
         return redirect(url_for('elegir_rol', user_id=user_id))
+
+@app.route('/dashboard/estudiante')
+def dashboard_estudiante():
+    user_id = request.args.get('user_id')
+    if not user_id:
+        return redirect(url_for('home'))
+    
+    # Obtener usuario
+    try:
+        usuario = supabase.auth.admin.get_user_by_id(user_id)
+        return render_template('dashboard_estudiante.html', usuario=usuario.user, rol='estudiante')
+    except:
+        flash('Error al cargar usuario', 'error')
+        return redirect(url_for('home'))
+
+@app.route('/dashboard/comprador')
+def dashboard_comprador():
+    user_id = request.args.get('user_id')
+    if not user_id:
+        return redirect(url_for('home'))
+    
+    try:
+        usuario = supabase.auth.admin.get_user_by_id(user_id)
+        return render_template('dashboard_comprador.html', usuario=usuario.user, rol='comprador')
+    except:
+        flash('Error al cargar usuario', 'error')
+        return redirect(url_for('home'))
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

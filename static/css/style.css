@@ -712,3 +712,220 @@ body.scrolled .header {
         flex-direction: column;
     }
 }
+
+/* =========================
+   DASHBOARD VENDEDOR (ESTUDIANTE)
+========================= */
+.dashboard-vendedor {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 120px 2rem 4rem;
+}
+
+.dashboard-vendedor h1 {
+    color: white;
+    font-size: 3rem;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.dashboard-vendedor > p {
+    color: rgba(255,255,255,0.9);
+    text-align: center;
+    font-size: 1.2rem;
+    margin-bottom: 3rem;
+}
+
+.acciones-vendedor {
+    max-width: 800px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.acciones-vendedor .btn {
+    padding: 1rem;
+    text-align: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+}
+
+.btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(16,185,129,0.4);
+}
+
+.btn-info {
+    background: linear-gradient(135deg, #06b6d4, #0891b2);
+    color: white;
+}
+
+.btn-info:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(6,182,212,0.4);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(239,68,68,0.4);
+}
+
+/* =========================
+   DASHBOARD COMPRADOR
+========================= */
+.dashboard-comprador {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    padding: 120px 2rem 4rem;
+}
+
+.dashboard-comprador h1 {
+    color: white;
+    font-size: 3rem;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.dashboard-comprador > p {
+    color: rgba(255,255,255,0.9);
+    text-align: center;
+    font-size: 1.2rem;
+    margin-bottom: 3rem;
+}
+
+.acciones-comprador {
+    max-width: 800px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.acciones-comprador .btn {
+    padding: 1rem;
+    text-align: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+/* =========================
+   ROL SELECTOR
+========================= */
+.rol-selector {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 120px 2rem 4rem;
+    text-align: center;
+}
+
+.rol-selector h1 {
+    color: white;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.rol-selector > p {
+    color: rgba(255,255,255,0.9);
+    font-size: 1.2rem;
+    margin-bottom: 3rem;
+}
+
+.rol-cards {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.rol-card {
+    flex: 1;
+    min-width: 250px;
+    background: white;
+    padding: 2rem;
+    border-radius: 20px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.rol-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+
+.rol-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.rol-card p {
+    color: #64748b;
+}
+
+.rol-card.estudiante {
+    border-top: 5px solid #10b981;
+}
+
+.rol-card.estudiante h3 {
+    color: #10b981;
+}
+
+.rol-card.comprador {
+    border-top: 5px solid #f59e0b;
+}
+
+.rol-card.comprador h3 {
+    color: #f59e0b;
+}
+
+/* =========================
+   DASHBOARD GENERAL (si aún usas el viejo)
+========================= */
+.dashboard {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    padding: 120px 2rem 4rem;
+}
+
+.dashboard h1 {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.rol-badge {
+    text-align: center;
+    padding: 0.5rem;
+    border-radius: 50px;
+    max-width: 200px;
+    margin: 0 auto 2rem;
+}
+
+.rol-badge.estudiante {
+    background: #10b981;
+    color: white;
+}
+
+.rol-badge.comprador {
+    background: #f59e0b;
+    color: white;
+}
+
+.dashboard-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
