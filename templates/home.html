@@ -17,12 +17,23 @@
             <strong>¡Precios diseñados para tu bolsillo!</strong>
         </p>
         <div class="hero-buttons">
-            <a href="{{ url_for('login') }}" class="btn btn-primary btn-large hero-btn">
-                🚀 Empezar Ahora
-            </a>
-            <a href="#productos" class="btn btn-secondary btn-large">
-                Ver Productos
-            </a>
+            {% if session_user %}
+                <!-- Usuario logueado -->
+                <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-large hero-btn">
+                    📊 Mi Dashboard
+                </a>
+                <a href="#productos" class="btn btn-secondary btn-large">
+                    Ver Productos
+                </a>
+            {% else %}
+                <!-- Usuario no logueado -->
+                <a href="{{ url_for('login') }}" class="btn btn-primary btn-large hero-btn">
+                    🚀 Empezar Ahora
+                </a>
+                <a href="#productos" class="btn btn-secondary btn-large">
+                    Ver Productos
+                </a>
+            {% endif %}
         </div>
     </div>
     <div class="hero-stats" id="stats">
@@ -63,7 +74,11 @@
                         <li>✅ Material incluido</li>
                         <li>✅ Soporte 24h</li>
                     </ul>
-                    <a href="{{ url_for('login') }}" class="btn btn-primary btn-full">Contactar</a>
+                    {% if session_user %}
+                        <a href="#" class="btn btn-primary btn-full">Contactar</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="btn btn-primary btn-full">Iniciar Sesión para Contactar</a>
+                    {% endif %}
                 </div>
             </article>
 
@@ -82,7 +97,11 @@
                         <li>✅ Archivos editables</li>
                         <li>✅ Entrega en 48h</li>
                     </ul>
-                    <a href="{{ url_for('login') }}" class="btn btn-primary btn-full">Contactar</a>
+                    {% if session_user %}
+                        <a href="#" class="btn btn-primary btn-full">Contactar</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="btn btn-primary btn-full">Iniciar Sesión para Contactar</a>
+                    {% endif %}
                 </div>
             </article>
 
@@ -101,7 +120,11 @@
                         <li>✅ Locación incluida</li>
                         <li>✅ 20% descuento</li>
                     </ul>
-                    <a href="{{ url_for('login') }}" class="btn btn-success btn-full">¡Aprovechar Oferta!</a>
+                    {% if session_user %}
+                        <a href="#" class="btn btn-success btn-full">¡Aprovechar Oferta!</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="btn btn-success btn-full">Inicia Sesión y Ahorra</a>
+                    {% endif %}
                 </div>
             </article>
 
@@ -119,15 +142,25 @@
                         <li>✅ Revisión incluida</li>
                         <li>✅ Rápida entrega</li>
                     </ul>
-                    <a href="{{ url_for('login') }}" class="btn btn-primary btn-full">Contactar</a>
+                    {% if session_user %}
+                        <a href="#" class="btn btn-primary btn-full">Contactar</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="btn btn-primary btn-full">Iniciar Sesión para Contactar</a>
+                    {% endif %}
                 </div>
             </article>
         </div>
 
         <div class="section-cta">
-            <a href="{{ url_for('login') }}" class="btn btn-primary btn-large">
-                📤 ¡Publica tu servicio ahora!
-            </a>
+            {% if session_user %}
+                <a href="#" class="btn btn-primary btn-large">
+                    📤 ¡Publica tu servicio ahora!
+                </a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="btn btn-primary btn-large">
+                    📤 ¡Regístrate y publica tu servicio!
+                </a>
+            {% endif %}
         </div>
     </div>
 </section>
@@ -149,7 +182,7 @@
 </section>
 
 <style>
-    /* Estilos adicionales para mejorar la experiencia */
+    /* Tus estilos existentes se mantienen */
     .producto-card {
         transition: transform 0.3s ease, box-shadow 0.3s ease;
     }

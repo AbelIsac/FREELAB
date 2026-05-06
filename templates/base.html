@@ -31,7 +31,23 @@
 
                 <div class="nav-actions">
                     <a href="#newsletter" class="nav-link secondary">Suscripción</a>
-                    <a href="{{ url_for('login') }}" class="btn btn-primary btn-sm">Iniciar Sesión</a>
+                    {% if session.get('user') %}
+                        <!-- Usuario logueado -->
+                        <div class="user-info" style="display: flex; align-items: center; gap: 10px;">
+                            <img src="{{ session.user.get('avatar', 'https://via.placeholder.com/35') }}" 
+                                 alt="Avatar" 
+                                 style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover;">
+                            <span style="color: #333; font-weight: 500;">{{ session.user.get('name', 'Usuario') }}</span>
+                        </div>
+                        <a href="{{ url_for('logout') }}" class="btn btn-danger btn-sm" style="background: #dc3545; color: white; padding: 8px 20px; border-radius: 50px; text-decoration: none;">
+                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                        </a>
+                    {% else %}
+                        <!-- Usuario no logueado -->
+                        <a href="{{ url_for('login') }}" class="btn btn-primary btn-sm">
+                            <i class="fab fa-google"></i> Iniciar Sesión
+                        </a>
+                    {% endif %}
                 </div>
 
                 <!-- Mobile menu button -->
@@ -158,11 +174,18 @@
         </div>
     </footer>
 
-    <!-- Floating Login Button -->
-    <a href="{{ url_for('login') }}" class="floating-action-btn" title="Iniciar sesión con Google">
-        <i class="fab fa-google"></i>
-        <span class="fab-text">Ingresar</span>
-    </a>
+    <!-- Floating Action Button -->
+    {% if session.get('user') %}
+        <a href="{{ url_for('dashboard') }}" class="floating-action-btn" title="Ir a mi Dashboard">
+            <i class="fas fa-chart-line"></i>
+            <span class="fab-text">Dashboard</span>
+        </a>
+    {% else %}
+        <a href="{{ url_for('login') }}" class="floating-action-btn" title="Iniciar sesión con Google">
+            <i class="fab fa-google"></i>
+            <span class="fab-text">Ingresar</span>
+        </a>
+    {% endif %}
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>

@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from flask import Flask, render_template, redirect, request, url_for, flash
+from flask import Flask, render_template, redirect, request, url_for, flash, session  # ← Agregué session aquí
 from config.supabase import supabase
 
 # Cargar variables de entorno
@@ -8,6 +8,12 @@ load_dotenv(override=True)
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-key-change-in-production')
+
+# Context processor para inyectar usuario en todos los templates
+@app.context_processor
+def inject_user():
+    user = session.get('user') if 'user' in session else None
+    return dict(session_user=user)
 
 @app.route('/')
 def home():
@@ -34,6 +40,14 @@ def callback():
         sesion = supabase.auth.exchange_code_for_session({"auth_code": codigo})
         usuario = sesion.user
         
+        # Guardar usuario en session de Flask
+        session['user'] = {
+            'id': usuario.id,
+            'email': usuario.email,
+            'name': usuario.user_metadata.get('name', 'Usuario'),
+            'avatar': usuario.user_metadata.get('avatar_url', 'https://via.placeholder.com/40')
+        }
+        
         # Verificar si tiene rol asignado
         respuesta = supabase.table('perfiles').select('rol').eq('id', usuario.id).execute()
         
@@ -46,6 +60,19 @@ def callback():
     except Exception as e:
         flash(f'Error en el callback: {str(e)}', 'error')
         return redirect(url_for('home'))
+
+@app.route('/logout')
+def logout():
+    try:
+        # Cerrar sesión en Supabase
+        supabase.auth.sign_out()
+        # Limpiar sesión de Flask
+        session.clear()
+        flash('Has cerrado sesión exitosamente', 'success')
+    except Exception as e:
+        flash(f'Error al cerrar sesión: {str(e)}', 'error')
+    
+    return redirect(url_for('home'))
 
 @app.route('/elegir-rol')
 def elegir_rol():
@@ -79,6 +106,13 @@ def guardar_rol():
     except Exception as e:
         flash(f'Error técnico: {str(e)}', 'error')
         return redirect(url_for('elegir_rol', user_id=user_id))
+
+@app.route('/dashboard')
+def dashboard():
+    if 'user' not in session:
+        flash('Por favor inicia sesión primero', 'error')
+        return redirect(url_for('home'))
+    return render_template('dashboard.html', user=session['user'])
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

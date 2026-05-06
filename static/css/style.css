@@ -712,3 +712,39 @@ body.scrolled .header {
         flex-direction: column;
     }
 }
+
+/* Botón de cerrar sesión */
+.btn-danger {
+    background: #dc3545;
+    color: white;
+    padding: 8px 20px;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-danger:hover {
+    background: #c82333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+}
+
+/* Información del usuario */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 10px;
+    border-radius: 50px;
+    background: #f0f2f5;
+}
+
+.user-info img {
+    border: 2px solid #667eea;
+}
+
+.user-info span {
+    color: #333;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
