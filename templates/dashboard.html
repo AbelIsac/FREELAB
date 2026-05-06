@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <h1>¡Hola, {{ usuario.user_metadata.name or usuario.email }}! 👋</h1>
+    <div class="rol-badge {{ 'estudiante' if rol == 'estudiante' else 'comprador' }}">
+        Tu rol: <strong>{{ rol.title() }}</strong>
+    </div>
+    
+    <div class="dashboard-actions">
+        {% if rol == 'estudiante' %}
+            <a href="#" class="btn btn-success">📤 Publicar Producto</a>
+        {% endif %}
+        <a href="#" class="btn btn-primary">🛒 Mis Compras</a>
+        <a href="#" class="btn btn-secondary">⚙️ Mi Perfil</a>
+    </div>
+</div>
+{% endblock %}

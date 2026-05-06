@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block title %}Marketplace Estudiantil - Encuentra y ofrece servicios entre estudiantes{% endblock %}
+
+{% block meta_description %}
+<meta name="description" content="Compra y vende servicios entre estudiantes. Clases, diseño, fotografía, traducción y más a precios estudiantiles. Únete a nuestra comunidad.">
+{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<section class="hero" aria-label="Sección principal">
+    <div class="hero-content">
+        <h1>🎓 Marketplace <span class="highlight">Estudiantil</span></h1>
+        <p class="hero-subtitle">
+            Compra y vende servicios entre estudiantes.
+            <strong>¡Precios diseñados para tu bolsillo!</strong>
+        </p>
+        <div class="hero-buttons">
+            <a href="{{ url_for('login') }}" class="btn btn-primary btn-large hero-btn">
+                🚀 Empezar Ahora
+            </a>
+            <a href="#productos" class="btn btn-secondary btn-large">
+                Ver Productos
+            </a>
+        </div>
+    </div>
+    <div class="hero-stats" id="stats">
+        <div class="stat" data-target="1200">
+            <span class="stat-number">0</span>
+            <span>Estudiantes</span>
+        </div>
+        <div class="stat" data-target="500">
+            <span class="stat-number">0</span>
+            <span>Productos</span>
+        </div>
+        <div class="stat" data-target="98">
+            <span class="stat-number">0</span>
+            <span>Satisfacción</span>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products Section -->
+<section id="productos" class="productos-section" aria-label="Productos destacados">
+    <div class="container">
+        <h2 class="section-title">✨ Productos y Servicios Destacados</h2>
+        <p class="section-subtitle">Lo que están vendiendo otros estudiantes</p>
+
+        <div class="productos-grid">
+            <!-- Producto 1 -->
+            <article class="producto-card">
+                <div class="producto-imagen">
+                    <img src="https://images.unsplash.com/photo-1516321310764-9f3c9619d7d4?w=400&h=300&fit=crop" alt="Clases de programación Python" loading="lazy">
+                    <span class="producto-badge">Nuevo</span>
+                </div>
+                <div class="producto-info">
+                    <h3>Clases de Python</h3>
+                    <p class="producto-estudiante">👩‍💻 Por @juan_programador</p>
+                    <div class="producto-precio">$15 <span>/hora</span></div>
+                    <ul class="producto-features">
+                        <li>✅ Clases personalizadas</li>
+                        <li>✅ Material incluido</li>
+                        <li>✅ Soporte 24h</li>
+                    </ul>
+                    <a href="{{ url_for('login') }}" class="btn btn-primary btn-full">Contactar</a>
+                </div>
+            </article>
+
+            <!-- Producto 2 (Popular) -->
+            <article class="producto-card popular">
+                <div class="producto-imagen">
+                    <img src="https://images.unsplash.com/photo-1559027408-50d17938342e?w=400&h=300&fit=crop" alt="Diseño de logos profesionales" loading="lazy">
+                    <span class="producto-badge popular-badge">⭐ Popular</span>
+                </div>
+                <div class="producto-info">
+                    <h3>Diseño de Logos</h3>
+                    <p class="producto-estudiante">🎨 Por @maria_diseño</p>
+                    <div class="producto-precio">$25 <span>por logo</span></div>
+                    <ul class="producto-features">
+                        <li>✅ 3 opciones de diseño</li>
+                        <li>✅ Archivos editables</li>
+                        <li>✅ Entrega en 48h</li>
+                    </ul>
+                    <a href="{{ url_for('login') }}" class="btn btn-primary btn-full">Contactar</a>
+                </div>
+            </article>
+
+            <!-- Producto 3 (Oferta) -->
+            <article class="producto-card">
+                <div class="producto-imagen">
+                    <img src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=300&fit=crop" alt="Sesión de fotografía profesional" loading="lazy">
+                    <span class="producto-badge oferta">🔥 Oferta</span>
+                </div>
+                <div class="producto-info">
+                    <h3>Sesión de Fotos</h3>
+                    <p class="producto-estudiante">📸 Por @carlos_fotografo</p>
+                    <div class="producto-precio">$20 <span>por sesión</span></div>
+                    <ul class="producto-features">
+                        <li>✅ 30 fotos editadas</li>
+                        <li>✅ Locación incluida</li>
+                        <li>✅ 20% descuento</li>
+                    </ul>
+                    <a href="{{ url_for('login') }}" class="btn btn-success btn-full">¡Aprovechar Oferta!</a>
+                </div>
+            </article>
+
+            <!-- Producto 4 -->
+            <article class="producto-card">
+                <div class="producto-imagen">
+                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop" alt="Traducción inglés-español" loading="lazy">
+                </div>
+                <div class="producto-info">
+                    <h3>Traducción Inglés-Español</h3>
+                    <p class="producto-estudiante">🌍 Por @ana_traductor</p>
+                    <div class="producto-precio">$0.05 <span>por palabra</span></div>
+                    <ul class="producto-features">
+                        <li>✅ Traducción certificada</li>
+                        <li>✅ Revisión incluida</li>
+                        <li>✅ Rápida entrega</li>
+                    </ul>
+                    <a href="{{ url_for('login') }}" class="btn btn-primary btn-full">Contactar</a>
+                </div>
+            </article>
+        </div>
+
+        <div class="section-cta">
+            <a href="{{ url_for('login') }}" class="btn btn-primary btn-large">
+                📤 ¡Publica tu servicio ahora!
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Newsletter Section -->
+<section class="newsletter" aria-label="Suscripción al newsletter">
+    <div class="container">
+        <div class="newsletter-content">
+            <div class="newsletter-text">
+                <h2>📬 Recibe ofertas exclusivas</h2>
+                <p>Suscríbete y sé el primero en conocer las mejores ofertas estudiantiles</p>
+            </div>
+            <form class="newsletter-form" id="newsletterForm">
+                <input type="email" id="newsletterEmail" placeholder="tu@email.com" required>
+                <button type="submit" class="btn btn-primary">Suscribirme</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<style>
+    /* Estilos adicionales para mejorar la experiencia */
+    .producto-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .producto-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+    }
+    .btn-success {
+        background: #28a745;
+        color: white;
+    }
+    .btn-success:hover {
+        background: #218838;
+    }
+    .oferta {
+        background: #ff5722;
+    }
+    .hero-stats .stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+        display: inline-block;
+    }
+</style>
+
+<script>
+    // Animación de contadores al hacer scroll
+    const statsSection = document.getElementById('stats');
+    let animated = false;
+
+    function animateNumbers() {
+        if (animated) return;
+        const stats = document.querySelectorAll('.stat');
+        stats.forEach(stat => {
+            const target = parseInt(stat.getAttribute('data-target'));
+            const numberSpan = stat.querySelector('.stat-number');
+            let current = 0;
+            const increment = target / 50;
+            const updateNumber = () => {
+                current += increment;
+                if (current < target) {
+                    numberSpan.innerText = Math.ceil(current);
+                    requestAnimationFrame(updateNumber);
+                } else {
+                    numberSpan.innerText = target;
+                }
+            };
+            updateNumber();
+        });
+        animated = true;
+    }
+
+    // Observador de scroll
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && !animated) {
+                animateNumbers();
+            }
+        });
+    }, { threshold: 0.5 });
+    if (statsSection) observer.observe(statsSection);
+
+    // Newsletter funcional (simulación)
+    const newsletterForm = document.getElementById('newsletterForm');
+    if (newsletterForm) {
+        newsletterForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('newsletterEmail').value;
+            if(email) {
+                alert(`📧 ¡Gracias por suscribirte, ${email}! Recibirás nuestras mejores ofertas.`);
+                newsletterForm.reset();
+            } else {
+                alert('Por favor, ingresa un email válido.');
+            }
+        });
+    }
+</script>
+{% endblock %}
