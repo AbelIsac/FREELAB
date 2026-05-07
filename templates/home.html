@@ -2,14 +2,13 @@
 
 {% block title %}Marketplace Estudiantil - Encuentra y ofrece servicios entre estudiantes{% endblock %}
 
-{% block meta_description %}
-<meta name="description" content="Compra y vende servicios entre estudiantes. Clases, diseño, fotografía, traducción y más a precios estudiantiles. Únete a nuestra comunidad.">
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
 {% endblock %}
 
 {% block content %}
-
 <!-- Hero Section -->
-<section class="hero" aria-label="Sección principal">
+<section class="hero">
     <div class="hero-content">
         <h1>🎓 Marketplace <span class="highlight">Estudiantil</span></h1>
         <p class="hero-subtitle">
@@ -18,16 +17,14 @@
         </p>
         <div class="hero-buttons">
             {% if session_user %}
-                <!-- Usuario logueado -->
-                <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-large hero-btn">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-large">
                     📊 Mi Dashboard
                 </a>
                 <a href="#productos" class="btn btn-secondary btn-large">
                     Ver Productos
                 </a>
             {% else %}
-                <!-- Usuario no logueado -->
-                <a href="{{ url_for('login') }}" class="btn btn-primary btn-large hero-btn">
+                <a href="{{ url_for('login') }}" class="btn btn-primary btn-large">
                     🚀 Empezar Ahora
                 </a>
                 <a href="#productos" class="btn btn-secondary btn-large">
@@ -52,17 +49,17 @@
     </div>
 </section>
 
-<!-- Featured Products Section -->
-<section id="productos" class="productos-section" aria-label="Productos destacados">
+<!-- Products Section -->
+<section id="productos" class="productos-section">
     <div class="container">
-        <h2 class="section-title">✨ Productos y Servicios Destacados</h2>
+        <h2 class="section-title">✨ Productos Destacados</h2>
         <p class="section-subtitle">Lo que están vendiendo otros estudiantes</p>
 
         <div class="productos-grid">
             <!-- Producto 1 -->
             <article class="producto-card">
                 <div class="producto-imagen">
-                    <img src="https://images.unsplash.com/photo-1516321310764-9f3c9619d7d4?w=400&h=300&fit=crop" alt="Clases de programación Python" loading="lazy">
+                    <img src="https://images.unsplash.com/photo-1516321310764-9f3c9619d7d4?w=400&h=300&fit=crop" alt="Clases Python" loading="lazy">
                     <span class="producto-badge">Nuevo</span>
                 </div>
                 <div class="producto-info">
@@ -75,17 +72,17 @@
                         <li>✅ Soporte 24h</li>
                     </ul>
                     {% if session_user %}
-                        <a href="#" class="btn btn-primary btn-full">Contactar</a>
+                        <a href="#" class="btn-details">Ver Detalles</a>
                     {% else %}
-                        <a href="{{ url_for('login') }}" class="btn btn-primary btn-full">Iniciar Sesión para Contactar</a>
+                        <a href="{{ url_for('login') }}" class="btn-details">Inicia Sesión</a>
                     {% endif %}
                 </div>
             </article>
 
-            <!-- Producto 2 (Popular) -->
-            <article class="producto-card popular">
+            <!-- Producto 2 -->
+            <article class="producto-card">
                 <div class="producto-imagen">
-                    <img src="https://images.unsplash.com/photo-1559027408-50d17938342e?w=400&h=300&fit=crop" alt="Diseño de logos profesionales" loading="lazy">
+                    <img src="https://images.unsplash.com/photo-1559027408-50d17938342e?w=400&h=300&fit=crop" alt="Diseño Logos" loading="lazy">
                     <span class="producto-badge popular-badge">⭐ Popular</span>
                 </div>
                 <div class="producto-info">
@@ -98,17 +95,17 @@
                         <li>✅ Entrega en 48h</li>
                     </ul>
                     {% if session_user %}
-                        <a href="#" class="btn btn-primary btn-full">Contactar</a>
+                        <a href="#" class="btn-buy">Comprar Ahora</a>
                     {% else %}
-                        <a href="{{ url_for('login') }}" class="btn btn-primary btn-full">Iniciar Sesión para Contactar</a>
+                        <a href="{{ url_for('login') }}" class="btn-buy">Inicia Sesión</a>
                     {% endif %}
                 </div>
             </article>
 
-            <!-- Producto 3 (Oferta) -->
+            <!-- Producto 3 -->
             <article class="producto-card">
                 <div class="producto-imagen">
-                    <img src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=300&fit=crop" alt="Sesión de fotografía profesional" loading="lazy">
+                    <img src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=300&fit=crop" alt="Sesión Fotos" loading="lazy">
                     <span class="producto-badge oferta">🔥 Oferta</span>
                 </div>
                 <div class="producto-info">
@@ -121,9 +118,9 @@
                         <li>✅ 20% descuento</li>
                     </ul>
                     {% if session_user %}
-                        <a href="#" class="btn btn-success btn-full">¡Aprovechar Oferta!</a>
+                        <a href="#" class="btn-success">Aprovechar Oferta</a>
                     {% else %}
-                        <a href="{{ url_for('login') }}" class="btn btn-success btn-full">Inicia Sesión y Ahorra</a>
+                        <a href="{{ url_for('login') }}" class="btn-success">Inicia Sesión</a>
                     {% endif %}
                 </div>
             </article>
@@ -131,10 +128,10 @@
             <!-- Producto 4 -->
             <article class="producto-card">
                 <div class="producto-imagen">
-                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop" alt="Traducción inglés-español" loading="lazy">
+                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop" alt="Traducción" loading="lazy">
                 </div>
                 <div class="producto-info">
-                    <h3>Traducción Inglés-Español</h3>
+                    <h3>Traducción Inglés</h3>
                     <p class="producto-estudiante">🌍 Por @ana_traductor</p>
                     <div class="producto-precio">$0.05 <span>por palabra</span></div>
                     <ul class="producto-features">
@@ -143,9 +140,9 @@
                         <li>✅ Rápida entrega</li>
                     </ul>
                     {% if session_user %}
-                        <a href="#" class="btn btn-primary btn-full">Contactar</a>
+                        <a href="#" class="btn-contact">Contactar</a>
                     {% else %}
-                        <a href="{{ url_for('login') }}" class="btn btn-primary btn-full">Iniciar Sesión para Contactar</a>
+                        <a href="{{ url_for('login') }}" class="btn-contact">Inicia Sesión</a>
                     {% endif %}
                 </div>
             </article>
@@ -154,24 +151,24 @@
         <div class="section-cta">
             {% if session_user %}
                 <a href="#" class="btn btn-primary btn-large">
-                    📤 ¡Publica tu servicio ahora!
+                    📤 Publica tu servicio
                 </a>
             {% else %}
                 <a href="{{ url_for('login') }}" class="btn btn-primary btn-large">
-                    📤 ¡Regístrate y publica tu servicio!
+                    📤 Regístrate y Publica
                 </a>
             {% endif %}
         </div>
     </div>
 </section>
 
-<!-- Newsletter Section -->
-<section class="newsletter" aria-label="Suscripción al newsletter">
+<!-- Newsletter -->
+<section class="newsletter">
     <div class="container">
         <div class="newsletter-content">
             <div class="newsletter-text">
                 <h2>📬 Recibe ofertas exclusivas</h2>
-                <p>Suscríbete y sé el primero en conocer las mejores ofertas estudiantiles</p>
+                <p>Suscríbete y sé el primero en conocer las mejores ofertas</p>
             </div>
             <form class="newsletter-form" id="newsletterForm">
                 <input type="email" id="newsletterEmail" placeholder="tu@email.com" required>
@@ -181,34 +178,11 @@
     </div>
 </section>
 
-<style>
-    /* Tus estilos existentes se mantienen */
-    .producto-card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .producto-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 12px 24px rgba(0,0,0,0.1);
-    }
-    .btn-success {
-        background: #28a745;
-        color: white;
-    }
-    .btn-success:hover {
-        background: #218838;
-    }
-    .oferta {
-        background: #ff5722;
-    }
-    .hero-stats .stat-number {
-        font-size: 2rem;
-        font-weight: bold;
-        display: inline-block;
-    }
-</style>
+{% endblock %}
 
+{% block extra_js %}
 <script>
-    // Animación de contadores al hacer scroll
+    // Contadores animados
     const statsSection = document.getElementById('stats');
     let animated = false;
 
@@ -234,7 +208,6 @@
         animated = true;
     }
 
-    // Observador de scroll
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting && !animated) {
@@ -242,19 +215,18 @@
             }
         });
     }, { threshold: 0.5 });
+    
     if (statsSection) observer.observe(statsSection);
 
-    // Newsletter funcional (simulación)
+    // Newsletter
     const newsletterForm = document.getElementById('newsletterForm');
     if (newsletterForm) {
         newsletterForm.addEventListener('submit', function(e) {
             e.preventDefault();
             const email = document.getElementById('newsletterEmail').value;
             if(email) {
-                alert(`📧 ¡Gracias por suscribirte, ${email}! Recibirás nuestras mejores ofertas.`);
+                alert(`📧 ¡Gracias por suscribirte, ${email}!`);
                 newsletterForm.reset();
-            } else {
-                alert('Por favor, ingresa un email válido.');
             }
         });
     }

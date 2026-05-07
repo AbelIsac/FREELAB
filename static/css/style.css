@@ -713,7 +713,7 @@ body.scrolled .header {
     }
 }
 
-<<<<<<< HEAD
+
 /* =========================
    DASHBOARD VENDEDOR (ESTUDIANTE)
 ========================= */
@@ -929,7 +929,8 @@ body.scrolled .header {
     justify-content: center;
     gap: 1rem;
     flex-wrap: wrap;
-=======
+    }
+
 /* Botón de cerrar sesión */
 .btn-danger {
     background: #dc3545;
@@ -964,5 +965,193 @@ body.scrolled .header {
     color: #333;
     font-weight: 500;
     font-size: 0.9rem;
->>>>>>> 4b851a1a77cd5bb29fb8db4a96ada2a659dafaf5
+
+}
+/* Botones personalizados para productos */
+.btn-details, .btn-buy, .btn-contact, .btn-success {
+    font-family: 'Poppins', sans-serif;
+}
+
+.btn-details i, .btn-buy i, .btn-contact i, .btn-success i {
+    font-size: 1rem;
+}
+
+/* Mejoras responsive para el grid */
+@media (max-width: 1024px) {
+    .productos-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+    }
+}
+
+@media (max-width: 768px) {
+    .productos-grid {
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 20px;
+    }
+    
+    .producto-info h3 {
+        font-size: 1.2rem;
+    }
+    
+    .producto-precio {
+        font-size: 1.3rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .productos-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .producto-card {
+        max-width: 100%;
+    }
+} 
+
+/* ========================
+   DROPDOWN MENU BONITO
+   ======================== */
+.user-dropdown {
+    position: relative;
+}
+
+.user-info-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #f5f7fa, #e9ecef);
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+.user-info-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg, #ffffff, #f0f2f5);
+}
+
+.user-avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #667eea;
+}
+
+.user-name {
+    font-weight: 600;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.user-info-btn i {
+    font-size: 0.8rem;
+    color: #667eea;
+    transition: transform 0.3s ease;
+}
+
+.user-info-btn:hover i {
+    transform: rotate(180deg);
+}
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 10px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    min-width: 220px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.dropdown-menu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    color: #333;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.dropdown-item i {
+    width: 20px;
+    color: #667eea;
+    font-size: 1rem;
+}
+
+.dropdown-item:hover {
+    background: linear-gradient(135deg, #667eea10, #764ba210);
+    padding-left: 25px;
+}
+
+.dropdown-item.logout {
+    color: #dc3545;
+}
+
+.dropdown-item.logout i {
+    color: #dc3545;
+}
+
+.dropdown-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #e0e0e0, transparent);
+    margin: 5px 0;
+}
+
+/* Animación para cerrar flash */
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* Logo highlight */
+.logo-highlight {
+    background: linear-gradient(135deg, #ff6b6b, #f7931e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Botón login normal */
+.btn-login {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.btn-login:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }

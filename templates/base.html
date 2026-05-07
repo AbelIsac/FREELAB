@@ -6,20 +6,17 @@
     <title>{% block title %}Marketplace Estudiantil{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <!-- Particle Background -->
-    <div class="particles"></div>
-
-    <!-- Header Premium -->
+    <!-- Header -->
     <header class="header">
         <nav class="navbar">
             <div class="nav-container">
                 <div class="nav-logo">
                     <a href="{{ url_for('home') }}">
                         <i class="fas fa-graduation-cap"></i>
-                        <span>Marketplace Estudiantil</span>
+                        <span>Marketplace<span class="logo-highlight">Est</span></span>
                     </a>
                 </div>
                 
@@ -30,27 +27,41 @@
                 </ul>
 
                 <div class="nav-actions">
-                    <a href="#newsletter" class="nav-link secondary">Suscripción</a>
-                    {% if session.get('user') %}
-                        <!-- Usuario logueado -->
-                        <div class="user-info" style="display: flex; align-items: center; gap: 10px;">
-                            <img src="{{ session.user.get('avatar', 'https://via.placeholder.com/35') }}" 
-                                 alt="Avatar" 
-                                 style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover;">
-                            <span style="color: #333; font-weight: 500;">{{ session.user.get('name', 'Usuario') }}</span>
+                    {% if session_user %}
+                        <!-- DROPDOWN MENU BONITO -->
+                        <div class="user-dropdown">
+                            <div class="user-info-btn">
+                                <img src="{{ session_user.get('avatar', 'https://ui-avatars.com/api/?background=667eea&color=fff&name=' + session_user.get('name', 'U')) }}" 
+                                     alt="Avatar" class="user-avatar">
+                                <span class="user-name">{{ session_user.get('name', 'Usuario').split()[0] }}</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="dropdown-menu">
+                                <a href="{{ url_for('dashboard') }}" class="dropdown-item">
+                                    <i class="fas fa-tachometer-alt"></i> Mi Dashboard
+                                </a>
+                                <a href="#" class="dropdown-item">
+                                    <i class="fas fa-shopping-bag"></i> Mis Compras
+                                </a>
+                                <a href="#" class="dropdown-item">
+                                    <i class="fas fa-plus-circle"></i> Publicar Producto
+                                </a>
+                                <a href="#" class="dropdown-item">
+                                    <i class="fas fa-user-circle"></i> Mi Perfil
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a href="{{ url_for('logout') }}" class="dropdown-item logout">
+                                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                                </a>
+                            </div>
                         </div>
-                        <a href="{{ url_for('logout') }}" class="btn btn-danger btn-sm" style="background: #dc3545; color: white; padding: 8px 20px; border-radius: 50px; text-decoration: none;">
-                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-                        </a>
                     {% else %}
-                        <!-- Usuario no logueado -->
-                        <a href="{{ url_for('login') }}" class="btn btn-primary btn-sm">
+                        <a href="{{ url_for('login') }}" class="btn-login">
                             <i class="fab fa-google"></i> Iniciar Sesión
                         </a>
                     {% endif %}
                 </div>
 
-                <!-- Mobile menu button -->
                 <div class="hamburger">
                     <span></span>
                     <span></span>
@@ -61,49 +72,39 @@
     </header>
 
     <!-- Flash Messages -->
-    {% if get_flashed_messages() %}
-    <div class="flash-container">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% for category, message in messages %}
-                <div class="flash-message alert-{{ 'success' if category == 'success' else 'error' }}">
-                    <i class="fas {% if category == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
-                    {{ message }}
-                    <button class="flash-close">&times;</button>
-                </div>
-            {% endfor %}
-        {% endwith %}
-    </div>
-    {% endif %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-container">
+                {% for category, message in messages %}
+                    <div class="flash-message alert-{{ category }}">
+                        <i class="fas {% if category == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
+                        {{ message }}
+                        <button class="flash-close">&times;</button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
 
     <main>
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer Premium -->
+    <!-- Footer -->
     <footer class="footer">
-        <div class="footer-wave"></div>
         <div class="container">
-            <!-- Main Footer Content -->
             <div class="footer-main">
                 <div class="footer-brand">
                     <div class="footer-logo">
                         <i class="fas fa-graduation-cap"></i>
-                        <span>Marketplace Estudiantil</span>
+                        <span>Marketplace<span class="logo-highlight">Est</span></span>
                     </div>
                     <p>Conectando estudiantes con oportunidades. Compra, vende y crece con tu comunidad.</p>
                     <div class="footer-social">
-                        <a href="#" class="social-link" title="Instagram">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="#" class="social-link" title="WhatsApp">
-                            <i class="fab fa-whatsapp"></i>
-                        </a>
-                        <a href="#" class="social-link" title="TikTok">
-                            <i class="fab fa-tiktok"></i>
-                        </a>
-                        <a href="#" class="social-link" title="Discord">
-                            <i class="fab fa-discord"></i>
-                        </a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-tiktok"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-discord"></i></a>
                     </div>
                 </div>
 
@@ -114,7 +115,6 @@
                             <li><a href="#">Cómo funciona</a></li>
                             <li><a href="#">Publicar servicio</a></li>
                             <li><a href="#">Comprar</a></li>
-                            <li><a href="#">Mis pedidos</a></li>
                         </ul>
                     </div>
                     <div class="footer-column">
@@ -122,7 +122,6 @@
                         <ul>
                             <li><a href="#">Ayuda</a></li>
                             <li><a href="#">Preguntas frecuentes</a></li>
-                            <li><a href="#">Reportar problema</a></li>
                             <li><a href="#">Contactar</a></li>
                         </ul>
                     </div>
@@ -130,63 +129,66 @@
                         <h4>Legal</h4>
                         <ul>
                             <li><a href="#">Términos de uso</a></li>
-                            <li><a href="#">Política de privacidad</a></li>
-                            <li><a href="#">Política de reembolso</a></li>
-                            <li><a href="#">Cookies</a></li>
+                            <li><a href="#">Privacidad</a></li>
                         </ul>
-                    </div>
-                    <div class="footer-newsletter">
-                        <h4>Suscripción Premium</h4>
-                        <p>Recibe ofertas exclusivas y promociones</p>
-                        <form class="newsletter-form">
-                            <div class="input-group">
-                                <input type="email" placeholder="tu@email.com" required>
-                                <button type="submit">
-                                    <i class="fas fa-paper-plane"></i>
-                                </button>
-                            </div>
-                        </form>
-                        <div class="newsletter-benefits">
-                            <small>✅ Ofertas exclusivas | ✅ Novedades | ✅ Descuentos</small>
-                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Footer Bottom -->
             <div class="footer-bottom">
-                <div class="footer-divider"></div>
-                <div class="footer-bottom-content">
-                    <div class="footer-left">
-                        <p>&copy; 2024 <strong>Marketplace Estudiantil</strong>. Todos los derechos reservados.</p>
-                        <p class="footer-small">Desarrollado con ❤️ por estudiantes para estudiantes</p>
-                    </div>
-                    <div class="footer-right">
-                        <div class="payment-methods">
-                            <i class="fab fa-cc-visa"></i>
-                            <i class="fab fa-cc-mastercard"></i>
-                            <i class="fab fa-cc-paypal"></i>
-                            <i class="fas fa-mobile-alt"></i>
-                        </div>
-                    </div>
-                </div>
+                <p>&copy; 2024 MarketplaceEst. Desarrollado con ❤️ por estudiantes para estudiantes</p>
             </div>
         </div>
     </footer>
 
-    <!-- Floating Action Button -->
-    {% if session.get('user') %}
-        <a href="{{ url_for('dashboard') }}" class="floating-action-btn" title="Ir a mi Dashboard">
+    <!-- Floating Button -->
+    {% if session_user %}
+        <a href="{{ url_for('dashboard') }}" class="floating-action-btn">
             <i class="fas fa-chart-line"></i>
-            <span class="fab-text">Dashboard</span>
+            <span>Dashboard</span>
         </a>
     {% else %}
-        <a href="{{ url_for('login') }}" class="floating-action-btn" title="Iniciar sesión con Google">
+        <a href="{{ url_for('login') }}" class="floating-action-btn">
             <i class="fab fa-google"></i>
-            <span class="fab-text">Ingresar</span>
+            <span>Ingresar</span>
         </a>
     {% endif %}
 
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        // DROPDOWN MENU - Funcionalidad
+        const userInfoBtn = document.querySelector('.user-info-btn');
+        const dropdownMenu = document.querySelector('.dropdown-menu');
+        
+        if (userInfoBtn) {
+            userInfoBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdownMenu.classList.toggle('show');
+            });
+            
+            // Cerrar dropdown al hacer click fuera
+            document.addEventListener('click', (e) => {
+                if (!userInfoBtn.contains(e.target)) {
+                    dropdownMenu.classList.remove('show');
+                }
+            });
+        }
+        
+        // Flash messages close
+        document.querySelectorAll('.flash-close').forEach(btn => {
+            btn.addEventListener('click', () => {
+                btn.parentElement.remove();
+            });
+        });
+        
+        // Auto close flash messages
+        setTimeout(() => {
+            document.querySelectorAll('.flash-message').forEach(msg => {
+                msg.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => msg.remove(), 300);
+            });
+        }, 5000);
+    </script>
+    
+    {% block extra_js %}{% endblock %}
 </body>
 </html>
