@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from flask import Flask, render_template, redirect, request, url_for, flash, session  # ← Agregué session aquí
+from flask import Flask, render_template, redirect, request, url_for, flash, session
 from config.supabase import supabase
 
 # Cargar variables de entorno
@@ -52,8 +52,14 @@ def callback():
         respuesta = supabase.table('perfiles').select('rol').eq('id', usuario.id).execute()
         
         if respuesta.data and respuesta.data[0].get('rol'):
+            rol = respuesta.data[0]['rol']
             flash(f'Bienvenido {usuario.user_metadata.get("name", "Usuario")}', 'success')
-            return render_template('dashboard.html', usuario=usuario, rol=respuesta.data[0]['rol'])
+            
+            # 🔥 REDIRIGIR SEGÚN EL ROL A LAS NUEVAS PANTALLAS
+            if rol == 'estudiante':
+                return redirect(url_for('dashboard_estudiante', user_id=usuario.id))
+            else:
+                return redirect(url_for('dashboard_comprador', user_id=usuario.id))
         else:
             return redirect(url_for('elegir_rol', user_id=usuario.id))
 
@@ -99,7 +105,7 @@ def guardar_rol():
         if respuesta.data:
             flash(f'¡Perfil creado! Tu rol es: {rol}', 'success')
             
-            # 🔥 CAMBIO IMPORTANTE: Redirigir según el rol
+            # 🔥 REDIRIGIR SEGÚN EL ROL
             if rol == 'estudiante':
                 return redirect(url_for('dashboard_estudiante', user_id=user_id))
             else:
@@ -112,41 +118,78 @@ def guardar_rol():
         flash(f'Error técnico: {str(e)}', 'error')
         return redirect(url_for('elegir_rol', user_id=user_id))
 
-<<<<<<< HEAD
 @app.route('/dashboard/estudiante')
 def dashboard_estudiante():
     user_id = request.args.get('user_id')
     if not user_id:
+        flash('Error: No se encontró usuario', 'error')
         return redirect(url_for('home'))
     
-    # Obtener usuario
     try:
-        usuario = supabase.auth.admin.get_user_by_id(user_id)
-        return render_template('dashboard_estudiante.html', usuario=usuario.user, rol='estudiante')
-    except:
-        flash('Error al cargar usuario', 'error')
+        # Obtener usuario de la sesión en lugar de llamar a admin
+        if 'user' in session and session['user']['id'] == user_id:
+            usuario_data = session['user']
+            # Crear un objeto similar al de supabase
+            class UsuarioMock:
+                def __init__(self, data):
+                    self.id = data['id']
+                    self.email = data['email']
+                    self.user_metadata = {'name': data['name'], 'avatar_url': data['avatar']}
+            
+            usuario = UsuarioMock(usuario_data)
+            return render_template('dashboard_estudiante.html', usuario=usuario, rol='estudiante')
+        else:
+            flash('Sesión expirada, inicia sesión nuevamente', 'error')
+            return redirect(url_for('home'))
+    except Exception as e:
+        flash(f'Error al cargar usuario: {str(e)}', 'error')
         return redirect(url_for('home'))
 
 @app.route('/dashboard/comprador')
 def dashboard_comprador():
     user_id = request.args.get('user_id')
     if not user_id:
+        flash('Error: No se encontró usuario', 'error')
         return redirect(url_for('home'))
     
     try:
-        usuario = supabase.auth.admin.get_user_by_id(user_id)
-        return render_template('dashboard_comprador.html', usuario=usuario.user, rol='comprador')
-    except:
-        flash('Error al cargar usuario', 'error')
+        # Obtener usuario de la sesión
+        if 'user' in session and session['user']['id'] == user_id:
+            usuario_data = session['user']
+            # Crear un objeto similar al de supabase
+            class UsuarioMock:
+                def __init__(self, data):
+                    self.id = data['id']
+                    self.email = data['email']
+                    self.user_metadata = {'name': data['name'], 'avatar_url': data['avatar']}
+            
+            usuario = UsuarioMock(usuario_data)
+            return render_template('dashboard_comprador.html', usuario=usuario, rol='comprador')
+        else:
+            flash('Sesión expirada, inicia sesión nuevamente', 'error')
+            return redirect(url_for('home'))
+    except Exception as e:
+        flash(f'Error al cargar usuario: {str(e)}', 'error')
         return redirect(url_for('home'))
-=======
+
 @app.route('/dashboard')
 def dashboard():
     if 'user' not in session:
         flash('Por favor inicia sesión primero', 'error')
         return redirect(url_for('home'))
-    return render_template('dashboard.html', user=session['user'])
->>>>>>> 4b851a1a77cd5bb29fb8db4a96ada2a659dafaf5
+    
+    # Verificar rol del usuario
+    user_id = session['user']['id']
+    respuesta = supabase.table('perfiles').select('rol').eq('id', user_id).execute()
+    
+    if respuesta.data and respuesta.data[0].get('rol'):
+        rol = respuesta.data[0]['rol']
+        if rol == 'estudiante':
+            return redirect(url_for('dashboard_estudiante', user_id=user_id))
+        else:
+            return redirect(url_for('dashboard_comprador', user_id=user_id))
+    else:
+        return redirect(url_for('elegir_rol', user_id=user_id))
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
