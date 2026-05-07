@@ -895,40 +895,33 @@ body.scrolled .header {
 /* =========================
    DASHBOARD GENERAL (si aún usas el viejo)
 ========================= */
-.dashboard {
+
+/* =========================
+   DASHBOARD VENDEDOR - VERSIÓN LIMPIA
+/* =========================
+   DASHBOARD FULL SCREEN
+========================= */
+.dashboard-vendedor-full {
     min-height: 100vh;
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-    padding: 120px 2rem 4rem;
+    background: #f8fafc;
+    padding: 80px 0 0 0;
 }
 
-.dashboard h1 {
-    text-align: center;
-    margin-bottom: 1rem;
+.dashboard-full {
+    max-width: 100%;
+    padding: 2rem 3rem;
 }
 
-.rol-badge {
-    text-align: center;
-    padding: 0.5rem;
-    border-radius: 50px;
-    max-width: 200px;
-    margin: 0 auto 2rem;
-}
-
-.rol-badge.estudiante {
-    background: #10b981;
-    color: white;
-}
-
-.rol-badge.comprador {
-    background: #f59e0b;
-    color: white;
-}
-
-.dashboard-actions {
+/* Header Full */
+.dashboard-header-full {
     display: flex;
-    justify-content: center;
-    gap: 1rem;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #e9ecef;
     flex-wrap: wrap;
+
     }
 
 /* Botón de cerrar sesión */
@@ -939,31 +932,45 @@ body.scrolled .header {
     border-radius: 50px;
     text-decoration: none;
     transition: all 0.3s ease;
+
+    gap: 1rem;
+
 }
 
-.btn-danger:hover {
-    background: #c82333;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
-}
-
-/* Información del usuario */
-.user-info {
+.header-info {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 5px 10px;
+    gap: 1rem;
+}
+
+.welcome-avatar img {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #e9ecef;
+}
+
+.welcome-text h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1a1e24;
+    margin-bottom: 0.25rem;
+}
+
+.welcome-text p {
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+.badge-vendedor {
+    background: #ecfdf5;
+    color: #059669;
+    padding: 0.5rem 1rem;
     border-radius: 50px;
-    background: #f0f2f5;
-}
-
-.user-info img {
-    border: 2px solid #667eea;
-}
-
-.user-info span {
-    color: #333;
+    font-size: 0.875rem;
     font-weight: 500;
+
     font-size: 0.9rem;
 
 }
@@ -1154,4 +1161,324 @@ body.scrolled .header {
 .btn-login:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Stats Full Width */
+.stats-grid-full {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.stat-card-full {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.2s ease;
+}
+
+.stat-card-full:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.stat-icon-full {
+    width: 48px;
+    height: 48px;
+    background: #f1f5f9;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-icon-full i {
+    font-size: 1.5rem;
+    color: #475569;
+}
+
+.stat-info-full {
+    flex: 1;
+}
+
+.stat-info-full h3 {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+}
+
+.stat-number-full {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #1a1e24;
+    line-height: 1.2;
+}
+
+/* Quick Actions Full */
+.quick-actions-full {
+    margin-bottom: 2.5rem;
+}
+
+.quick-actions-full h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1a1e24;
+    margin-bottom: 1.25rem;
+}
+
+.actions-grid-full {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+}
+
+.action-card-full {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.action-card-full:hover {
+    border-color: #cbd5e1;
+    background: #fafcfc;
+    transform: translateY(-2px);
+}
+
+.action-icon-full {
+    width: 48px;
+    height: 48px;
+    background: #f1f5f9;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.action-icon-full i {
+    font-size: 1.25rem;
+    color: #475569;
+}
+
+.action-text {
+    flex: 1;
+}
+
+.action-text h3 {
+    color: #1a1e24;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.action-text p {
+    color: #6c757d;
+    font-size: 0.75rem;
+}
+
+/* Steps Full */
+.steps-full {
+    background: #fafcfc;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.steps-full h2 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1a1e24;
+    margin-bottom: 1.25rem;
+}
+
+.steps-grid-full {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+}
+
+.step-full {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.step-number-full {
+    width: 32px;
+    height: 32px;
+    background: #f1f5f9;
+    color: #475569;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.875rem;
+    flex-shrink: 0;
+}
+
+.step-content-full {
+    flex: 1;
+}
+
+.step-content-full h3 {
+    color: #1a1e24;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.step-content-full p {
+    color: #6c757d;
+    font-size: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.step-link-full {
+    color: #3b82f6;
+    text-decoration: none;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.step-link-full:hover {
+    text-decoration: underline;
+}
+
+/* Navigation Buttons Full */
+.nav-buttons-full {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e9ecef;
+}
+
+.btn-link {
+    background: transparent;
+    border: 1px solid #e2e8f0;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    color: #475569;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.btn-link:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: #1a1e24;
+}
+
+/* Responsive Full */
+@media (max-width: 768px) {
+    .dashboard-full {
+        padding: 1rem;
+    }
+    
+    .dashboard-header-full {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .stats-grid-full {
+        grid-template-columns: 1fr;
+    }
+    
+    .actions-grid-full {
+        grid-template-columns: 1fr;
+    }
+    
+    .steps-grid-full {
+        grid-template-columns: 1fr;
+    }
+    
+    .step-full {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .nav-buttons-full {
+        flex-direction: column;
+    }
+    
+    .btn-link {
+        justify-content: center;
+    }
+}
+
+/* =========================
+   BADGE COMPRADOR
+========================= */
+.badge-comprador {
+    background: #eff6ff;
+    color: #3b82f6;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Category Links */
+.category-link {
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.category-link:hover {
+    background: #f8fafc;
+    transform: translateX(4px);
+}
+
+.category-link .step-number-full {
+    background: #eff6ff;
+    color: #3b82f6;
+}
+
+.category-link:hover .step-number-full {
+    background: #3b82f6;
+    color: white;
+}
+
+/* Ajuste para que las categorías sean clickeables */
+.step-full.category-link {
+    display: flex;
+    cursor: pointer;
+}
+
+/* Responsive para comprador */
+@media (max-width: 768px) {
+    .category-link:hover {
+        transform: translateX(0);
+    }
+
 }

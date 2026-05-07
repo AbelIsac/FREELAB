@@ -110,4 +110,6 @@ document.addEventListener('DOMContentLoaded', () => {
 // Mobile menu toggle
 document.querySelector('.hamburger')?.addEventListener('click', () => {
     document.querySelector('.nav-menu').classList.toggle('active');
+
+    
 });
