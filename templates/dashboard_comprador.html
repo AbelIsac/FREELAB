@@ -1,28 +1,205 @@
 {% extends "base.html" %}
 
-{% block title %}Panel Comprador - Marketplace Estudiantil{% endblock %}
+{% block title %}Panel de Comprador - Marketplace Estudiantil{% endblock %}
 
 {% block content %}
-<div class="dashboard-comprador">
-    <h1>🛍️ ¡Bienvenido, {{ usuario.user_metadata.name or usuario.email.split('@')[0] }}!</h1>
-    <p>Panel de control de comprador - Explora y compra productos estudiantiles</p>
-    
-    <div class="acciones-comprador">
-        <a href="#" class="btn btn-primary">
-            <i class="fas fa-search"></i> Explorar productos
-        </a>
-        <a href="#" class="btn btn-success">
-            <i class="fas fa-shopping-cart"></i> Mis compras
-        </a>
-        <a href="#" class="btn btn-info">
-            <i class="fas fa-heart"></i> Favoritos
-        </a>
-        <a href="#" class="btn btn-secondary">
-            <i class="fas fa-pen"></i> Mis reseñas
-        </a>
-        <a href="{{ url_for('home') }}" class="btn btn-danger">
-            <i class="fas fa-home"></i> Ir al inicio
-        </a>
+<div class="dashboard-vendedor-full">
+    <div class="dashboard-full">
+        <!-- Header -->
+        <div class="dashboard-header-full">
+            <div class="header-info">
+                <div class="welcome-avatar">
+                    <img src="{{ usuario.user_metadata.get('avatar_url', 'https://ui-avatars.com/api/?background=cbd5e1&color=475569&name=' + usuario.user_metadata.get('name', 'U')) }}" alt="Avatar">
+                </div>
+                <div class="welcome-text">
+                    <h1>Bienvenido, {{ usuario.user_metadata.get('name', 'Comprador') }}</h1>
+                    <p>Explora y compra productos de otros estudiantes</p>
+                </div>
+            </div>
+            <div class="header-badge">
+                <span class="badge-comprador">
+                    <i class="fas fa-shopping-bag"></i> Comprador
+                </span>
+            </div>
+        </div>
+
+        <!-- Stats Grid Full Width -->
+        <div class="stats-grid-full">
+            <div class="stat-card-full">
+                <div class="stat-icon-full">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <div class="stat-info-full">
+                    <h3>Compras realizadas</h3>
+                    <p class="stat-number-full">0</p>
+                </div>
+            </div>
+
+            <div class="stat-card-full">
+                <div class="stat-icon-full">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <div class="stat-info-full">
+                    <h3>Productos favoritos</h3>
+                    <p class="stat-number-full">0</p>
+                </div>
+            </div>
+
+            <div class="stat-card-full">
+                <div class="stat-icon-full">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="stat-info-full">
+                    <h3>Reseñas escritas</h3>
+                    <p class="stat-number-full">0</p>
+                </div>
+            </div>
+
+            <div class="stat-card-full">
+                <div class="stat-icon-full">
+                    <i class="fas fa-tag"></i>
+                </div>
+                <div class="stat-info-full">
+                    <h3>Ofertas aplicadas</h3>
+                    <p class="stat-number-full">0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Acciones Rápidas -->
+        <div class="quick-actions-full">
+            <h2>Acciones rápidas</h2>
+            <div class="actions-grid-full">
+                <a href="#" class="action-card-full">
+                    <div class="action-icon-full">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="action-text">
+                        <h3>Explorar productos</h3>
+                        <p>Descubre lo que ofrecen otros estudiantes</p>
+                    </div>
+                </a>
+
+                <a href="#" class="action-card-full">
+                    <div class="action-icon-full">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <div class="action-text">
+                        <h3>Mis compras</h3>
+                        <p>Historial de tus pedidos</p>
+                    </div>
+                </a>
+
+                <a href="#" class="action-card-full">
+                    <div class="action-icon-full">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="action-text">
+                        <h3>Favoritos</h3>
+                        <p>Productos que te interesan</p>
+                    </div>
+                </a>
+
+                <a href="#" class="action-card-full">
+                    <div class="action-icon-full">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="action-text">
+                        <h3>Mis reseñas</h3>
+                        <p>Califica los productos que compraste</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Categorías Destacadas -->
+        <div class="steps-full">
+            <h2>Categorías destacadas</h2>
+            <div class="steps-grid-full">
+                <a href="#" class="step-full category-link">
+                    <div class="step-number-full">
+                        <i class="fas fa-laptop-code"></i>
+                    </div>
+                    <div class="step-content-full">
+                        <h3>Tecnología</h3>
+                        <p>Clases, desarrollo, diseño</p>
+                    </div>
+                </a>
+
+                <a href="#" class="step-full category-link">
+                    <div class="step-number-full">
+                        <i class="fas fa-paint-brush"></i>
+                    </div>
+                    <div class="step-content-full">
+                        <h3>Diseño</h3>
+                        <p>Gráfico, web, ilustración</p>
+                    </div>
+                </a>
+
+                <a href="#" class="step-full category-link">
+                    <div class="step-number-full">
+                        <i class="fas fa-chalkboard-user"></i>
+                    </div>
+                    <div class="step-content-full">
+                        <h3>Clases particulares</h3>
+                        <p>Matemáticas, inglés, programación</p>
+                    </div>
+                </a>
+
+                <a href="#" class="step-full category-link">
+                    <div class="step-number-full">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <div class="step-content-full">
+                        <h3>Arte y música</h3>
+                        <p>Instrumentos, pintura, fotografía</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Recomendaciones -->
+        <div class="steps-full">
+            <h2>🎯 Recomendaciones para ti</h2>
+            <div class="steps-grid-full">
+                <div class="step-full">
+                    <div class="step-number-full">1</div>
+                    <div class="step-content-full">
+                        <h3>Completa tu perfil</h3>
+                        <p>Agrega tus intereses para mejores recomendaciones</p>
+                        <a href="#" class="step-link-full">Configurar perfil →</a>
+                    </div>
+                </div>
+
+                <div class="step-full">
+                    <div class="step-number-full">2</div>
+                    <div class="step-content-full">
+                        <h3>Explora productos</h3>
+                        <p>Descubre servicios de otros estudiantes</p>
+                        <a href="#" class="step-link-full">Ver productos →</a>
+                    </div>
+                </div>
+
+                <div class="step-full">
+                    <div class="step-number-full">3</div>
+                    <div class="step-content-full">
+                        <h3>Deja tu primera reseña</h3>
+                        <p>Ayuda a la comunidad con tu opinión</p>
+                        <a href="#" class="step-link-full">Calificar →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones Inferiores -->
+        <div class="nav-buttons-full">
+            <a href="{{ url_for('home') }}" class="btn-link">
+                <i class="fas fa-home"></i> Inicio
+            </a>
+            <a href="{{ url_for('logout') }}" class="btn-link">
+                <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+            </a>
+        </div>
     </div>
 </div>
 {% endblock %}

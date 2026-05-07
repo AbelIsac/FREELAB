@@ -1,28 +1,159 @@
 {% extends "base.html" %}
 
-{% block title %}Panel Vendedor - Marketplace Estudiantil{% endblock %}
+{% block title %}Panel de Vendedor - Marketplace Estudiantil{% endblock %}
 
 {% block content %}
-<div class="dashboard-vendedor">
-    <h1>🎓 ¡Bienvenido, {{ usuario.user_metadata.name or usuario.email.split('@')[0] }}!</h1>
-    <p>Panel de control de vendedor - Gestiona tus productos y servicios</p>
-    
-    <div class="acciones-vendedor">
-        <a href="#" class="btn btn-success">
-            <i class="fas fa-plus-circle"></i> Publicar producto
-        </a>
-        <a href="#" class="btn btn-primary">
-            <i class="fas fa-box"></i> Mis productos
-        </a>
-        <a href="#" class="btn btn-info">
-            <i class="fas fa-chart-line"></i> Ventas
-        </a>
-        <a href="#" class="btn btn-secondary">
-            <i class="fas fa-star"></i> Reseñas
-        </a>
-        <a href="{{ url_for('home') }}" class="btn btn-danger">
-            <i class="fas fa-home"></i> Ir al inicio
-        </a>
+<div class="dashboard-vendedor-full">
+    <div class="dashboard-full">
+        <!-- Header -->
+        <div class="dashboard-header-full">
+            <div class="header-info">
+                <div class="welcome-avatar">
+                    <img src="{{ usuario.user_metadata.get('avatar_url', 'https://ui-avatars.com/api/?background=cbd5e1&color=475569&name=' + usuario.user_metadata.get('name', 'U')) }}" alt="Avatar">
+                </div>
+                <div class="welcome-text">
+                    <h1>Bienvenido, {{ usuario.user_metadata.get('name', 'Vendedor') }}</h1>
+                    <p>Gestiona tus productos y ventas desde aquí</p>
+                </div>
+            </div>
+            <div class="header-badge">
+                <span class="badge-vendedor">
+                    <i class="fas fa-check-circle"></i> Vendedor
+                </span>
+            </div>
+        </div>
+
+        <!-- Stats Grid Full Width -->
+        <div class="stats-grid-full">
+            <div class="stat-card-full">
+                <div class="stat-icon-full">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-info-full">
+                    <h3>Ventas totales</h3>
+                    <p class="stat-number-full">0</p>
+                </div>
+            </div>
+
+            <div class="stat-card-full">
+                <div class="stat-icon-full">
+                    <i class="fas fa-tags"></i>
+                </div>
+                <div class="stat-info-full">
+                    <h3>Productos activos</h3>
+                    <p class="stat-number-full">0</p>
+                </div>
+            </div>
+
+            <div class="stat-card-full">
+                <div class="stat-icon-full">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="stat-info-full">
+                    <h3>Calificación</h3>
+                    <p class="stat-number-full">—</p>
+                </div>
+            </div>
+
+            <div class="stat-card-full">
+                <div class="stat-icon-full">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-info-full">
+                    <h3>Clientes</h3>
+                    <p class="stat-number-full">0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Acciones Rápidas -->
+        <div class="quick-actions-full">
+            <h2>Acciones rápidas</h2>
+            <div class="actions-grid-full">
+                <a href="#" class="action-card-full">
+                    <div class="action-icon-full">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <div class="action-text">
+                        <h3>Publicar producto</h3>
+                        <p>Ofrece tus servicios</p>
+                    </div>
+                </a>
+
+                <a href="#" class="action-card-full">
+                    <div class="action-icon-full">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <div class="action-text">
+                        <h3>Mis productos</h3>
+                        <p>Gestiona tu catálogo</p>
+                    </div>
+                </a>
+
+                <a href="#" class="action-card-full">
+                    <div class="action-icon-full">
+                        <i class="fas fa-chart-simple"></i>
+                    </div>
+                    <div class="action-text">
+                        <h3>Estadísticas</h3>
+                        <p>Analiza tus ventas</p>
+                    </div>
+                </a>
+
+                <a href="#" class="action-card-full">
+                    <div class="action-icon-full">
+                        <i class="fas fa-gear"></i>
+                    </div>
+                    <div class="action-text">
+                        <h3>Configuración</h3>
+                        <p>Ajusta tu perfil</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Primeros Pasos -->
+        <div class="steps-full">
+            <h2>Primeros pasos</h2>
+            <div class="steps-grid-full">
+                <div class="step-full">
+                    <div class="step-number-full">1</div>
+                    <div class="step-content-full">
+                        <h3>Completa tu perfil</h3>
+                        <p>Agrega información de contacto</p>
+                        <a href="#" class="step-link-full">Configurar →</a>
+                    </div>
+                </div>
+
+                <div class="step-full">
+                    <div class="step-number-full">2</div>
+                    <div class="step-content-full">
+                        <h3>Publica un producto</h3>
+                        <p>Describe lo que ofreces</p>
+                        <a href="#" class="step-link-full">Publicar →</a>
+                    </div>
+                </div>
+
+                <div class="step-full">
+                    <div class="step-number-full">3</div>
+                    <div class="step-content-full">
+                        <h3>Comparte tu tienda</h3>
+                        <p>Promociona tus productos</p>
+                        <a href="#" class="step-link-full">Compartir →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botones Inferiores -->
+        <div class="nav-buttons-full">
+            <a href="{{ url_for('home') }}" class="btn-link">
+                <i class="fas fa-home"></i> Inicio
+            </a>
+            <a href="{{ url_for('logout') }}" class="btn-link">
+                <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+            </a>
+        </div>
     </div>
 </div>
 {% endblock %}

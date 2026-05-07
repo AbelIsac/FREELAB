@@ -153,26 +153,23 @@
                 </div>
             </div>
 
-            <!-- Footer Bottom -->
-            <div class="footer-bottom">
-                <div class="footer-divider"></div>
-                <div class="footer-bottom-content">
-                    <div class="footer-left">
-                        <p>&copy; 2024 <strong>Marketplace Estudiantil</strong>. Todos los derechos reservados.</p>
-                        <p class="footer-small">Desarrollado con ❤️ por estudiantes para estudiantes</p>
-                    </div>
-                    <div class="footer-right">
-                        <div class="payment-methods">
-                            <i class="fab fa-cc-visa"></i>
-                            <i class="fab fa-cc-mastercard"></i>
-                            <i class="fab fa-cc-paypal"></i>
-                            <i class="fas fa-mobile-alt"></i>
-                        </div>
-                    </div>
+<footer class="footer">
+    <div class="footer-bottom">
+        <div class="footer-divider"></div>
+        <div class="footer-bottom-content">
+            <div class="footer-left">
+                <p>&copy; <span id="current-year">2024</span> <strong>Marketplace Estudiantil</strong></p>
+            </div>
+            <div class="footer-right">
+                <div class="payment-methods">
+                    <i class="fab fa-cc-visa" title="Visa"></i>
+                    <i class="fab fa-cc-mastercard" title="Mastercard"></i>
+                    <i class="fab fa-cc-paypal" title="PayPal"></i>
                 </div>
             </div>
         </div>
-    </footer>
+    </div>
+</footer>
 
     <!-- Floating Action Button -->
     {% if session.get('user') %}
