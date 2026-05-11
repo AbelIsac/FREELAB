@@ -191,5 +191,9 @@ def dashboard():
     else:
         return redirect(url_for('elegir_rol', user_id=user_id))
 
+@app.route('/productos')
+def productos():
+    return render_template('productos.html')
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
