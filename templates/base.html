@@ -21,7 +21,7 @@
                 </div>
                 
                 <ul class="nav-menu">
-                    <li><a href="#productos" class="nav-link">Productos</a></li>
+                    <li><a href="{{ url_for('productos') }}" class="nav-link">Productos</a></li>
                     <li><a href="#como-funciona" class="nav-link">Cómo funciona</a></li>
                     <li><a href="#contacto" class="nav-link">Contacto</a></li>
                 </ul>
@@ -86,7 +86,7 @@
         {% endif %}
     {% endwith %}
 
-    <main>
+    <main class="main-content">
         {% block content %}{% endblock %}
     </main>
 
@@ -135,28 +135,22 @@
                 </div>
             </div>
 
-
             <div class="footer-bottom">
-                <p>&copy; 2024 MarketplaceEst. Desarrollado con ❤️ por estudiantes para estudiantes</p>
-
-<footer class="footer">
-    <div class="footer-bottom">
-        <div class="footer-divider"></div>
-        <div class="footer-bottom-content">
-            <div class="footer-left">
-                <p>&copy; <span id="current-year">2024</span> <strong>Marketplace Estudiantil</strong></p>
-            </div>
-            <div class="footer-right">
-                <div class="payment-methods">
-                    <i class="fab fa-cc-visa" title="Visa"></i>
-                    <i class="fab fa-cc-mastercard" title="Mastercard"></i>
-                    <i class="fab fa-cc-paypal" title="PayPal"></i>
+                <div class="footer-bottom-content">
+                    <div class="footer-left">
+                        <p>&copy; <span id="current-year">2024</span> <strong>Marketplace Estudiantil</strong>. Desarrollado con ❤️ por estudiantes</p>
+                    </div>
+                    <div class="footer-right">
+                        <div class="payment-methods">
+                            <i class="fab fa-cc-visa" title="Visa"></i>
+                            <i class="fab fa-cc-mastercard" title="Mastercard"></i>
+                            <i class="fab fa-cc-paypal" title="PayPal"></i>
+                        </div>
+                    </div>
                 </div>
-
             </div>
         </div>
-    </div>
-</footer>
+    </footer>
 
     <!-- Floating Button -->
     {% if session_user %}
@@ -172,6 +166,9 @@
     {% endif %}
 
     <script>
+        // Año actual para el footer
+        document.getElementById('current-year').innerText = new Date().getFullYear();
+        
         // DROPDOWN MENU - Funcionalidad
         const userInfoBtn = document.querySelector('.user-info-btn');
         const dropdownMenu = document.querySelector('.dropdown-menu');
