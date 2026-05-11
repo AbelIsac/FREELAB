@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Configuración - Marketplace Estudiantil{% endblock %}
+
+{% block content %}
+<div class="dashboard-vendedor-full">
+    <div class="dashboard-full">
+        <div class="dashboard-header-full">
+            <div class="header-info">
+                <div class="welcome-text">
+                    <h1>Configuración de perfil</h1>
+                    <p>Actualiza tu información personal y de contacto</p>
+                </div>
+            </div>
+            <div class="header-badge">
+                <span class="badge-vendedor">
+                    <i class="fas fa-gear"></i> Editar
+                </span>
+            </div>
+        </div>
+
+        <form style="max-width: 600px; margin: 0 auto;">
+            <div class="form-group">
+                <label>Nombre completo</label>
+                <input type="text" class="form-control" value="{{ user.name }}" disabled>
+            </div>
+            <div class="form-group">
+                <label>Correo electrónico</label>
+                <input type="email" class="form-control" value="{{ user.email }}" disabled>
+            </div>
+            <div class="form-group">
+                <label>Teléfono (opcional)</label>
+                <input type="tel" class="form-control" placeholder="+56 9 XXXX XXXX">
+            </div>
+            <div class="form-group">
+                <label>Biografía / Descripción</label>
+                <textarea rows="3" class="form-control" placeholder="Cuéntales a los compradores sobre ti..."></textarea>
+            </div>
+            <div class="nav-buttons-full" style="justify-content: flex-end;">
+                <button class="btn-link" disabled style="opacity: 0.5;">Guardar (próximamente)</button>
+            </div>
+        </form>
+
+        <div class="nav-buttons-full" style="margin-top: 2rem;">
+            <a href="{{ url_for('dashboard_estudiante', user_id=session['user']['id']) }}" class="btn-link">← Volver al dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -31,7 +31,7 @@
                 </div>
                 <div class="stat-info-full">
                     <h3>Ventas totales</h3>
-                    <p class="stat-number-full">0</p>
+                    <p class="stat-number-full">{{ stats.ventas }}</p>
                 </div>
             </div>
 
@@ -41,7 +41,7 @@
                 </div>
                 <div class="stat-info-full">
                     <h3>Productos activos</h3>
-                    <p class="stat-number-full">0</p>
+                    <p class="stat-number-full">{{ stats.productos }}</p>
                 </div>
             </div>
 
@@ -51,7 +51,7 @@
                 </div>
                 <div class="stat-info-full">
                     <h3>Calificación</h3>
-                    <p class="stat-number-full">—</p>
+                    <p class="stat-number-full">{{ stats.calificacion }}</p>
                 </div>
             </div>
 
@@ -61,7 +61,7 @@
                 </div>
                 <div class="stat-info-full">
                     <h3>Clientes</h3>
-                    <p class="stat-number-full">0</p>
+                    <p class="stat-number-full">{{ stats.clientes }}</p>
                 </div>
             </div>
         </div>
@@ -70,7 +70,7 @@
         <div class="quick-actions-full">
             <h2>Acciones rápidas</h2>
             <div class="actions-grid-full">
-                <a href="#" class="action-card-full">
+                <a href="{{ url_for('publicar_producto') }}" class="action-card-full">
                     <div class="action-icon-full">
                         <i class="fas fa-plus"></i>
                     </div>
@@ -80,7 +80,7 @@
                     </div>
                 </a>
 
-                <a href="#" class="action-card-full">
+                <a href="{{ url_for('mis_productos') }}" class="action-card-full">
                     <div class="action-icon-full">
                         <i class="fas fa-box"></i>
                     </div>
@@ -90,7 +90,7 @@
                     </div>
                 </a>
 
-                <a href="#" class="action-card-full">
+                <a href="{{ url_for('estadisticas') }}" class="action-card-full">
                     <div class="action-icon-full">
                         <i class="fas fa-chart-simple"></i>
                     </div>
@@ -100,7 +100,7 @@
                     </div>
                 </a>
 
-                <a href="#" class="action-card-full">
+                <a href="{{ url_for('configuracion') }}" class="action-card-full">
                     <div class="action-icon-full">
                         <i class="fas fa-gear"></i>
                     </div>
@@ -121,7 +121,7 @@
                     <div class="step-content-full">
                         <h3>Completa tu perfil</h3>
                         <p>Agrega información de contacto</p>
-                        <a href="#" class="step-link-full">Configurar →</a>
+                        <a href="{{ url_for('configuracion') }}" class="step-link-full">Configurar →</a>
                     </div>
                 </div>
 
@@ -130,7 +130,7 @@
                     <div class="step-content-full">
                         <h3>Publica un producto</h3>
                         <p>Describe lo que ofreces</p>
-                        <a href="#" class="step-link-full">Publicar →</a>
+                        <a href="{{ url_for('publicar_producto') }}" class="step-link-full">Publicar →</a>
                     </div>
                 </div>
 

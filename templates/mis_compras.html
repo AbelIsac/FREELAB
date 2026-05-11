@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Mis compras{% endblock %}
+{% block content %}
+<div class="dashboard-vendedor-full">
+    <div class="dashboard-full">
+        <h1>Mis compras</h1>
+        {% for venta in compras %}
+        <div style="border:1px solid #ddd; margin:1rem 0; padding:1rem;">
+            <h3>{{ venta.producto.titulo }}</h3>
+            <p>Monto: ${{ "{:,.0f}".format(venta.monto) }}</p>
+            <p>Fecha: {{ venta.fecha_venta[:10] }}</p>
+            {% if venta.valoraciones and venta.valoraciones|length %}
+                <p>Tu reseña: {{ venta.valoraciones[0].calificacion }} ⭐</p>
+            {% else %}
+            <form method="POST" action="{{ url_for('dejar_resena', venta_id=venta.id) }}">
+                <select name="calificacion" required>
+                    <option value="">Calificación</option>
+                    <option value="1">1</option><option value="2">2</option>
+                    <option value="3">3</option><option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+                <textarea name="comentario" placeholder="Comentario"></textarea>
+                <button type="submit">Dejar reseña</button>
+            </form>
+            {% endif %}
+        </div>
+        {% else %}
+        <p>No hay compras.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

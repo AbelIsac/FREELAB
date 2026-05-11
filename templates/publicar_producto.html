@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Publicar producto{% endblock %}
+{% block content %}
+<div class="dashboard-vendedor-full">
+    <div class="dashboard-full">
+        <h1>Publicar nuevo producto</h1>
+        <form method="POST" action="{{ url_for('guardar_producto') }}">
+            <div class="form-group">
+                <label>Título</label>
+                <input type="text" name="titulo" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Descripción</label>
+                <textarea name="descripcion" rows="4" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Precio (CLP)</label>
+                <input type="number" name="precio" step="0.01" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Categoría</label>
+                <select name="categoria" class="form-control">
+                    <option value="1">Clases particulares</option>
+                    <option value="2">Tecnología</option>
+                    <option value="3">Diseño</option>
+                    <option value="4">Arte y música</option>
+                    <option value="5">Otros</option>
+                </select>
+            </div>
+            <button type="submit" class="btn-link" style="background:#3b82f6; color:white;">Publicar</button>
+        </form>
+        <a href="{{ url_for('dashboard_estudiante', user_id=session['user']['id']) }}">Cancelar</a>
+    </div>
+</div>
+<style>.form-group{margin-bottom:1.5rem;} .form-control{width:100%; padding:0.5rem; border:1px solid #ccc; border-radius:6px;}</style>
+{% endblock %}

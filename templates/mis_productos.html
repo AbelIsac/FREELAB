@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Mis productos - Marketplace Estudiantil{% endblock %}
+
+{% block content %}
+<div class="dashboard-vendedor-full">
+    <div class="dashboard-full">
+        <div class="dashboard-header-full">
+            <div class="header-info">
+                <div class="welcome-text">
+                    <h1>Mis productos</h1>
+                    <p>Administra tu catálogo</p>
+                </div>
+            </div>
+            <div class="header-badge">
+                <span class="badge-vendedor">
+                    <i class="fas fa-box"></i> {{ productos|length }} productos
+                </span>
+            </div>
+        </div>
+
+        {% if productos %}
+            <div class="productos-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+                {% for prod in productos %}
+                <div class="producto-card" style="background: white; border: 1px solid #e9ecef; border-radius: 12px; overflow: hidden;">
+                    <div style="padding: 1rem;">
+                        <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">{{ prod.titulo }}</h3>
+                        <p style="color: #6c757d; font-size: 0.85rem;">{{ prod.descripcion[:100] }}{% if prod.descripcion|length > 100 %}...{% endif %}</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
+                            <span style="font-weight: 700; color: #059669;">${{ "{:,.0f}".format(prod.precio) }}</span>
+                            <span class="badge" style="background: #e2e8f0; padding: 0.25rem 0.5rem; border-radius: 50px; font-size: 0.7rem;">{{ prod.categorias.nombre if prod.categorias else 'Sin categoría' }}</span>
+                        </div>
+                        <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                            <a href="#" class="btn-link" style="font-size: 0.75rem;">Editar</a>
+                            <a href="#" class="btn-link" style="font-size: 0.75rem; color: #dc2626;">Eliminar</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 3rem; background: #f8fafc; border-radius: 12px;">
+                <i class="fas fa-box-open" style="font-size: 3rem; color: #cbd5e1;"></i>
+                <h3 style="margin-top: 1rem;">Aún no tienes productos</h3>
+                <p>Comienza publicando tu primer servicio</p>
+                <a href="{{ url_for('publicar_producto') }}" class="btn-link" style="background: #3b82f6; color: white; padding: 0.5rem 1rem; border-radius: 8px;">Publicar producto →</a>
+            </div>
+        {% endif %}
+
+        <div class="nav-buttons-full" style="margin-top: 2rem;">
+            <a href="{{ url_for('dashboard_estudiante', user_id=session['user']['id']) }}" class="btn-link">← Volver al dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

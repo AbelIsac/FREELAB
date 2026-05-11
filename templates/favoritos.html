@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Mis favoritos - Marketplace Estudiantil{% endblock %}
+
+{% block content %}
+<div class="dashboard-vendedor-full">
+    <div class="dashboard-full">
+        <div class="dashboard-header-full">
+            <div class="header-info">
+                <div class="welcome-text">
+                    <h1>Mis favoritos</h1>
+                    <p>Productos que te han gustado</p>
+                </div>
+            </div>
+            <div class="header-badge">
+                <span class="badge-comprador">
+                    <i class="fas fa-heart"></i> {{ favoritos|length }} productos
+                </span>
+            </div>
+        </div>
+
+        {% if favoritos %}
+            <div class="productos-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+                {% for fav in favoritos %}
+                <div class="producto-card" style="background: white; border: 1px solid #e9ecef; border-radius: 12px; overflow: hidden;">
+                    <div style="padding: 1rem;">
+                        <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">{{ fav.producto.titulo }}</h3>
+                        <p style="color: #6c757d; font-size: 0.85rem;">{{ fav.producto.descripcion[:100] }}{% if fav.producto.descripcion|length > 100 %}...{% endif %}</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
+                            <span style="font-weight: 700; color: #059669;">${{ "{:,.0f}".format(fav.producto.precio) }}</span>
+                            <span class="badge" style="background: #e2e8f0; padding: 0.25rem 0.5rem; border-radius: 50px; font-size: 0.7rem;">{{ fav.producto.categorias.nombre if fav.producto.categorias else 'Sin categoría' }}</span>
+                        </div>
+                        <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                            <form method="POST" action="{{ url_for('comprar_producto', producto_id=fav.producto.id) }}" style="display: inline;">
+                                <button type="submit" class="btn-link" style="background: #3b82f6; color: white; border: none; padding: 0.3rem 0.8rem; border-radius: 6px; font-size: 0.75rem;">Comprar</button>
+                            </form>
+                            <button onclick="quitarFavorito({{ fav.producto.id }})" class="btn-link" style="background: #fee2e2; color: #dc2626; border: none; padding: 0.3rem 0.8rem; border-radius: 6px; font-size: 0.75rem;">Quitar</button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 3rem; background: #f8fafc; border-radius: 12px;">
+                <i class="fas fa-heart-broken" style="font-size: 3rem; color: #cbd5e1;"></i>
+                <h3 style="margin-top: 1rem;">No tienes productos favoritos</h3>
+                <p>Explora productos y guarda los que más te gusten</p>
+                <a href="{{ url_for('explorar_productos') }}" class="btn-link" style="background: #3b82f6; color: white; padding: 0.5rem 1rem; border-radius: 8px;">Explorar productos →</a>
+            </div>
+        {% endif %}
+
+        <div class="nav-buttons-full" style="margin-top: 2rem;">
+            <a href="{{ url_for('dashboard_comprador', user_id=session['user']['id']) }}" class="btn-link">← Volver al dashboard</a>
+        </div>
+    </div>
+</div>
+
+<script>
+function quitarFavorito(productoId) {
+    fetch(`/quitar-favorito/${productoId}`, { method: 'POST' })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error al quitar favorito');
+            }
+        });
+}
+</script>
+{% endblock %}

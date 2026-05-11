@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Explorar productos{% endblock %}
+{% block content %}
+<div class="dashboard-vendedor-full">
+    <div class="dashboard-full">
+        <h1>Explorar productos</h1>
+        <div class="productos-grid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1rem;">
+            {% for prod in productos %}
+            <div style="border:1px solid #ccc; padding:1rem; border-radius:8px;">
+                <h3>{{ prod.titulo }}</h3>
+                <p>{{ prod.descripcion[:100] }}</p>
+                <p><strong>${{ "{:,.0f}".format(prod.precio) }}</strong></p>
+                <p>Categoría: {{ prod.categorias.nombre if prod.categorias else '-' }}</p>
+                <form method="POST" action="{{ url_for('comprar_producto', producto_id=prod.id) }}">
+                    <button type="submit">Comprar</button>
+                </form>
+                <button onclick="fetch('/agregar-favorito/'+{{ prod.id }}, {method:'POST'}).then(r=>alert('Agregado'))">❤️ Favorito</button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

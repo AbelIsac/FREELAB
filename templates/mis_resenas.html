@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Mis reseñas - Marketplace Estudiantil{% endblock %}
+
+{% block content %}
+<div class="dashboard-vendedor-full">
+    <div class="dashboard-full">
+        <div class="dashboard-header-full">
+            <div class="header-info">
+                <div class="welcome-text">
+                    <h1>Mis reseñas</h1>
+                    <p>Calificaciones que has dejado a los vendedores</p>
+                </div>
+            </div>
+            <div class="header-badge">
+                <span class="badge-comprador">
+                    <i class="fas fa-star"></i> {{ resenas|length }} reseñas
+                </span>
+            </div>
+        </div>
+
+        {% if resenas %}
+            <div style="margin-top: 1.5rem;">
+                {% for venta in resenas %}
+                <div style="background: white; border: 1px solid #e9ecef; border-radius: 12px; padding: 1rem; margin-bottom: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div>
+                            <h3 style="font-size: 1rem;">{{ venta.producto.titulo }}</h3>
+                            <p style="color: #6c757d; font-size: 0.8rem;">Comprado el {{ venta.fecha_venta[:10] }}</p>
+                        </div>
+                        <div style="background: #fef3c7; padding: 0.25rem 0.5rem; border-radius: 8px;">
+                            <span style="color: #d97706;">{{ venta.valoraciones.calificacion }} ⭐</span>
+                        </div>
+                    </div>
+                    {% if venta.valoraciones.comentario %}
+                    <p style="margin-top: 0.5rem; font-style: italic;">"{{ venta.valoraciones.comentario }}"</p>
+                    {% endif %}
+                    <div style="margin-top: 0.75rem;">
+                        <button onclick="editarResena({{ venta.id }})" class="btn-link">✏️ Editar reseña</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 3rem; background: #f8fafc; border-radius: 12px;">
+                <i class="fas fa-pen-fancy" style="font-size: 3rem; color: #cbd5e1;"></i>
+                <h3 style="margin-top: 1rem;">Aún no has escrito reseñas</h3>
+                <p>Después de comprar, puedes calificar al vendedor</p>
+                <a href="{{ url_for('mis_compras') }}" class="btn-link" style="background: #3b82f6; color: white; padding: 0.5rem 1rem; border-radius: 8px;">Ver mis compras →</a>
+            </div>
+        {% endif %}
+
+        <div class="nav-buttons-full" style="margin-top: 2rem;">
+            <a href="{{ url_for('dashboard_comprador', user_id=session['user']['id']) }}" class="btn-link">← Volver al dashboard</a>
+        </div>
+    </div>
+</div>
+
+<script>
+function editarResena(ventaId) {
+    // Redirigir a una página para editar o mostrar modal
+    window.location.href = `/editar-resena/${ventaId}`;
+}
+</script>
+{% endblock %}
