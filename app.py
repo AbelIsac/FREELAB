@@ -291,11 +291,20 @@ def favoritos():
     if 'user' not in session:
         flash('Inicia sesión', 'error')
         return redirect(url_for('home'))
-    favs = supabase.table('favoritos')\
-        .select('*, producto:productos(*, categorias(nombre))')\
-        .eq('usuario_id', session['user']['id'])\
-        .execute()
-    return render_template('favoritos.html', favoritos=favs.data)
+    
+    user_id = session['user']['id']
+    # Obtener ids de productos favoritos
+    favs = supabase.table('favoritos').select('producto_id').eq('usuario_id', user_id).execute()
+    if not favs.data:
+        return render_template('favoritos.html', favoritos=[])
+    
+    producto_ids = [f['producto_id'] for f in favs.data]
+    # Obtener datos completos de esos productos
+    productos = supabase.table('productos').select('*, categorias(nombre)').in_('id', producto_ids).execute()
+    
+    # Estructurar como espera la plantilla
+    favoritos_data = [{'producto': p} for p in productos.data]
+    return render_template('favoritos.html', favoritos=favoritos_data)
 
 @app.route('/agregar-favorito/<int:producto_id>', methods=['POST'])
 def agregar_favorito(producto_id):
@@ -362,6 +371,52 @@ def dashboard():
 @app.route('/productos')
 def productos():
     return render_template('productos.html')
+
+@app.route('/checkout/<int:producto_id>')
+def checkout(producto_id):
+    if 'user' not in session:
+        flash('Inicia sesión', 'error')
+        return redirect(url_for('home'))
+    
+    # Obtener producto
+    prod = supabase.table('productos').select('*').eq('id', producto_id).single().execute()
+    if not prod.data:
+        flash('Producto no encontrado', 'error')
+        return redirect(url_for('explorar_productos'))
+    
+    return render_template('checkout.html', producto=prod.data)
+
+@app.route('/procesar-pago/<int:producto_id>', methods=['POST'])
+def procesar_pago(producto_id):
+    if 'user' not in session:
+        flash('Inicia sesión', 'error')
+        return redirect(url_for('home'))
+    
+    comprador_id = session['user']['id']
+    try:
+        prod = supabase.table('productos').select('*').eq('id', producto_id).single().execute()
+        if not prod.data:
+            flash('Producto no encontrado', 'error')
+            return redirect(url_for('explorar_productos'))
+        
+        if prod.data['vendedor_id'] == comprador_id:
+            flash('No puedes comprar tus propios productos', 'error')
+            return redirect(url_for('explorar_productos'))
+        
+        # Crear venta
+        venta_data = {
+            'producto_id': producto_id,
+            'comprador_id': comprador_id,
+            'vendedor_id': prod.data['vendedor_id'],
+            'monto': prod.data['precio'],
+            'estado': 'completado'
+        }
+        supabase.table('ventas').insert(venta_data).execute()
+        flash('¡Pago exitoso! Compra realizada', 'success')
+        return redirect(url_for('mis_compras'))
+    except Exception as e:
+        flash(f'Error en pago: {str(e)}', 'error')
+        return redirect(url_for('checkout', producto_id=producto_id))
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

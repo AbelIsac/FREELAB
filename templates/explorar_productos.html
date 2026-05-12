@@ -1,5 +1,7 @@
 {% extends "base.html" %}
-{% block title %}Explorar productos{% endblock %}
+
+{% block title %}Explorar productos - Marketplace Estudiantil{% endblock %}
+
 {% block content %}
 <div class="dashboard-vendedor-full">
     <div class="dashboard-full">
@@ -8,16 +10,50 @@
             {% for prod in productos %}
             <div style="border:1px solid #ccc; padding:1rem; border-radius:8px;">
                 <h3>{{ prod.titulo }}</h3>
-                <p>{{ prod.descripcion[:100] }}</p>
+                <p>{{ prod.descripcion[:100] }}{% if prod.descripcion|length > 100 %}...{% endif %}</p>
                 <p><strong>${{ "{:,.0f}".format(prod.precio) }}</strong></p>
                 <p>Categoría: {{ prod.categorias.nombre if prod.categorias else '-' }}</p>
-                <form method="POST" action="{{ url_for('comprar_producto', producto_id=prod.id) }}">
-                    <button type="submit">Comprar</button>
-                </form>
-                <button onclick="fetch('/agregar-favorito/'+{{ prod.id }}, {method:'POST'}).then(r=>alert('Agregado'))">❤️ Favorito</button>
+                <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                    <a href="{{ url_for('checkout', producto_id=prod.id) }}" class="btn-link" style="background: #3b82f6; color: white; padding: 0.3rem 0.8rem; border-radius: 6px; text-decoration: none;">Comprar</a>
+                    <button onclick="agregarFavorito({{ prod.id }}, this)" class="btn-link" style="background: #f1f5f9; border: none; padding: 0.3rem 0.8rem; border-radius: 6px;">❤️ Favorito</button>
+                </div>  
             </div>
+            {% else %}
+            <p>No hay productos disponibles en este momento.</p>
             {% endfor %}
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Solo números para tarjeta (SIN formato automático)
+    const cardInput = document.getElementById('cardNumber');
+    cardInput.addEventListener('input', function(e) {
+        e.target.value = e.target.value.replace(/\D/g, '').substring(0, 19);
+    });
+
+    // Solo números para fecha (SIN formato automático)
+    const expiryInput = document.getElementById('expiryDate');
+    expiryInput.addEventListener('input', function(e) {
+        e.target.value = e.target.value.replace(/\D/g, '').substring(0, 5);
+    });
+
+    // Solo números para CVV
+    const cvvInput = document.getElementById('cvv');
+    cvvInput.addEventListener('input', function(e) {
+        e.target.value = e.target.value.replace(/\D/g, '').substring(0, 4);
+    });
+
+    // Loading state del botón
+    const form = document.getElementById('paymentForm');
+    const payButton = document.getElementById('payButton');
+    
+    form.addEventListener('submit', function() {
+        payButton.disabled = true;
+        payButton.querySelector('.button-text').style.display = 'none';
+        payButton.querySelector('.button-loading').style.display = 'inline';
+    });
+});
+</script>
 {% endblock %}
