@@ -1,12 +1,26 @@
 import os
+from datetime import datetime
 from dotenv import load_dotenv
 from flask import Flask, render_template, redirect, request, url_for, flash, session
 from config.supabase import supabase
+from werkzeug.utils import secure_filename
 
 load_dotenv(override=True)
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-key-change-in-production')
+
+# Configuración para subir archivos
+UPLOAD_FOLDER = 'static/uploads'
+ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg', 'gif', 'doc', 'docx'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max
+
+# Crear carpeta si no existe
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.context_processor
 def inject_user():
@@ -36,21 +50,25 @@ def callback():
         sesion = supabase.auth.exchange_code_for_session({"auth_code": codigo})
         usuario = sesion.user
         
-        session['user'] = {
-            'id': usuario.id,
-            'email': usuario.email,
-            'name': usuario.user_metadata.get('name', 'Usuario'),
-            'avatar': usuario.user_metadata.get('avatar_url', 'https://via.placeholder.com/40')
-        }
-        
         # Asegurar que exista perfil
         perfil = supabase.table('perfiles').select('id').eq('id', usuario.id).execute()
         if not perfil.data:
             supabase.table('perfiles').insert({'id': usuario.id}).execute()
         
+        # Obtener el rol
         respuesta = supabase.table('perfiles').select('rol').eq('id', usuario.id).execute()
-        if respuesta.data and respuesta.data[0].get('rol'):
-            rol = respuesta.data[0]['rol']
+        rol = respuesta.data[0]['rol'] if respuesta.data and respuesta.data[0].get('rol') else None
+        
+        # Guardar en sesión
+        session['user'] = {
+            'id': usuario.id,
+            'email': usuario.email,
+            'name': usuario.user_metadata.get('name', 'Usuario'),
+            'avatar': usuario.user_metadata.get('avatar_url', 'https://via.placeholder.com/40'),
+            'rol': rol
+        }
+        
+        if rol:
             flash(f'Bienvenido {usuario.user_metadata.get("name", "Usuario")}', 'success')
             if rol == 'estudiante':
                 return redirect(url_for('dashboard_estudiante', user_id=usuario.id))
@@ -58,6 +76,7 @@ def callback():
                 return redirect(url_for('dashboard_comprador', user_id=usuario.id))
         else:
             return redirect(url_for('elegir_rol', user_id=usuario.id))
+            
     except Exception as e:
         flash(f'Error en callback: {str(e)}', 'error')
         return redirect(url_for('home'))
@@ -86,6 +105,8 @@ def guardar_rol():
         return redirect(url_for('home'))
     try:
         supabase.table('perfiles').upsert({"id": user_id, "rol": rol}).execute()
+        if 'user' in session:
+            session['user']['rol'] = rol
         flash(f'Perfil creado: {rol}', 'success')
         if rol == 'estudiante':
             return redirect(url_for('dashboard_estudiante', user_id=user_id))
@@ -141,27 +162,50 @@ def guardar_producto():
     if 'user' not in session:
         flash('No autorizado', 'error')
         return redirect(url_for('home'))
+    
     titulo = request.form.get('titulo')
     descripcion = request.form.get('descripcion')
     precio = request.form.get('precio')
     categoria_id = request.form.get('categoria')
+    
     if not titulo or not precio:
         flash('Título y precio son obligatorios', 'error')
         return redirect(url_for('publicar_producto'))
+    
+    # Datos básicos del producto
+    data = {
+        'vendedor_id': session['user']['id'],
+        'titulo': titulo,
+        'descripcion': descripcion,
+        'precio': float(precio),
+        'categoria_id': int(categoria_id) if categoria_id and categoria_id.isdigit() else None,
+        'estado': 'activo'
+    }
+    
+    # Manejar la imagen
+    if 'imagen' in request.files:
+        file = request.files['imagen']
+        if file and file.filename and allowed_file(file.filename):
+            filename = secure_filename(f"{session['user']['id']}_{datetime.now().strftime('%Y%m%d%H%M%S')}_{file.filename}")
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+            data['imagen_url'] = f"/static/uploads/{filename}"
+    
+    # Manejar archivo
+    if 'archivo' in request.files:
+        file = request.files['archivo']
+        if file and file.filename and allowed_file(file.filename):
+            filename = secure_filename(f"{session['user']['id']}_{datetime.now().strftime('%Y%m%d%H%M%S')}_{file.filename}")
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+            data['archivo_url'] = f"/static/uploads/{filename}"
+    
     try:
-        data = {
-            'vendedor_id': session['user']['id'],
-            'titulo': titulo,
-            'descripcion': descripcion,
-            'precio': float(precio),
-            'categoria_id': int(categoria_id) if categoria_id and categoria_id.isdigit() else None,
-            'estado': 'activo'
-        }
         supabase.table('productos').insert(data).execute()
-        flash('Producto publicado', 'success')
+        flash('✅ Producto publicado exitosamente!', 'success')
         return redirect(url_for('dashboard_estudiante', user_id=session['user']['id']))
     except Exception as e:
-        flash(f'Error: {str(e)}', 'error')
+        flash(f'Error al publicar: {str(e)}', 'error')
         return redirect(url_for('publicar_producto'))
 
 @app.route('/mis-productos')
@@ -239,12 +283,11 @@ def explorar_productos():
     if 'user' not in session:
         flash('Inicia sesión para explorar', 'error')
         return redirect(url_for('home'))
-    categoria = request.args.get('categoria', type=int)
-    query = supabase.table('productos').select('*, categorias(nombre)').eq('estado', 'activo')
-    if categoria:
-        query = query.eq('categoria_id', categoria)
+    categoria = request.args.get('categoria')
+    query = supabase.table('productos').select('*').eq('estado', 'activo')
+    if categoria and categoria != 'todos':
+        query = query.eq('categoria_id', int(categoria))
     productos = query.execute()
-    # No intentamos obtener email del vendedor porque perfiles no tiene email
     return render_template('explorar_productos.html', productos=productos.data)
 
 @app.route('/comprar/<int:producto_id>', methods=['POST'])
@@ -280,7 +323,7 @@ def mis_compras():
         flash('Inicia sesión', 'error')
         return redirect(url_for('home'))
     compras = supabase.table('ventas')\
-        .select('*, producto:productos(*, categorias(nombre))')\
+        .select('*, producto:productos(*)')\
         .eq('comprador_id', session['user']['id'])\
         .order('fecha_venta', desc=True)\
         .execute()
@@ -292,7 +335,7 @@ def favoritos():
         flash('Inicia sesión', 'error')
         return redirect(url_for('home'))
     favs = supabase.table('favoritos')\
-        .select('*, producto:productos(*, categorias(nombre))')\
+        .select('*, producto:productos(*)')\
         .eq('usuario_id', session['user']['id'])\
         .execute()
     return render_template('favoritos.html', favoritos=favs.data)

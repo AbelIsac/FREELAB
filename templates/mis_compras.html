@@ -1,31 +1,68 @@
 {% extends "base.html" %}
+
 {% block title %}Mis compras{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/mis_compras.css') }}">
+{% endblock %}
+
 {% block content %}
 <div class="dashboard-vendedor-full">
     <div class="dashboard-full">
-        <h1>Mis compras</h1>
+        <div class="explorar-header">
+            <h1>📦 Mis compras</h1>
+            <p>Historial de todos tus pedidos</p>
+        </div>
+
         {% for venta in compras %}
-        <div style="border:1px solid #ddd; margin:1rem 0; padding:1rem;">
-            <h3>{{ venta.producto.titulo }}</h3>
-            <p>Monto: ${{ "{:,.0f}".format(venta.monto) }}</p>
-            <p>Fecha: {{ venta.fecha_venta[:10] }}</p>
-            {% if venta.valoraciones and venta.valoraciones|length %}
-                <p>Tu reseña: {{ venta.valoraciones[0].calificacion }} ⭐</p>
-            {% else %}
-            <form method="POST" action="{{ url_for('dejar_resena', venta_id=venta.id) }}">
-                <select name="calificacion" required>
-                    <option value="">Calificación</option>
-                    <option value="1">1</option><option value="2">2</option>
-                    <option value="3">3</option><option value="4">4</option>
-                    <option value="5">5</option>
-                </select>
-                <textarea name="comentario" placeholder="Comentario"></textarea>
-                <button type="submit">Dejar reseña</button>
-            </form>
-            {% endif %}
+        <div class="compra-card">
+            <div class="compra-header">
+                <span class="compra-id">#{{ venta.id }}</span>
+                <span class="compra-fecha"><i class="fas fa-calendar"></i> {{ venta.fecha_venta[:10] }}</span>
+            </div>
+            <div class="compra-body">
+                <div class="producto-info">
+                    <h3>{{ venta.producto.titulo }}</h3>
+                    <p class="producto-monto">${{ "{:,.0f}".format(venta.monto) }}</p>
+                </div>
+                
+                <div class="resena-section">
+                    {% if venta.valoraciones and venta.valoraciones|length %}
+                        <div class="resena-actual">
+                            <div class="stars">
+                                {% for i in range(venta.valoraciones[0].calificacion) %}⭐{% endfor %}
+                            </div>
+                            <span>Tu reseña: {{ venta.valoraciones[0].calificacion }} estrellas</span>
+                        </div>
+                        {% if venta.valoraciones[0].comentario %}
+                        <p style="margin-top: 0.5rem;">"{{ venta.valoraciones[0].comentario }}"</p>
+                        {% endif %}
+                    {% else %}
+                        <form method="POST" action="{{ url_for('dejar_resena', venta_id=venta.id) }}" class="form-resena">
+                            <select name="calificacion" required class="input-modern" style="width: auto;">
+                                <option value="">⭐ Calificación</option>
+                                <option value="1">⭐ 1 estrella</option>
+                                <option value="2">⭐⭐ 2 estrellas</option>
+                                <option value="3">⭐⭐⭐ 3 estrellas</option>
+                                <option value="4">⭐⭐⭐⭐ 4 estrellas</option>
+                                <option value="5">⭐⭐⭐⭐⭐ 5 estrellas</option>
+                            </select>
+                            <textarea name="comentario" placeholder="Escribe tu comentario..."></textarea>
+                            <button type="submit" class="btn-resena">
+                                <i class="fas fa-pen"></i> Dejar reseña
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
         </div>
         {% else %}
-        <p>No hay compras.</p>
+        <div class="empty-state" style="text-align: center; padding: 4rem;">
+            <i class="fas fa-shopping-bag" style="font-size: 4rem; color: #cbd5e1;"></i>
+            <h3>No hay compras</h3>
+            <p>Aún no has realizado ninguna compra</p>
+            <a href="{{ url_for('productos') }}" class="btn-publicar" style="display: inline-block;">Explorar productos →</a>
+        </div>
         {% endfor %}
     </div>
 </div>

@@ -1,36 +1,105 @@
 {% extends "base.html" %}
-{% block title %}Publicar producto{% endblock %}
+
+{% block title %}Publicar producto - Marketplace Estudiantil{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/publicar_producto.css') }}">
+{% endblock %}
+
 {% block content %}
 <div class="dashboard-vendedor-full">
     <div class="dashboard-full">
-        <h1>Publicar nuevo producto</h1>
-        <form method="POST" action="{{ url_for('guardar_producto') }}">
-            <div class="form-group">
-                <label>Título</label>
-                <input type="text" name="titulo" class="form-control" required>
+        <div class="publicar-container">
+            <div class="form-card">
+                <div class="form-title">
+                    <h1>🚀 Publicar nuevo producto</h1>
+                    <p>Comparte tus servicios con la comunidad estudiantil</p>
+                </div>
+
+                <form method="POST" action="{{ url_for('guardar_producto') }}" enctype="multipart/form-data">
+                    <div class="form-group-publicar">
+                        <label><i class="fas fa-heading"></i> Título del servicio *</label>
+                        <input type="text" name="titulo" class="input-publicar" placeholder="Ej: Clases de programación Python" required>
+                    </div>
+
+                    <div class="form-group-publicar">
+                        <label><i class="fas fa-align-left"></i> Descripción</label>
+                        <textarea name="descripcion" rows="4" class="input-publicar" placeholder="Describe tu servicio en detalle..."></textarea>
+                    </div>
+
+                    <div class="form-group-publicar">
+                        <label><i class="fas fa-dollar-sign"></i> Precio (CLP) *</label>
+                        <input type="number" name="precio" step="0.01" class="input-publicar" placeholder="Ej: 15000" required>
+                        <span class="preview-precio">$0 CLP</span>
+                    </div>
+
+                    <div class="form-group-publicar">
+                        <label><i class="fas fa-tags"></i> Categoría</label>
+                        <select name="categoria" class="input-publicar">
+                            <option value="1">📚 Clases particulares</option>
+                            <option value="2">💻 Tecnología</option>
+                            <option value="3">🎨 Diseño</option>
+                            <option value="4">🎵 Arte y música</option>
+                            <option value="5">📦 Otros</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group-publicar">
+                        <label><i class="fas fa-image"></i> Imagen del producto</label>
+                        <input type="file" name="imagen" class="input-publicar" accept="image/*" onchange="previewImage(event)">
+                        <div id="imagePreview" style="margin-top: 10px; display: none;">
+                            <img id="preview" style="max-width: 200px; border-radius: 12px;">
+                        </div>
+                        <small class="form-text">Formatos permitidos: JPG, PNG, GIF</small>
+                    </div>
+
+                    <div class="form-group-publicar">
+                        <label><i class="fas fa-file-pdf"></i> Archivo adjunto (PDF, DOC)</label>
+                        <input type="file" name="archivo" class="input-publicar" accept=".pdf,.doc,.docx">
+                        <small class="form-text">Puedes subir material complementario (máx 16MB)</small>
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-cloud-upload-alt"></i> Publicar producto
+                    </button>
+                </form>
+
+                <a href="{{ url_for('dashboard_estudiante', user_id=session['user']['id']) }}" class="btn-cancel">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
             </div>
-            <div class="form-group">
-                <label>Descripción</label>
-                <textarea name="descripcion" rows="4" class="form-control"></textarea>
-            </div>
-            <div class="form-group">
-                <label>Precio (CLP)</label>
-                <input type="number" name="precio" step="0.01" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label>Categoría</label>
-                <select name="categoria" class="form-control">
-                    <option value="1">Clases particulares</option>
-                    <option value="2">Tecnología</option>
-                    <option value="3">Diseño</option>
-                    <option value="4">Arte y música</option>
-                    <option value="5">Otros</option>
-                </select>
-            </div>
-            <button type="submit" class="btn-link" style="background:#3b82f6; color:white;">Publicar</button>
-        </form>
-        <a href="{{ url_for('dashboard_estudiante', user_id=session['user']['id']) }}">Cancelar</a>
+        </div>
     </div>
 </div>
-<style>.form-group{margin-bottom:1.5rem;} .form-control{width:100%; padding:0.5rem; border:1px solid #ccc; border-radius:6px;}</style>
+
+<script>
+// Preview de precio
+const precioInput = document.querySelector('input[name="precio"]');
+const previewSpan = document.querySelector('.preview-precio');
+
+if (precioInput) {
+    precioInput.addEventListener('input', function() {
+        const valor = this.value;
+        if (valor) {
+            previewSpan.textContent = `$${parseInt(valor).toLocaleString()} CLP`;
+        } else {
+            previewSpan.textContent = '$0 CLP';
+        }
+    });
+}
+
+// Preview de imagen
+function previewImage(event) {
+    const reader = new FileReader();
+    reader.onload = function() {
+        const output = document.getElementById('preview');
+        const container = document.getElementById('imagePreview');
+        output.src = reader.result;
+        container.style.display = 'block';
+    }
+    if (event.target.files[0]) {
+        reader.readAsDataURL(event.target.files[0]);
+    }
+}
+</script>
 {% endblock %}
