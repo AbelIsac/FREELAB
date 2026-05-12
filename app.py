@@ -202,7 +202,7 @@ def guardar_producto():
     
     try:
         supabase.table('productos').insert(data).execute()
-        flash('✅ Producto publicado exitosamente!', 'success')
+        flash('Producto publicado exitosamente!', 'success')
         return redirect(url_for('dashboard_estudiante', user_id=session['user']['id']))
     except Exception as e:
         flash(f'Error al publicar: {str(e)}', 'error')
