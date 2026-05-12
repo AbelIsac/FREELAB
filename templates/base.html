@@ -38,17 +38,52 @@
                                 <i class="fas fa-chevron-down"></i>
                             </div>
                             <div class="dropdown-menu">
-                                <a href="{{ url_for('dashboard') }}" class="dropdown-item">
-                                    <i class="fas fa-tachometer-alt"></i> Mi Dashboard
-                                </a>
-                                <a href="#" class="dropdown-item">
-                                    <i class="fas fa-shopping-bag"></i> Mis Compras
-                                </a>
-                                <a href="#" class="dropdown-item">
-                                    <i class="fas fa-plus-circle"></i> Publicar Producto
-                                </a>
-                                <a href="#" class="dropdown-item">
+                                {% if session_user.rol == 'estudiante' %}
+                                    <!-- Opciones para VENDEDOR/ESTUDIANTE -->
+                                    <a href="{{ url_for('dashboard_estudiante', user_id=session_user.id) }}" class="dropdown-item">
+                                        <i class="fas fa-tachometer-alt"></i> Mi Dashboard
+                                    </a>
+                                    <a href="{{ url_for('mis_productos') }}" class="dropdown-item">
+                                        <i class="fas fa-store"></i> Mis Productos
+                                    </a>
+                                    <a href="{{ url_for('estadisticas') }}" class="dropdown-item">
+                                        <i class="fas fa-chart-line"></i> Mis Ventas
+                                    </a>
+                                    <a href="{{ url_for('publicar_producto') }}" class="dropdown-item">
+                                        <i class="fas fa-plus-circle"></i> Publicar Producto
+                                    </a>
+                                {% elif session_user.rol == 'comprador' %}
+                                    <!-- Opciones para COMPRADOR -->
+                                    <a href="{{ url_for('dashboard_comprador', user_id=session_user.id) }}" class="dropdown-item">
+                                        <i class="fas fa-tachometer-alt"></i> Mi Dashboard
+                                    </a>
+                                    <a href="{{ url_for('mis_compras') }}" class="dropdown-item">
+                                        <i class="fas fa-shopping-bag"></i> Mis Compras
+                                    </a>
+                                    <a href="{{ url_for('favoritos') }}" class="dropdown-item">
+                                        <i class="fas fa-heart"></i> Lista de Deseos
+                                    </a>
+                                    <a href="{{ url_for('mis_resenas') }}" class="dropdown-item">
+                                        <i class="fas fa-star"></i> Mis Reseñas
+                                    </a>
+                                {% else %}
+                                    <!-- Opciones por defecto (si no hay rol) -->
+                                    <a href="{{ url_for('dashboard') }}" class="dropdown-item">
+                                        <i class="fas fa-tachometer-alt"></i> Mi Dashboard
+                                    </a>
+                                    <a href="{{ url_for('productos') }}" class="dropdown-item">
+                                        <i class="fas fa-search"></i> Explorar Productos
+                                    </a>
+                                {% endif %}
+                                
+                                <div class="dropdown-divider"></div>
+                                
+                                <!-- Opciones comunes para todos -->
+                                <a href="{{ url_for('configuracion') }}" class="dropdown-item">
                                     <i class="fas fa-user-circle"></i> Mi Perfil
+                                </a>
+                                <a href="{{ url_for('configuracion') }}" class="dropdown-item">
+                                    <i class="fas fa-cog"></i> Configuración
                                 </a>
                                 <div class="dropdown-divider"></div>
                                 <a href="{{ url_for('logout') }}" class="dropdown-item logout">

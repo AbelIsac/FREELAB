@@ -2,59 +2,68 @@
 
 {% block title %}Estadísticas - Marketplace Estudiantil{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/estadisticas.css') }}">
+{% endblock %}
+
 {% block content %}
 <div class="dashboard-vendedor-full">
     <div class="dashboard-full">
-        <div class="dashboard-header-full">
-            <div class="header-info">
-                <div class="welcome-text">
-                    <h1>Estadísticas de ventas</h1>
-                    <p>Resumen de tu rendimiento</p>
-                </div>
-            </div>
+        <div class="stats-hero">
+            <h1>📊 Estadísticas de ventas</h1>
+            <p>Resumen de tu rendimiento como vendedor</p>
         </div>
 
-        <div class="stats-grid-full" style="margin-bottom: 2rem;">
-            <div class="stat-card-full">
-                <div class="stat-icon-full">
+        <div class="stats-grid-enhanced">
+            <div class="stat-card-enhanced">
+                <div class="stat-icon-enhanced">
                     <i class="fas fa-shopping-cart"></i>
                 </div>
-                <div class="stat-info-full">
+                <div class="stat-info-enhanced">
                     <h3>Ventas totales</h3>
-                    <p class="stat-number-full">{{ stats.total_ventas }}</p>
+                    <p class="stat-number-enhanced">{{ stats.total_ventas }}</p>
+                    <span class="stat-trend trend-up"><i class="fas fa-arrow-up"></i> +12%</span>
                 </div>
             </div>
-            <div class="stat-card-full">
-                <div class="stat-icon-full">
+
+            <div class="stat-card-enhanced">
+                <div class="stat-icon-enhanced">
                     <i class="fas fa-dollar-sign"></i>
                 </div>
-                <div class="stat-info-full">
+                <div class="stat-info-enhanced">
                     <h3>Ingresos totales</h3>
-                    <p class="stat-number-full">${{ "{:,.0f}".format(stats.ingresos) }}</p>
+                    <p class="stat-number-enhanced">${{ "{:,.0f}".format(stats.ingresos) }}</p>
+                    <span class="stat-trend trend-up"><i class="fas fa-arrow-up"></i> +8%</span>
                 </div>
             </div>
-            <div class="stat-card-full">
-                <div class="stat-icon-full">
+
+            <div class="stat-card-enhanced">
+                <div class="stat-icon-enhanced">
                     <i class="fas fa-cube"></i>
                 </div>
-                <div class="stat-info-full">
+                <div class="stat-info-enhanced">
                     <h3>Productos vendidos</h3>
-                    <p class="stat-number-full">{{ stats.productos_vendidos }}</p>
+                    <p class="stat-number-enhanced">{{ stats.productos_vendidos }}</p>
+                    <span class="stat-trend trend-up"><i class="fas fa-arrow-up"></i> +5%</span>
                 </div>
             </div>
-            <div class="stat-card-full">
-                <div class="stat-icon-full">
+
+            <div class="stat-card-enhanced">
+                <div class="stat-icon-enhanced">
                     <i class="fas fa-star"></i>
                 </div>
-                <div class="stat-info-full">
+                <div class="stat-info-enhanced">
                     <h3>Calificación</h3>
-                    <p class="stat-number-full">{{ stats.calificacion }}</p>
+                    <p class="stat-number-enhanced">{{ stats.calificacion }}</p>
+                    <span class="stat-trend trend-up"><i class="fas fa-star"></i> Excelente</span>
                 </div>
             </div>
         </div>
 
-        <div class="nav-buttons-full">
-            <a href="{{ url_for('dashboard_estudiante', user_id=session['user']['id']) }}" class="btn-link">← Volver al dashboard</a>
+        <div style="text-align: center; margin-top: 2rem;">
+            <a href="{{ url_for('dashboard_estudiante', user_id=session['user']['id']) }}" class="btn-link">
+                <i class="fas fa-arrow-left"></i> Volver al dashboard
+            </a>
         </div>
     </div>
 </div>

@@ -1,0 +1,151 @@
+/* Mis Productos - Estilos Modernos */
+
+@keyframes popIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.producto-card-mio {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    animation: popIn 0.4s ease backwards;
+    position: relative;
+}
+
+.producto-card-mio:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+.producto-imagen-mio {
+    height: 160px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    position: relative;
+}
+
+.producto-status {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 4px 10px;
+    background: #10b981;
+    color: white;
+    border-radius: 50px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.producto-content {
+    padding: 1.2rem;
+}
+
+.producto-titulo-mio {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.producto-desc-mio {
+    color: #64748b;
+    font-size: 0.8rem;
+    margin-bottom: 1rem;
+    line-height: 1.4;
+}
+
+.producto-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e9ecef;
+}
+
+.producto-precio-mio {
+    font-weight: 700;
+    color: #059669;
+    font-size: 1.1rem;
+}
+
+.producto-actions-mio {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-edit {
+    background: #e2e8f0;
+    color: #475569;
+    border: none;
+    padding: 0.3rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-edit:hover {
+    background: #cbd5e1;
+}
+
+.btn-delete {
+    background: #fee2e2;
+    color: #dc2626;
+    border: none;
+    padding: 0.3rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-delete:hover {
+    background: #fecaca;
+}
+
+/* Empty state */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: #f8fafc;
+    border-radius: 24px;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    color: #cbd5e1;
+    margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    color: #64748b;
+    margin-bottom: 1.5rem;
+}
+
+.btn-publicar {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-publicar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}

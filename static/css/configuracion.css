@@ -1,0 +1,175 @@
+/* Configuración de Perfil - Estilos Modernos */
+
+/* Animaciones */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+/* Sección de configuración */
+.configuracion-container {
+    max-width: 800px;
+    margin: 0 auto;
+    animation: fadeInUp 0.6s ease;
+}
+
+/* Tarjeta de perfil */
+.perfil-card {
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.perfil-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+}
+
+.perfil-header {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    padding: 2rem;
+    text-align: center;
+    color: white;
+}
+
+.perfil-avatar {
+    width: 100px;
+    height: 100px;
+    background: white;
+    border-radius: 50%;
+    margin: 0 auto 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.perfil-avatar:hover {
+    transform: scale(1.05);
+}
+
+.perfil-avatar i {
+    font-size: 3rem;
+    color: #667eea;
+}
+
+.perfil-header h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.perfil-header p {
+    opacity: 0.9;
+    font-size: 0.9rem;
+}
+
+.perfil-body {
+    padding: 2rem;
+}
+
+/* Formulario moderno */
+.form-group-modern {
+    margin-bottom: 1.5rem;
+}
+
+.form-group-modern label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-group-modern label i {
+    margin-right: 8px;
+    color: #667eea;
+}
+
+.input-modern {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 16px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+    background: #f8fafc;
+}
+
+.input-modern:focus {
+    outline: none;
+    border-color: #667eea;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.input-modern:disabled {
+    background: #f1f5f9;
+    color: #64748b;
+    cursor: not-allowed;
+}
+
+textarea.input-modern {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* Botón guardar */
+.btn-save {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+}
+
+.btn-save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+}
+
+.btn-save:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Badge de estado */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: #f1f5f9;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    color: #475569;
+    margin-bottom: 1rem;
+}
+
+.status-badge i {
+    font-size: 0.9rem;
+}

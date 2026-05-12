@@ -2,12 +2,66 @@
 
 {% block title %}Explorar productos - Marketplace Estudiantil{% endblock %}
 
+<<<<<<< HEAD
+=======
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/explorar.css') }}">
+{% endblock %}
+
+>>>>>>> 0bf06ce3a8b32bab17a733d5eff1899e8afe7400
 {% block content %}
 <div class="dashboard-vendedor-full">
     <div class="dashboard-full">
-        <h1>Explorar productos</h1>
-        <div class="productos-grid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1rem;">
+        <div class="explorar-header">
+            <h1>✨ Explorar productos</h1>
+            <p>Descubre servicios ofrecidos por otros estudiantes</p>
+        </div>
+
+        <!-- Barra de búsqueda y filtros -->
+        <div class="filtros-busqueda">
+            <div class="search-bar-modern">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Buscar servicios... ej: Python, Diseño, Fotografía">
+            </div>
+            
+            <div class="filtros-group">
+                <select id="categoriaFilter" class="filtro-select">
+                    <option value="todos">📁 Todas las categorías</option>
+                    <option value="1">📚 Clases particulares</option>
+                    <option value="2">💻 Tecnología</option>
+                    <option value="3">🎨 Diseño</option>
+                    <option value="4">🎵 Arte y música</option>
+                    <option value="5">📦 Otros</option>
+                </select>
+
+                <select id="precioFilter" class="filtro-select">
+                    <option value="todos">💰 Todos los precios</option>
+                    <option value="0-10000">$0 - $10.000</option>
+                    <option value="10000-50000">$10.000 - $50.000</option>
+                    <option value="50000-100000">$50.000 - $100.000</option>
+                    <option value="100000+">$100.000+</option>
+                </select>
+
+                <select id="ordenFilter" class="filtro-select">
+                    <option value="reciente">🕐 Más reciente</option>
+                    <option value="precio-asc">💰 Precio: menor a mayor</option>
+                    <option value="precio-desc">💰 Precio: mayor a menor</option>
+                    <option value="popular">⭐ Más popular</option>
+                </select>
+
+                <button id="resetFiltros" class="btn-reset">
+                    <i class="fas fa-undo-alt"></i> Reset
+                </button>
+            </div>
+        </div>
+
+        <div class="productos-count" id="productosCount">
+            Mostrando <span id="countNum">0</span> productos
+        </div>
+
+        <div class="productos-grid-explorar" id="productosGrid">
             {% for prod in productos %}
+<<<<<<< HEAD
             <div style="border:1px solid #ccc; padding:1rem; border-radius:8px;">
                 <h3>{{ prod.titulo }}</h3>
                 <p>{{ prod.descripcion[:100] }}{% if prod.descripcion|length > 100 %}...{% endif %}</p>
@@ -17,6 +71,44 @@
                     <a href="{{ url_for('checkout', producto_id=prod.id) }}" class="btn-link" style="background: #3b82f6; color: white; padding: 0.3rem 0.8rem; border-radius: 6px; text-decoration: none;">Comprar</a>
                     <button onclick="agregarFavorito({{ prod.id }}, this)" class="btn-link" style="background: #f1f5f9; border: none; padding: 0.3rem 0.8rem; border-radius: 6px;">❤️ Favorito</button>
                 </div>  
+=======
+            <div class="producto-card-explorar" data-categoria="{{ prod.categoria_id }}" data-precio="{{ prod.precio }}" data-titulo="{{ prod.titulo.lower() }}" data-descripcion="{{ prod.descripcion.lower() if prod.descripcion else '' }}">
+                <div class="producto-imagen-explorar">
+                    {% if prod.imagen_url %}
+                        <img src="{{ prod.imagen_url }}" alt="{{ prod.titulo }}">
+                    {% else %}
+                        <img src="https://images.unsplash.com/photo-1516321310764-9f3c9619d7d4?w=400&h=200&fit=crop" alt="{{ prod.titulo }}">
+                    {% endif %}
+                    <div class="producto-overlay">
+                        <button class="btn-overlay" onclick="verDetalle({{ prod.id }})">
+                            <i class="fas fa-eye"></i> Ver detalles
+                        </button>
+                    </div>
+                </div>
+                <div class="producto-body">
+                    <h3 class="producto-titulo">{{ prod.titulo }}</h3>
+                    <p class="producto-descripcion">{{ prod.descripcion[:100] }}{% if prod.descripcion and prod.descripcion|length > 100 %}...{% endif %}</p>
+                    <p class="producto-precio-explorar">${{ "{:,.0f}".format(prod.precio) }}</p>
+                    <span class="producto-categoria">
+                        <i class="fas fa-tag"></i> 
+                        {% if prod.categoria_id == 1 %}📚 Clases
+                        {% elif prod.categoria_id == 2 %}💻 Tecnología
+                        {% elif prod.categoria_id == 3 %}🎨 Diseño
+                        {% elif prod.categoria_id == 4 %}🎵 Arte
+                        {% else %}📦 Otros{% endif %}
+                    </span>
+                    <div class="producto-actions">
+                        <form method="POST" action="{{ url_for('comprar_producto', producto_id=prod.id) }}" style="flex: 1;">
+                            <button type="submit" class="btn-comprar">
+                                <i class="fas fa-shopping-cart"></i> Comprar
+                            </button>
+                        </form>
+                        <button onclick="agregarFavorito({{ prod.id }})" class="btn-favorito" id="fav-{{ prod.id }}">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                    </div>
+                </div>
+>>>>>>> 0bf06ce3a8b32bab17a733d5eff1899e8afe7400
             </div>
             {% else %}
             <p>No hay productos disponibles en este momento.</p>
@@ -25,6 +117,7 @@
     </div>
 </div>
 
+<<<<<<< HEAD
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Solo números para tarjeta (SIN formato automático)
@@ -56,4 +149,288 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+=======
+<!-- Modal de detalles del producto -->
+<div id="modalDetalle" class="modal-detalle">
+    <div class="modal-content-detalle">
+        <span class="modal-close" onclick="cerrarModal()">&times;</span>
+        <div id="modalBody"></div>
+    </div>
+</div>
+
+<script>
+// Filtros y búsqueda
+const searchInput = document.getElementById('searchInput');
+const categoriaFilter = document.getElementById('categoriaFilter');
+const precioFilter = document.getElementById('precioFilter');
+const ordenFilter = document.getElementById('ordenFilter');
+const resetBtn = document.getElementById('resetFiltros');
+const productosGrid = document.getElementById('productosGrid');
+const productos = document.querySelectorAll('.producto-card-explorar');
+const countNum = document.getElementById('countNum');
+
+function filtrarProductos() {
+    const searchTerm = searchInput.value.toLowerCase();
+    const categoria = categoriaFilter.value;
+    const precio = precioFilter.value;
+    
+    let productosVisibles = 0;
+    let productosArray = Array.from(productos);
+    
+    // Filtrar
+    productosArray.forEach(producto => {
+        const titulo = producto.dataset.titulo || '';
+        const descripcion = producto.dataset.descripcion || '';
+        const productoCategoria = producto.dataset.categoria;
+        const productoPrecio = parseInt(producto.dataset.precio);
+        
+        let mostrar = true;
+        
+        // Búsqueda
+        if (searchTerm && !titulo.includes(searchTerm) && !descripcion.includes(searchTerm)) {
+            mostrar = false;
+        }
+        
+        // Categoría
+        if (categoria !== 'todos' && productoCategoria != categoria) {
+            mostrar = false;
+        }
+        
+        // Precio
+        if (precio !== 'todos') {
+            if (precio === '0-10000' && productoPrecio > 10000) mostrar = false;
+            if (precio === '10000-50000' && (productoPrecio < 10000 || productoPrecio > 50000)) mostrar = false;
+            if (precio === '50000-100000' && (productoPrecio < 50000 || productoPrecio > 100000)) mostrar = false;
+            if (precio === '100000+' && productoPrecio < 100000) mostrar = false;
+        }
+        
+        if (mostrar) {
+            producto.style.display = '';
+            productosVisibles++;
+        } else {
+            producto.style.display = 'none';
+        }
+    });
+    
+    // Ordenar
+    const orden = ordenFilter.value;
+    if (orden === 'precio-asc') {
+        productosArray.sort((a, b) => parseInt(a.dataset.precio) - parseInt(b.dataset.precio));
+    } else if (orden === 'precio-desc') {
+        productosArray.sort((a, b) => parseInt(b.dataset.precio) - parseInt(a.dataset.precio));
+    }
+    
+    // Reordenar en el DOM
+    productosArray.forEach(producto => {
+        if (producto.style.display !== 'none') {
+            productosGrid.appendChild(producto);
+        }
+    });
+    
+    countNum.textContent = productosVisibles;
+}
+
+// Event listeners
+searchInput.addEventListener('input', filtrarProductos);
+categoriaFilter.addEventListener('change', filtrarProductos);
+precioFilter.addEventListener('change', filtrarProductos);
+ordenFilter.addEventListener('change', filtrarProductos);
+resetBtn.addEventListener('click', () => {
+    searchInput.value = '';
+    categoriaFilter.value = 'todos';
+    precioFilter.value = 'todos';
+    ordenFilter.value = 'reciente';
+    filtrarProductos();
+});
+
+// Favoritos
+function agregarFavorito(productoId) {
+    fetch('/agregar-favorito/' + productoId, {method: 'POST'})
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                const btn = document.getElementById('fav-' + productoId);
+                btn.classList.add('activo');
+                Swal.fire('Éxito', 'Producto agregado a favoritos', 'success');
+            }
+        });
+}
+
+// Modal de detalles
+const modal = document.getElementById('modalDetalle');
+
+function verDetalle(productoId) {
+    fetch(`/producto-detalle/${productoId}`)
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById('modalBody').innerHTML = `
+                <div style="text-align: center;">
+                    <img src="${data.imagen_url || 'https://images.unsplash.com/photo-1516321310764-9f3c9619d7d4?w=400&h=300&fit=crop'}" 
+                         style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 16px;">
+                    <h2 style="margin-top: 1rem;">${data.titulo}</h2>
+                    <p style="color: #059669; font-size: 1.5rem; font-weight: bold;">$${parseInt(data.precio).toLocaleString()}</p>
+                    <p style="color: #64748b; margin: 1rem 0;">${data.descripcion || 'Sin descripción'}</p>
+                    ${data.archivo_url ? `<a href="${data.archivo_url}" target="_blank" class="btn-comprar" style="display: inline-block; margin: 0.5rem;">
+                        <i class="fas fa-download"></i> Descargar material
+                    </a>` : ''}
+                    <div style="margin-top: 1.5rem;">
+                        <form method="POST" action="/comprar/${data.id}" style="display: inline;">
+                            <button type="submit" class="btn-comprar" style="background: linear-gradient(135deg, #28a745, #20c997);">
+                                <i class="fas fa-shopping-cart"></i> Comprar ahora
+                            </button>
+                        </form>
+                        <button onclick="cerrarModal()" class="btn-reset" style="margin-left: 1rem;">Cerrar</button>
+                    </div>
+                </div>
+            `;
+            modal.style.display = 'flex';
+        });
+}
+
+function cerrarModal() {
+    modal.style.display = 'none';
+}
+
+window.onclick = (event) => {
+    if (event.target === modal) cerrarModal();
+};
+
+filtrarProductos();
+</script>
+
+<style>
+.filtros-busqueda {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 20px;
+    margin-bottom: 2rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+}
+
+.search-bar-modern {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.search-bar-modern i {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+}
+
+.search-bar-modern input {
+    width: 100%;
+    padding: 1rem 1rem 1rem 3rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 50px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.search-bar-modern input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+}
+
+.filtros-group {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.filtro-select {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 50px;
+    background: white;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filtro-select:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.btn-reset {
+    padding: 0.75rem 1.5rem;
+    background: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-reset:hover {
+    background: #dc2626;
+    transform: translateY(-2px);
+}
+
+.productos-count {
+    margin-bottom: 1rem;
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+/* Modal */
+.modal-detalle {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content-detalle {
+    background: white;
+    border-radius: 24px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 1.5rem;
+    position: relative;
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #94a3b8;
+}
+
+.modal-close:hover {
+    color: #ef4444;
+}
+
+@media (max-width: 768px) {
+    .filtros-group {
+        flex-direction: column;
+    }
+    
+    .filtro-select, .btn-reset {
+        width: 100%;
+    }
+}
+</style>
+>>>>>>> 0bf06ce3a8b32bab17a733d5eff1899e8afe7400
 {% endblock %}
