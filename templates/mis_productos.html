@@ -19,18 +19,34 @@
                 {% for prod in productos %}
                 <div class="producto-card-mio">
                     <div class="producto-imagen-mio">
+                        {% if prod.imagen_url %}
+                            <img src="{{ prod.imagen_url }}" alt="{{ prod.titulo }}" class="producto-imagen-src">
+                        {% else %}
+                            <img src="https://images.unsplash.com/photo-1516321310764-9f3c9619d7d4?w=400&h=200&fit=crop" alt="Producto sin imagen" class="producto-imagen-src">
+                        {% endif %}
                         <span class="producto-status">Activo</span>
                     </div>
                     <div class="producto-content">
                         <h3 class="producto-titulo-mio">{{ prod.titulo }}</h3>
-                        <p class="producto-desc-mio">{{ prod.descripcion[:80] }}{% if prod.descripcion|length > 80 %}...{% endif %}</p>
+                        <p class="producto-desc-mio">{{ prod.descripcion[:80] }}{% if prod.descripcion and prod.descripcion|length > 80 %}...{% endif %}</p>
                         <div class="producto-footer">
                             <span class="producto-precio-mio">${{ "{:,.0f}".format(prod.precio) }}</span>
                             <div class="producto-actions-mio">
-                                <button class="btn-edit"><i class="fas fa-edit"></i> Editar</button>
-                                <button class="btn-delete"><i class="fas fa-trash"></i> Eliminar</button>
+                                <button class="btn-edit" onclick="editarProducto({{ prod.id }})">
+                                    <i class="fas fa-edit"></i> Editar
+                                </button>
+                                <button class="btn-delete" onclick="eliminarProducto({{ prod.id }}, '{{ prod.titulo }}')">
+                                    <i class="fas fa-trash"></i> Eliminar
+                                </button>
                             </div>
                         </div>
+                        {% if prod.archivo_url %}
+                        <div class="producto-archivo">
+                            <a href="{{ prod.archivo_url }}" target="_blank" class="archivo-link">
+                                <i class="fas fa-file-pdf"></i> Ver material adjunto
+                            </a>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
                 {% endfor %}
@@ -53,4 +69,100 @@
         </div>
     </div>
 </div>
+
+<script>
+function editarProducto(productoId) {
+    // Redirigir a página de edición (por implementar)
+    alert('Función de edición próximamente para el producto ID: ' + productoId);
+}
+
+function eliminarProducto(productoId, productoNombre) {
+    Swal.fire({
+        title: '¿Eliminar producto?',
+        html: `
+            <div style="text-align: center;">
+                <i class="fas fa-trash-alt" style="font-size: 3rem; color: #dc2626; margin-bottom: 1rem;"></i>
+                <p style="font-size: 1rem;">¿Estás seguro de que deseas eliminar <strong>"${productoNombre}"</strong>?</p>
+                <p style="color: #64748b; font-size: 0.85rem;">Esta acción no se puede deshacer y el producto será eliminado permanentemente.</p>
+            </div>
+        `,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: '<i class="fas fa-trash-alt"></i> Sí, eliminar',
+        cancelButtonText: '<i class="fas fa-times"></i> Cancelar',
+        reverseButtons: true,
+        customClass: {
+            popup: 'swal2-popup-custom',
+            title: 'swal2-title-custom',
+            confirmButton: 'swal2-confirm-custom',
+            cancelButton: 'swal2-cancel-custom'
+        },
+        backdrop: `
+            rgba(0,0,0,0.4)
+            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='24' height='24'%3E%3Cpath fill='none' stroke='%23ffffff' stroke-width='1' d='M12 4v1m0 14v1M4 12H3m3.5-5.5L5.5 5.5m11 11l1.5 1.5M20 12h1m-3.5-5.5l1.5-1.5'/%3E%3C/svg%3E") center/30px repeat,
+            !important
+        `,
+        showClass: {
+            popup: 'animate__animated animate__fadeInDown animate__faster'
+        },
+        hideClass: {
+            popup: 'animate__animated animate__fadeOutUp animate__faster'
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Mostrar loading
+            Swal.fire({
+                title: 'Eliminando producto...',
+                html: '<div class="swal2-loader-custom"><i class="fas fa-spinner fa-pulse"></i> Por favor espera</div>',
+                showConfirmButton: false,
+                allowOutsideClick: false,
+                willOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            // Llamar al backend
+            fetch(`/eliminar-producto/${productoId}`, {method: 'DELETE'})
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            title: '¡Eliminado!',
+                            html: '<i class="fas fa-check-circle" style="font-size: 3rem; color: #10b981;"></i><p style="margin-top: 1rem;">El producto ha sido eliminado permanentemente.</p>',
+                            icon: 'success',
+                            confirmButtonColor: '#10b981',
+                            confirmButtonText: '<i class="fas fa-check"></i> Aceptar',
+                            timer: 2000,
+                            timerProgressBar: true,
+                            showClass: {
+                                popup: 'animate__animated animate__fadeInDown'
+                            }
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Error',
+                            html: `<i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #dc2626;"></i><p style="margin-top: 1rem;">${data.error}</p>`,
+                            icon: 'error',
+                            confirmButtonColor: '#dc2626',
+                            confirmButtonText: '<i class="fas fa-times"></i> Cerrar'
+                        });
+                    }
+                })
+                .catch(error => {
+                    Swal.fire({
+                        title: 'Error',
+                        html: '<i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #dc2626;"></i><p style="margin-top: 1rem;">Error al conectar con el servidor</p>',
+                        icon: 'error',
+                        confirmButtonColor: '#dc2626',
+                        confirmButtonText: '<i class="fas fa-times"></i> Cerrar'
+                    });
+                });
+        }
+    });
+}
+</script>
 {% endblock %}

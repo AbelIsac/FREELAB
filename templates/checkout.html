@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% block title %}Finalizar compra - {{ producto.titulo }}{% endblock %}
+{% block content %}
+<div class="checkout-container">
+    <div class="checkout-wrapper">
+        <!-- Header -->
+        <div class="checkout-header">
+            <h1>Confirmar compra</h1>
+            <p class="subtitle">Revisa tu pedido antes de finalizar</p>
+        </div>
+
+        <!-- Resumen del producto -->
+        <div class="product-summary">
+            <div class="product-card">
+                {% if producto.imagen %}
+                <div class="product-image">
+                    <img src="{{ url_for('static', filename=producto.imagen) }}" 
+                         alt="{{ producto.titulo }}" 
+                         onerror="this.src='/static/images/default-product.jpg'">
+                </div>
+                {% endif %}
+                <div class="product-details">
+                    <h2 class="product-title">{{ producto.titulo }}</h2>
+                    <p class="product-description">{{ producto.descripcion }}</p>
+                    <div class="product-price">
+                        <span class="price">${{ "{:,.0f}".format(producto.precio) }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ESPACIADO EXTRA -->
+        <div class="spacer-section"></div>
+
+        <!-- Formulario de pago -->
+        <form method="POST" action="{{ url_for('procesar_pago', producto_id=producto.id) }}" id="paymentForm">
+            <div class="payment-section">
+                <h3>Información de pago</h3>
+                
+                <div class="form-group">
+                    <label for="cardNumber">Número de tarjeta</label>
+                    <div class="input-wrapper">
+                        <input type="text" 
+                               id="cardNumber" 
+                               name="card_number"
+                               class="form-control"
+                               placeholder="0000 0000 0000 0000"
+                               autocomplete="off"
+                               autocorrect="off"
+                               autocapitalize="off"
+                               spellcheck="false"
+                               maxlength="19"
+                               required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="expiryDate">Fecha de expiración</label>
+                        <div class="input-wrapper">
+                            <input type="text" 
+                                   id="expiryDate"
+                                   name="expiry_date"
+                                   class="form-control"
+                                   placeholder="MM/AA"
+                                   autocomplete="off"
+                                   autocorrect="off"
+                                   autocapitalize="off"
+                                   spellcheck="false"
+                                   maxlength="5"
+                                   required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="cvv">CVV</label>
+                        <div class="input-wrapper">
+                            <input type="text" 
+                                   id="cvv"
+                                   name="cvv"
+                                   class="form-control"
+                                   placeholder="123"
+                                   autocomplete="off"
+                                   autocorrect="off"
+                                   autocapitalize="off"
+                                   spellcheck="false"
+                                   maxlength="4"
+                                   required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="holderName">Titular de la tarjeta</label>
+                    <input type="text" 
+                           id="holderName"
+                           name="holder_name"
+                           class="form-control" 
+                           placeholder="Nombre completo como aparece en la tarjeta"
+                           autocomplete="off"
+                           autocorrect="off"
+                           autocapitalize="off"
+                           spellcheck="false"
+                           required>
+                </div>
+            </div>
+
+            <!-- Resumen del pedido -->
+            <div class="order-summary">
+                <div class="summary-item">
+                    <span>Total:</span>
+                    <strong>${{ "{:,.0f}".format(producto.precio) }}</strong>
+                </div>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="checkout-actions">
+                <a href="{{ url_for('explorar_productos') }}" class="btn btn-secondary">
+                    Volver a productos
+                </a>
+                <button type="submit" class="btn btn-primary" id="payButton">
+                    <span class="button-text">Pagar ${{ "{:,.0f}".format(producto.precio) }}</span>
+                    <span class="button-loading" style="display: none;">Procesando pago...</span>
+                </button>
+            </div>
+        </form>
+
+        <!-- Seguridad -->
+        <div class="security-notice">
+            <p><strong>Seguro:</strong> Tu información está protegida con encriptación SSL</p>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // ✅ ANTI-AUTOCOMPLETADO + FORMATO PERFECTO
+    const inputs = ['cardNumber', 'expiryDate', 'cvv', 'holderName'];
+    
+    inputs.forEach(inputId => {
+        const input = document.getElementById(inputId);
+        if (input) {
+            input.addEventListener('focus', function() {
+                this.select(); // Selecciona todo al hacer foco
+            });
+        }
+    });
+
+    // 🎴 Formato tarjeta (4242 4242 4242 4242)
+    const cardInput = document.getElementById('cardNumber');
+    cardInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '').substring(0, 16);
+        let formatted = value.replace(/(\d{4})(?=\d)/g, '$1 ');
+        e.target.value = formatted;
+    });
+
+    // 📅 Formato fecha (12/34)
+    const expiryInput = document.getElementById('expiryDate');
+    expiryInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '').substring(0, 4);
+        if (value.length >= 2) {
+            value = value.substring(0, 2) + '/' + value.substring(2);
+        }
+        e.target.value = value;
+    });
+
+    // 🔢 Formato CVV (solo números)
+    const cvvInput = document.getElementById('cvv');
+    cvvInput.addEventListener('input', function(e) {
+        e.target.value = e.target.value.replace(/\D/g, '').substring(0, 4);
+    });
+
+    // ⏳ Loading button
+    const form = document.getElementById('paymentForm');
+    const payButton = document.getElementById('payButton');
+    
+    form.addEventListener('submit', function() {
+        payButton.disabled = true;
+        payButton.querySelector('.button-text').style.display = 'none';
+        payButton.querySelector('.button-loading').style.display = 'inline';
+    });
+});
+</script>
+{% endblock %}

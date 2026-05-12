@@ -150,12 +150,7 @@ def dashboard_estudiante():
         flash(f'Error: {str(e)}', 'error')
         return redirect(url_for('home'))
 
-@app.route('/publicar-producto')
-def publicar_producto():
-    if 'user' not in session:
-        flash('Inicia sesión', 'error')
-        return redirect(url_for('home'))
-    return render_template('publicar_producto.html')
+
 
 @app.route('/guardar-producto', methods=['POST'])
 def guardar_producto():
@@ -334,6 +329,22 @@ def favoritos():
     if 'user' not in session:
         flash('Inicia sesión', 'error')
         return redirect(url_for('home'))
+
+    
+    user_id = session['user']['id']
+    # Obtener ids de productos favoritos
+    favs = supabase.table('favoritos').select('producto_id').eq('usuario_id', user_id).execute()
+    if not favs.data:
+        return render_template('favoritos.html', favoritos=[])
+    
+    producto_ids = [f['producto_id'] for f in favs.data]
+    # Obtener datos completos de esos productos
+    productos = supabase.table('productos').select('*, categorias(nombre)').in_('id', producto_ids).execute()
+    
+    # Estructurar como espera la plantilla
+    favoritos_data = [{'producto': p} for p in productos.data]
+    return render_template('favoritos.html', favoritos=favoritos_data)
+
     favs = supabase.table('favoritos')\
         .select('*, producto:productos(*)')\
         .eq('usuario_id', session['user']['id'])\
@@ -406,5 +417,114 @@ def dashboard():
 def productos():
     return render_template('productos.html')
 
+@app.route('/checkout/<int:producto_id>')
+def checkout(producto_id):
+    if 'user' not in session:
+        flash('Inicia sesión para continuar', 'error')
+        return redirect(url_for('home'))
+    
+    # Obtener producto
+    prod = supabase.table('productos').select('*').eq('id', producto_id).execute()
+    if not prod.data:
+        flash('Producto no encontrado', 'error')
+        return redirect(url_for('explorar_productos'))
+    
+    return render_template('checkout.html', producto=prod.data[0])
+
+@app.route('/procesar-pago/<int:producto_id>', methods=['POST'])
+def procesar_pago(producto_id):
+    if 'user' not in session:
+        flash('Inicia sesión', 'error')
+        return redirect(url_for('home'))
+    
+    comprador_id = session['user']['id']
+    try:
+        prod = supabase.table('productos').select('*').eq('id', producto_id).single().execute()
+        if not prod.data:
+            flash('Producto no encontrado', 'error')
+            return redirect(url_for('explorar_productos'))
+        
+        if prod.data['vendedor_id'] == comprador_id:
+            flash('No puedes comprar tus propios productos', 'error')
+            return redirect(url_for('explorar_productos'))
+        
+        # Crear venta
+        venta_data = {
+            'producto_id': producto_id,
+            'comprador_id': comprador_id,
+            'vendedor_id': prod.data['vendedor_id'],
+            'monto': prod.data['precio'],
+            'estado': 'completado'
+        }
+        supabase.table('ventas').insert(venta_data).execute()
+        flash('¡Pago exitoso! Compra realizada', 'success')
+        return redirect(url_for('mis_compras'))
+    except Exception as e:
+        flash(f'Error en pago: {str(e)}', 'error')
+        return redirect(url_for('checkout', producto_id=producto_id))
+    
+@app.route('/eliminar-producto/<int:producto_id>', methods=['DELETE'])
+def eliminar_producto(producto_id):
+    if 'user' not in session:
+        return {'error': 'No autorizado'}, 401
+    
+    try:
+        # Obtener el producto completo (incluyendo URLs de archivos)
+        producto = supabase.table('productos').select('*').eq('id', producto_id).single().execute()
+        if not producto.data:
+            return {'error': 'Producto no encontrado'}, 404
+        
+        if producto.data['vendedor_id'] != session['user']['id']:
+            return {'error': 'No autorizado'}, 403
+        
+        # Eliminar archivos físicos si existen
+        if producto.data.get('imagen_url'):
+            file_path = producto.data['imagen_url'].replace('/static/', 'static/')
+            if os.path.exists(file_path):
+                os.remove(file_path)
+        
+        if producto.data.get('archivo_url'):
+            file_path = producto.data['archivo_url'].replace('/static/', 'static/')
+            if os.path.exists(file_path):
+                os.remove(file_path)
+        
+        # Eliminar el producto de la base de datos
+        supabase.table('productos').delete().eq('id', producto_id).execute()
+        
+        return {'success': True}, 200
+    except Exception as e:
+        return {'error': str(e)}, 400
+    
+@app.route('/productos-destacados')
+def productos_destacados():
+    """Obtener productos destacados para el home"""
+    try:
+        productos = supabase.table('productos')\
+            .select('*')\
+            .eq('estado', 'activo')\
+            .order('fecha_publicacion', desc=True)\
+            .limit(4)\
+            .execute()
+        return {'productos': productos.data}, 200
+    except Exception as e:
+        return {'error': str(e)}, 400
+    
+@app.route('/publicar-producto')
+def publicar_producto():
+    if 'user' not in session:
+        flash('Inicia sesión para publicar', 'error')
+        return redirect(url_for('home'))
+    
+    # Verificar que el usuario es estudiante/vendedor
+    user_id = session['user']['id']
+    respuesta = supabase.table('perfiles').select('rol').eq('id', user_id).execute()
+    rol = respuesta.data[0]['rol'] if respuesta.data else None
+    
+    if rol != 'estudiante':
+        flash('Solo los vendedores pueden publicar productos', 'error')
+        return redirect(url_for('dashboard'))
+    
+    return render_template('publicar_producto.html')
+    
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

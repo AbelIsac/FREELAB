@@ -84,17 +84,18 @@
                         {% else %}📦 Otros{% endif %}
                     </span>
                     <div class="producto-actions">
-                        <form method="POST" action="{{ url_for('comprar_producto', producto_id=prod.id) }}" style="flex: 1;">
-                            <button type="submit" class="btn-comprar">
-                                <i class="fas fa-shopping-cart"></i> Comprar
-                            </button>
-                        </form>
+                        <!-- ✅ CONEXIÓN DIRECTA AL CHECKOUT -->
+                        <a href="{{ url_for('checkout', producto_id=prod.id) }}" class="btn-comprar">
+                            <i class="fas fa-shopping-cart"></i> Comprar
+                        </a>
                         <button onclick="agregarFavorito({{ prod.id }})" class="btn-favorito" id="fav-{{ prod.id }}">
                             <i class="fas fa-heart"></i>
                         </button>
                     </div>
                 </div>
             </div>
+            {% else %}
+            <p style="text-align: center; grid-column: 1/-1; padding: 2rem;">No hay productos disponibles en este momento.</p>
             {% endfor %}
         </div>
     </div>
@@ -201,9 +202,10 @@ function agregarFavorito(productoId) {
             if (data.success) {
                 const btn = document.getElementById('fav-' + productoId);
                 btn.classList.add('activo');
-                Swal.fire('Éxito', 'Producto agregado a favoritos', 'success');
+                alert('❤️ Producto agregado a favoritos');
             }
-        });
+        })
+        .catch(() => alert('Error al agregar favorito'));
 }
 
 // Modal de detalles
@@ -224,11 +226,9 @@ function verDetalle(productoId) {
                         <i class="fas fa-download"></i> Descargar material
                     </a>` : ''}
                     <div style="margin-top: 1.5rem;">
-                        <form method="POST" action="/comprar/${data.id}" style="display: inline;">
-                            <button type="submit" class="btn-comprar" style="background: linear-gradient(135deg, #28a745, #20c997);">
-                                <i class="fas fa-shopping-cart"></i> Comprar ahora
-                            </button>
-                        </form>
+                        <a href="/checkout/${data.id}" class="btn-comprar" style="display: inline-block; background: linear-gradient(135deg, #28a745, #20c997); text-decoration: none;">
+                            <i class="fas fa-shopping-cart"></i> Comprar ahora
+                        </a>
                         <button onclick="cerrarModal()" class="btn-reset" style="margin-left: 1rem;">Cerrar</button>
                     </div>
                 </div>
@@ -245,6 +245,7 @@ window.onclick = (event) => {
     if (event.target === modal) cerrarModal();
 };
 
+// Inicializar filtros
 filtrarProductos();
 </script>
 
@@ -328,6 +329,146 @@ filtrarProductos();
     font-size: 0.9rem;
 }
 
+/* Grid de productos */
+.productos-grid-explorar {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+.producto-card-explorar {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.producto-card-explorar:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+}
+
+.producto-imagen-explorar {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+}
+
+.producto-imagen-explorar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.producto-card-explorar:hover .producto-imagen-explorar img {
+    transform: scale(1.05);
+}
+
+.producto-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.producto-card-explorar:hover .producto-overlay {
+    opacity: 1;
+}
+
+.btn-overlay {
+    background: white;
+    color: #667eea;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.producto-body {
+    padding: 1.2rem;
+}
+
+.producto-titulo {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.producto-descripcion {
+    color: #64748b;
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+}
+
+.producto-precio-explorar {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #059669;
+    margin: 0.5rem 0;
+}
+
+.producto-categoria {
+    display: inline-block;
+    background: #f1f5f9;
+    padding: 0.2rem 0.8rem;
+    border-radius: 50px;
+    font-size: 0.7rem;
+    margin-bottom: 1rem;
+}
+
+.producto-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-comprar {
+    flex: 1;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    text-decoration: none;
+    text-align: center;
+    padding: 0.6rem;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-comprar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102,126,234,0.4);
+}
+
+.btn-favorito {
+    background: #f1f5f9;
+    border: none;
+    width: 40px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-favorito:hover {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+.btn-favorito.activo {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
 /* Modal */
 .modal-detalle {
     display: none;
@@ -372,6 +513,7 @@ filtrarProductos();
     color: #ef4444;
 }
 
+/* Responsive */
 @media (max-width: 768px) {
     .filtros-group {
         flex-direction: column;
@@ -379,6 +521,10 @@ filtrarProductos();
     
     .filtro-select, .btn-reset {
         width: 100%;
+    }
+    
+    .productos-grid-explorar {
+        grid-template-columns: 1fr;
     }
 }
 </style>
