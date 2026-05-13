@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Revisar Publicaciones{% endblock %}
+{% block content %}
+<div class="admin-container">
+    <h1>📦 Gestión de Publicaciones</h1>
+    <div class="productos-grid">
+        {% for prod in productos %}
+        <div class="producto-card">
+            <h3>{{ prod.titulo }}</h3>
+            <p>{{ prod.descripcion[:120] }}{% if prod.descripcion and prod.descripcion|length > 120 %}...{% endif %}</p>
+            <p><strong>Precio:</strong> ${{ "{:,.0f}".format(prod.precio) }}</p>
+            <p><strong>Vendedor:</strong> {{ prod.perfiles.nombre if prod.perfiles and prod.perfiles.nombre else 'Desconocido' }}</p>
+            <p><strong>Estado actual:</strong> 
+                {% if prod.estado == 'pendiente' %}
+                    <span class="badge-pendiente">⏳ Pendiente</span>
+                {% elif prod.estado == 'activo' %}
+                    <span class="badge-activo">✅ Activo</span>
+                {% elif prod.estado == 'rechazado' %}
+                    <span class="badge-rechazado">❌ Rechazado</span>
+                {% else %}
+                    <span>{{ prod.estado }}</span>
+                {% endif %}
+            </p>
+            <div class="actions">
+                {% if prod.estado == 'pendiente' %}
+                <form method="POST" action="{{ url_for('admin_aprobar_producto', producto_id=prod.id) }}" style="display:inline;">
+                    <button type="submit" class="btn-aprobar">
+                        <i class="fas fa-check-circle"></i> Aprobar
+                    </button>
+                </form>
+                <form method="POST" action="{{ url_for('admin_rechazar_producto', producto_id=prod.id) }}" style="display:inline;">
+                    <button type="submit" class="btn-rechazar">
+                        <i class="fas fa-times-circle"></i> Rechazar
+                    </button>
+                </form>
+                {% else %}
+                <span class="info-text">Este producto ya fue {{ prod.estado }}</span>
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+        <p class="no-data">📭 No hay publicaciones para revisar.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.admin-container { max-width: 1200px; margin: 2rem auto; padding: 1rem; }
+.productos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
+.producto-card { background: white; border-radius: 16px; padding: 1.2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s; }
+.producto-card:hover { transform: translateY(-3px); }
+.actions { margin-top: 1rem; display: flex; gap: 0.8rem; flex-wrap: wrap; }
+.btn-aprobar { background: #10b981; color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 500; }
+.btn-aprobar:hover { background: #059669; }
+.btn-rechazar { background: #ef4444; color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 500; }
+.btn-rechazar:hover { background: #dc2626; }
+.badge-pendiente { background: #f59e0b; color: white; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.8rem; }
+.badge-activo { background: #10b981; color: white; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.8rem; }
+.badge-rechazado { background: #6b7280; color: white; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.8rem; }
+.no-data { text-align: center; padding: 2rem; color: #6b7280; }
+</style>
+{% endblock %}

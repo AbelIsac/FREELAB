@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Panel de Administración{% endblock %}
+{% block content %}
+<div class="admin-container">
+    <h1>Panel de Administración</h1>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <i class="fas fa-tags"></i>
+            <h3>{{ stats.total_categorias }}</h3>
+            <p>Categorías</p>
+            <a href="{{ url_for('admin_categorias') }}">Gestionar →</a>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-clock"></i>
+            <h3>{{ stats.productos_pendientes }}</h3>
+            <p>Publicaciones pendientes</p>
+            <a href="{{ url_for('admin_publicaciones') }}">Revisar →</a>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-hourglass-half"></i>
+            <h3>{{ stats.ventas_pendientes }}</h3>
+            <p>Transacciones pendientes</p>
+            <a href="{{ url_for('admin_transacciones') }}">Aprobar →</a>
+        </div>
+    </div>
+</div>
+
+<style>
+.admin-container {
+    max-width: 1200px;
+    margin: 6rem auto 2rem auto;   /* antes era 2rem, ahora margen superior más grande */
+    padding: 1rem;
+}
+
+.admin-container h1 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #1e293b;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.8rem;
+    margin-top: 1rem;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 24px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+}
+
+.stat-card i {
+    font-size: 2.8rem;
+    color: #3b82f6;
+    margin-bottom: 1rem;
+}
+
+.stat-card h3 {
+    font-size: 2.2rem;
+    margin: 0.5rem 0;
+    color: #0f172a;
+    font-weight: 700;
+}
+
+.stat-card p {
+    color: #64748b;
+    font-size: 0.95rem;
+    margin-bottom: 1.2rem;
+}
+
+.stat-card a {
+    display: inline-block;
+    margin-top: 0.5rem;
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.stat-card a:hover {
+    color: #1d4ed8;
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .admin-container {
+        margin: 4rem auto 2rem auto;
+    }
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
+</style>
+{% endblock %}

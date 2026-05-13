@@ -31,7 +31,7 @@
 
                 <div class="nav-actions">
                     {% if session_user %}
-                        <!-- DROPDOWN MENU BONITO -->
+                        <!-- DROPDOWN MENU -->
                         <div class="user-dropdown">
                             <div class="user-info-btn">
                                 <img src="{{ session_user.get('avatar', 'https://ui-avatars.com/api/?background=667eea&color=fff&name=' + session_user.get('name', 'U')) }}" 
@@ -41,7 +41,6 @@
                             </div>
                             <div class="dropdown-menu">
                                 {% if session_user.rol == 'estudiante' %}
-                                    <!-- Opciones para VENDEDOR/ESTUDIANTE -->
                                     <a href="{{ url_for('dashboard_estudiante', user_id=session_user.id) }}" class="dropdown-item">
                                         <i class="fas fa-tachometer-alt"></i> Mi Dashboard
                                     </a>
@@ -55,7 +54,6 @@
                                         <i class="fas fa-plus-circle"></i> Publicar Producto
                                     </a>
                                 {% elif session_user.rol == 'comprador' %}
-                                    <!-- Opciones para COMPRADOR -->
                                     <a href="{{ url_for('dashboard_comprador', user_id=session_user.id) }}" class="dropdown-item">
                                         <i class="fas fa-tachometer-alt"></i> Mi Dashboard
                                     </a>
@@ -68,19 +66,18 @@
                                     <a href="{{ url_for('mis_resenas') }}" class="dropdown-item">
                                         <i class="fas fa-star"></i> Mis Reseñas
                                     </a>
-                                {% else %}
-                                    <!-- Opciones por defecto (si no hay rol) -->
-                                    <a href="{{ url_for('dashboard') }}" class="dropdown-item">
-                                        <i class="fas fa-tachometer-alt"></i> Mi Dashboard
-                                    </a>
-                                    <a href="{{ url_for('productos') }}" class="dropdown-item">
-                                        <i class="fas fa-search"></i> Explorar Productos
+                                {% endif %}
+
+                                <!-- ========== NUEVO: Panel Admin ========== -->
+                                {% if session_user.rol == 'admin' %}
+                                    <a href="{{ url_for('admin_dashboard') }}" class="dropdown-item">
+                                        <i class="fas fa-shield-alt"></i> Panel Admin
                                     </a>
                                 {% endif %}
-                                
+
                                 <div class="dropdown-divider"></div>
                                 
-                                <!-- Opciones comunes para todos -->
+                                <!-- Opciones comunes -->
                                 <a href="{{ url_for('configuracion') }}" class="dropdown-item">
                                     <i class="fas fa-user-circle"></i> Mi Perfil
                                 </a>
@@ -190,7 +187,7 @@
         </div>
     </footer>
 
-    <!-- Floating Button -->
+    <!-- Floating Button (único, no duplicado) -->
     {% if session_user %}
         <a href="{{ url_for('dashboard') }}" class="floating-action-btn">
             <i class="fas fa-chart-line"></i>
@@ -203,11 +200,17 @@
         </a>
     {% endif %}
 
+    <!-- CARRITO FLOTANTE -->
+    <a href="{{ url_for('ver_carrito') }}" class="cart-float" id="cartFloat">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count" id="cartCount">0</span>
+    </a>
+
     <script>
-        // Año actual para el footer
+        // Año actual
         document.getElementById('current-year').innerText = new Date().getFullYear();
         
-        // DROPDOWN MENU - Funcionalidad
+        // DROPDOWN MENU
         const userInfoBtn = document.querySelector('.user-info-btn');
         const dropdownMenu = document.querySelector('.dropdown-menu');
         
@@ -216,8 +219,6 @@
                 e.stopPropagation();
                 dropdownMenu.classList.toggle('show');
             });
-            
-            // Cerrar dropdown al hacer click fuera
             document.addEventListener('click', (e) => {
                 if (!userInfoBtn.contains(e.target)) {
                     dropdownMenu.classList.remove('show');
@@ -232,17 +233,25 @@
             });
         });
         
-        // Auto close flash messages
         setTimeout(() => {
             document.querySelectorAll('.flash-message').forEach(msg => {
                 msg.style.animation = 'slideOutRight 0.3s ease';
                 setTimeout(() => msg.remove(), 300);
             });
         }, 5000);
+
+        // Contador carrito
+        function actualizarContadorCarritoGlobal() {
+            const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+            const totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
+            const contador = document.getElementById('cartCount');
+            if (contador) contador.innerText = totalItems;
+        }
+        document.addEventListener('DOMContentLoaded', actualizarContadorCarritoGlobal);
+        setInterval(actualizarContadorCarritoGlobal, 2000);
     </script>
-    <!-- SweetAlert2 JS -->
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
     {% block extra_js %}{% endblock %}
 </body>
 </html>

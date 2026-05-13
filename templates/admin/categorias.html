@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Gestionar Categorías{% endblock %}
+{% block content %}
+<div class="admin-categorias">
+    <h1>Gestionar Categorías</h1>
+    <form method="POST" action="{{ url_for('admin_categoria_crear') }}" class="form-inline">
+        <input type="text" name="nombre" placeholder="Nombre" required>
+        <input type="text" name="descripcion" placeholder="Descripción">
+        <button type="submit">Crear</button>
+    </form>
+    <table class="table">
+        <thead>
+            <tr><th>ID</th><th>Nombre</th><th>Descripción</th><th>Acciones</th></tr>
+        </thead>
+        <tbody>
+            {% for cat in categorias %}
+            <tr>
+                <td>{{ cat.id }}</td>
+                <td>
+                    <form method="POST" action="{{ url_for('admin_categoria_editar', categoria_id=cat.id) }}" style="display: inline;">
+                        <input type="text" name="nombre" value="{{ cat.nombre }}">
+                        <input type="text" name="descripcion" value="{{ cat.descripcion or '' }}">
+                        <button type="submit">Editar</button>
+                    </form>
+                </td>
+                <td>
+                    <button class="delete-cat" data-id="{{ cat.id }}">Eliminar</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<script>
+document.querySelectorAll('.delete-cat').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        Swal.fire({
+            title: '¿Eliminar categoría?',
+            text: 'Esta acción eliminará la categoría. Los productos asociados quedarán sin categoría.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Eliminar'
+        }).then(res => {
+            if (res.isConfirmed) {
+                fetch(`/admin/categoria/eliminar/${id}`, {method: 'DELETE'})
+                .then(r => r.json())
+                .then(data => { if(data.success) location.reload(); else Swal.fire('Error', data.error, 'error'); });
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

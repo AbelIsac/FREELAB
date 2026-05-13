@@ -1,5 +1,13 @@
 {% extends "base.html" %}
-{% block title %}Finalizar compra - {{ producto.titulo }}{% endblock %}
+
+{% if producto %}
+    {% set page_title = "Finalizar compra - " + producto.titulo %}
+{% else %}
+    {% set page_title = "Finalizar compra - Carrito" %}
+{% endif %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
 {% block content %}
 <div class="checkout-container">
     <div class="checkout-wrapper">
@@ -9,34 +17,64 @@
             <p class="subtitle">Revisa tu pedido antes de finalizar</p>
         </div>
 
-        <!-- Resumen del producto -->
+        <!-- Resumen: PRODUCTO ÚNICO o CARRITO -->
         <div class="product-summary">
-            <div class="product-card">
-                {% if producto.imagen %}
-                <div class="product-image">
-                    <img src="{{ url_for('static', filename=producto.imagen) }}" 
-                         alt="{{ producto.titulo }}" 
-                         onerror="this.src='/static/images/default-product.jpg'">
-                </div>
-                {% endif %}
-                <div class="product-details">
-                    <h2 class="product-title">{{ producto.titulo }}</h2>
-                    <p class="product-description">{{ producto.descripcion }}</p>
-                    <div class="product-price">
-                        <span class="price">${{ "{:,.0f}".format(producto.precio) }}</span>
+            {% if producto %}
+                {# ========== PRODUCTO ÚNICO ========== #}
+                <div class="product-card">
+                    {% if producto.imagen %}
+                    <div class="product-image">
+                        <img src="{{ url_for('static', filename=producto.imagen) }}" 
+                             alt="{{ producto.titulo }}" 
+                             onerror="this.src='/static/images/default-product.jpg'">
+                    </div>
+                    {% endif %}
+                    <div class="product-details">
+                        <h2 class="product-title">{{ producto.titulo }}</h2>
+                        <p class="product-description">{{ producto.descripcion }}</p>
+                        <div class="product-price">
+                            <span class="price">${{ "{:,.0f}".format(producto.precio) }}</span>
+                        </div>
                     </div>
                 </div>
-            </div>
+            {% else %}
+                {# ========== CARRITO (múltiples productos) ========== #}
+                <h3>Productos a comprar ({{ items|length }})</h3>
+                {% for item in items %}
+                <div class="product-card" style="margin-bottom: 1rem;">
+                    <div class="product-image" style="width: 80px; height: 80px;">
+                        {% if item.imagen %}
+                        <img src="{{ item.imagen if item.imagen.startswith('http') else url_for('static', filename=item.imagen) }}" 
+                             alt="{{ item.titulo }}" 
+                             style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;"
+                             onerror="this.src='/static/images/default-product.jpg'">
+                        {% else %}
+                        <img src="https://images.unsplash.com/photo-1516321310764-9f3c9619d7d4?w=80&h=80&fit=crop" 
+                             alt="{{ item.titulo }}"
+                             style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;">
+                        {% endif %}
+                    </div>
+                    <div class="product-details" style="flex: 1;">
+                        <h2 class="product-title">{{ item.titulo }}</h2>
+                        <p class="product-description">Cantidad: {{ item.cantidad }}</p>
+                        <div class="product-price">
+                            <span class="price">${{ "{:,.0f}".format(item.precio * item.cantidad) }}</span>
+                            <small style="color: #64748b;">(${{ "{:,.0f}".format(item.precio) }} c/u)</small>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endif %}
         </div>
 
-        <!-- ESPACIADO EXTRA -->
-        <div class="spacer-section"></div>
-
         <!-- Formulario de pago -->
-        <form method="POST" action="{{ url_for('procesar_pago', producto_id=producto.id) }}" id="paymentForm">
+        {% if producto %}
+            <form method="POST" action="{{ url_for('procesar_pago', producto_id=producto.id) }}" id="paymentForm">
+        {% else %}
+            <form method="POST" action="{{ url_for('procesar_pago_carrito') }}" id="paymentForm">
+        {% endif %}
             <div class="payment-section">
                 <h3>Información de pago</h3>
-                
                 <div class="form-group">
                     <label for="cardNumber">Número de tarjeta</label>
                     <div class="input-wrapper">
@@ -46,9 +84,6 @@
                                class="form-control"
                                placeholder="0000 0000 0000 0000"
                                autocomplete="off"
-                               autocorrect="off"
-                               autocapitalize="off"
-                               spellcheck="false"
                                maxlength="19"
                                required>
                     </div>
@@ -64,9 +99,6 @@
                                    class="form-control"
                                    placeholder="MM/AA"
                                    autocomplete="off"
-                                   autocorrect="off"
-                                   autocapitalize="off"
-                                   spellcheck="false"
                                    maxlength="5"
                                    required>
                         </div>
@@ -80,9 +112,6 @@
                                    class="form-control"
                                    placeholder="123"
                                    autocomplete="off"
-                                   autocorrect="off"
-                                   autocapitalize="off"
-                                   spellcheck="false"
                                    maxlength="4"
                                    required>
                         </div>
@@ -96,10 +125,6 @@
                            name="holder_name"
                            class="form-control" 
                            placeholder="Nombre completo como aparece en la tarjeta"
-                           autocomplete="off"
-                           autocorrect="off"
-                           autocapitalize="off"
-                           spellcheck="false"
                            required>
                 </div>
             </div>
@@ -108,17 +133,25 @@
             <div class="order-summary">
                 <div class="summary-item">
                     <span>Total:</span>
-                    <strong>${{ "{:,.0f}".format(producto.precio) }}</strong>
+                    <strong>
+                        {% if producto %}
+                            ${{ "{:,.0f}".format(producto.precio) }}
+                        {% else %}
+                            ${{ "{:,.0f}".format(total) }}
+                        {% endif %}
+                    </strong>
                 </div>
             </div>
 
             <!-- Botones de acción -->
             <div class="checkout-actions">
-                <a href="{{ url_for('explorar_productos') }}" class="btn btn-secondary">
-                    Volver a productos
+                <a href="{% if producto %}{{ url_for('explorar_productos') }}{% else %}{{ url_for('ver_carrito') }}{% endif %}" class="btn btn-secondary">
+                    Volver
                 </a>
                 <button type="submit" class="btn btn-primary" id="payButton">
-                    <span class="button-text">Pagar ${{ "{:,.0f}".format(producto.precio) }}</span>
+                    <span class="button-text">
+                        Pagar ${% if producto %}{{ "{:,.0f}".format(producto.precio) }}{% else %}{{ "{:,.0f}".format(total) }}{% endif %}
+                    </span>
                     <span class="button-loading" style="display: none;">Procesando pago...</span>
                 </button>
             </div>
@@ -133,51 +166,65 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // ✅ ANTI-AUTOCOMPLETADO + FORMATO PERFECTO
-    const inputs = ['cardNumber', 'expiryDate', 'cvv', 'holderName'];
-    
-    inputs.forEach(inputId => {
-        const input = document.getElementById(inputId);
-        if (input) {
-            input.addEventListener('focus', function() {
-                this.select(); // Selecciona todo al hacer foco
-            });
-        }
-    });
-
-    // 🎴 Formato tarjeta (4242 4242 4242 4242)
     const cardInput = document.getElementById('cardNumber');
-    cardInput.addEventListener('input', function(e) {
-        let value = e.target.value.replace(/\D/g, '').substring(0, 16);
-        let formatted = value.replace(/(\d{4})(?=\d)/g, '$1 ');
-        e.target.value = formatted;
-    });
+    if (cardInput) {
+        cardInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '').substring(0, 16);
+            let formatted = value.replace(/(\d{4})(?=\d)/g, '$1 ');
+            e.target.value = formatted;
+        });
+        cardInput.addEventListener('focus', function() { this.select(); });
+    }
 
-    // 📅 Formato fecha (12/34)
     const expiryInput = document.getElementById('expiryDate');
-    expiryInput.addEventListener('input', function(e) {
-        let value = e.target.value.replace(/\D/g, '').substring(0, 4);
-        if (value.length >= 2) {
-            value = value.substring(0, 2) + '/' + value.substring(2);
-        }
-        e.target.value = value;
-    });
+    if (expiryInput) {
+        expiryInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '').substring(0, 4);
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2);
+            }
+            e.target.value = value;
+        });
+        expiryInput.addEventListener('focus', function() { this.select(); });
+    }
 
-    // 🔢 Formato CVV (solo números)
     const cvvInput = document.getElementById('cvv');
-    cvvInput.addEventListener('input', function(e) {
-        e.target.value = e.target.value.replace(/\D/g, '').substring(0, 4);
-    });
+    if (cvvInput) {
+        cvvInput.addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D/g, '').substring(0, 4);
+        });
+        cvvInput.addEventListener('focus', function() { this.select(); });
+    }
 
-    // ⏳ Loading button
     const form = document.getElementById('paymentForm');
     const payButton = document.getElementById('payButton');
-    
-    form.addEventListener('submit', function() {
-        payButton.disabled = true;
-        payButton.querySelector('.button-text').style.display = 'none';
-        payButton.querySelector('.button-loading').style.display = 'inline';
-    });
+    if (form && payButton) {
+        form.addEventListener('submit', function() {
+            payButton.disabled = true;
+            const textSpan = payButton.querySelector('.button-text');
+            const loadingSpan = payButton.querySelector('.button-loading');
+            if (textSpan) textSpan.style.display = 'none';
+            if (loadingSpan) loadingSpan.style.display = 'inline';
+        });
+    }
 });
 </script>
+
+<style>
+.product-card {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 16px;
+    margin-bottom: 0.75rem;
+}
+@media (max-width: 640px) {
+    .product-card {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+</style>
 {% endblock %}

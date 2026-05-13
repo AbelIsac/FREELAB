@@ -204,48 +204,53 @@
     }
 
     // Cargar productos destacados desde la base de datos
-    function cargarProductosDestacados() {
-        fetch('/productos-destacados')
-            .then(response => response.json())
-            .then(data => {
-                if (data.productos && data.productos.length > 0) {
-                    const container = document.getElementById('productos-destacados');
-                    container.innerHTML = '';
+function cargarProductosDestacados() {
+    const container = document.getElementById('productos-destacados');
+    container.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner fa-pulse"></i> Cargando productos...</div>';
+    
+    fetch('/productos-destacados')
+        .then(response => {
+            if (!response.ok) throw new Error('Error al cargar productos');
+            return response.json();
+        })
+        .then(data => {
+            if (data.productos && data.productos.length > 0) {
+                container.innerHTML = '';
+                data.productos.forEach(prod => {
+                    const imagenUrl = prod.imagen_url || 'https://images.unsplash.com/photo-1516321310764-9f3c9619d7d4?w=400&h=300&fit=crop';
+                    const categoriaNombre = getCategoriaNombre(prod.categoria_id);
+                    const precioFormateado = parseInt(prod.precio).toLocaleString();
+                    const descripcionCorta = prod.descripcion ? escapeHtml(prod.descripcion.substring(0, 80)) + '...' : 'Sin descripción';
                     
-                    data.productos.forEach(prod => {
-                        const imagenUrl = prod.imagen_url || 'https://images.unsplash.com/photo-1516321310764-9f3c9619d7d4?w=400&h=300&fit=crop';
-                        const categoriaNombre = getCategoriaNombre(prod.categoria_id);
-                        const precioFormateado = parseInt(prod.precio).toLocaleString();
-                        
-                        const productoHTML = `
-                            <article class="producto-card">
-                                <div class="producto-imagen">
-                                    <img src="${imagenUrl}" alt="${prod.titulo}" loading="lazy">
-                                    <span class="producto-badge">${categoriaNombre}</span>
+                    const productoHTML = `
+                        <article class="producto-card">
+                            <div class="producto-imagen">
+                                <img src="${imagenUrl}" alt="${prod.titulo}" loading="lazy">
+                                <span class="producto-badge">${categoriaNombre}</span>
+                            </div>
+                            <div class="producto-info">
+                                <h3>${escapeHtml(prod.titulo)}</h3>
+                                <p class="producto-descripcion-corta">${descripcionCorta}</p>
+                                <div class="producto-precio">$${precioFormateado} <span>CLP</span></div>
+                                <div class="producto-actions-home">
+                                    <button onclick="window.location.href='/explorar'" class="btn-buy-home">
+                                        <i class="fas fa-shopping-cart"></i> Comprar
+                                    </button>
                                 </div>
-                                <div class="producto-info">
-                                    <h3>${escapeHtml(prod.titulo)}</h3>
-                                    <p class="producto-descripcion-corta">${prod.descripcion ? escapeHtml(prod.descripcion.substring(0, 80)) + '...' : 'Sin descripción'}</p>
-                                    <div class="producto-precio">$${precioFormateado} <span>CLP</span></div>
-                                    <div class="producto-actions-home">
-                                        <button onclick="comprarProducto(${prod.id})" class="btn-buy-home">
-                                            <i class="fas fa-shopping-cart"></i> Comprar
-                                        </button>
-                                    </div>
-                                </div>
-                            </article>
-                        `;
-                        container.innerHTML += productoHTML;
-                    });
-                } else {
-                    document.getElementById('productos-destacados').innerHTML = '<p class="no-productos">No hay productos disponibles por el momento.</p>';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                document.getElementById('productos-destacados').innerHTML = '<p class="no-productos">Error al cargar productos.</p>';
-            });
-    }
+                            </div>
+                        </article>
+                    `;
+                    container.innerHTML += productoHTML;
+                });
+            } else {
+                container.innerHTML = '<p class="no-productos">No hay productos destacados por el momento.</p>';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            container.innerHTML = '<p class="no-productos">Error al cargar productos destacados.</p>';
+        });
+}
 
     // Función para escapar HTML (seguridad)
     function escapeHtml(text) {

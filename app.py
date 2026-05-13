@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from flask import Flask, render_template, redirect, request, url_for, flash, session
 from config.supabase import supabase
 from werkzeug.utils import secure_filename
+from flask import Flask, render_template, redirect, request, url_for, flash, session, jsonify
 
 load_dotenv(override=True)
 
@@ -21,6 +22,20 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+from functools import wraps
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user' not in session:
+            flash('Inicia sesión', 'error')
+            return redirect(url_for('home'))
+        if session['user'].get('rol') != 'admin':
+            flash('Acceso no autorizado', 'error')
+            return redirect(url_for('home'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 @app.context_processor
 def inject_user():
@@ -72,11 +87,13 @@ def callback():
             flash(f'Bienvenido {usuario.user_metadata.get("name", "Usuario")}', 'success')
             if rol == 'estudiante':
                 return redirect(url_for('dashboard_estudiante', user_id=usuario.id))
+            elif rol == 'admin':
+                return redirect(url_for('admin_dashboard'))
             else:
                 return redirect(url_for('dashboard_comprador', user_id=usuario.id))
         else:
             return redirect(url_for('elegir_rol', user_id=usuario.id))
-            
+
     except Exception as e:
         flash(f'Error en callback: {str(e)}', 'error')
         return redirect(url_for('home'))
@@ -103,19 +120,29 @@ def guardar_rol():
     if not user_id or not rol:
         flash('Faltan datos', 'error')
         return redirect(url_for('home'))
+    
+    # Validar que el rol esté permitido
+    if rol not in ['estudiante', 'comprador', 'admin']:
+        flash('Rol no válido', 'error')
+        return redirect(url_for('elegir_rol', user_id=user_id))
+    
     try:
         supabase.table('perfiles').upsert({"id": user_id, "rol": rol}).execute()
         if 'user' in session:
             session['user']['rol'] = rol
+        
         flash(f'Perfil creado: {rol}', 'success')
+        
+        # Redirección según el rol
         if rol == 'estudiante':
             return redirect(url_for('dashboard_estudiante', user_id=user_id))
-        else:
+        elif rol == 'comprador':
             return redirect(url_for('dashboard_comprador', user_id=user_id))
+        elif rol == 'admin':
+            return redirect(url_for('admin_dashboard'))  # Asegúrate de tener esta ruta
     except Exception as e:
         flash(f'Error: {str(e)}', 'error')
         return redirect(url_for('elegir_rol', user_id=user_id))
-
 # ==================== VENDEDOR ====================
 @app.route('/dashboard/estudiante')
 def dashboard_estudiante():
@@ -150,7 +177,12 @@ def dashboard_estudiante():
         flash(f'Error: {str(e)}', 'error')
         return redirect(url_for('home'))
 
-
+@app.route('/publicar-producto')
+def publicar_producto():
+    if 'user' not in session:
+        flash('Inicia sesión', 'error')
+        return redirect(url_for('home'))
+    return render_template('publicar_producto.html')
 
 @app.route('/guardar-producto', methods=['POST'])
 def guardar_producto():
@@ -174,7 +206,7 @@ def guardar_producto():
         'descripcion': descripcion,
         'precio': float(precio),
         'categoria_id': int(categoria_id) if categoria_id and categoria_id.isdigit() else None,
-        'estado': 'activo'
+        'estado': 'pendiente'
     }
     
     # Manejar la imagen
@@ -197,7 +229,7 @@ def guardar_producto():
     
     try:
         supabase.table('productos').insert(data).execute()
-        flash('Producto publicado exitosamente!', 'success')
+        flash('✅ Producto publicado exitosamente!', 'success')
         return redirect(url_for('dashboard_estudiante', user_id=session['user']['id']))
     except Exception as e:
         flash(f'Error al publicar: {str(e)}', 'error')
@@ -330,7 +362,12 @@ def favoritos():
         flash('Inicia sesión', 'error')
         return redirect(url_for('home'))
 
-    
+    favs = supabase.table('favoritos')\
+        .select('*, producto:productos(*)')\
+        .eq('usuario_id', session['user']['id'])\
+        .execute()
+    return render_template('favoritos.html', favoritos=favs.data)
+
     user_id = session['user']['id']
     # Obtener ids de productos favoritos
     favs = supabase.table('favoritos').select('producto_id').eq('usuario_id', user_id).execute()
@@ -345,11 +382,6 @@ def favoritos():
     favoritos_data = [{'producto': p} for p in productos.data]
     return render_template('favoritos.html', favoritos=favoritos_data)
 
-    favs = supabase.table('favoritos')\
-        .select('*, producto:productos(*)')\
-        .eq('usuario_id', session['user']['id'])\
-        .execute()
-    return render_template('favoritos.html', favoritos=favs.data)
 
 @app.route('/agregar-favorito/<int:producto_id>', methods=['POST'])
 def agregar_favorito(producto_id):
@@ -420,16 +452,16 @@ def productos():
 @app.route('/checkout/<int:producto_id>')
 def checkout(producto_id):
     if 'user' not in session:
-        flash('Inicia sesión para continuar', 'error')
+        flash('Inicia sesión', 'error')
         return redirect(url_for('home'))
     
     # Obtener producto
-    prod = supabase.table('productos').select('*').eq('id', producto_id).execute()
+    prod = supabase.table('productos').select('*').eq('id', producto_id).single().execute()
     if not prod.data:
         flash('Producto no encontrado', 'error')
         return redirect(url_for('explorar_productos'))
     
-    return render_template('checkout.html', producto=prod.data[0])
+    return render_template('checkout.html', producto=prod.data)
 
 @app.route('/procesar-pago/<int:producto_id>', methods=['POST'])
 def procesar_pago(producto_id):
@@ -454,7 +486,7 @@ def procesar_pago(producto_id):
             'comprador_id': comprador_id,
             'vendedor_id': prod.data['vendedor_id'],
             'monto': prod.data['precio'],
-            'estado': 'completado'
+            'estado': 'pendiente'
         }
         supabase.table('ventas').insert(venta_data).execute()
         flash('¡Pago exitoso! Compra realizada', 'success')
@@ -462,69 +494,227 @@ def procesar_pago(producto_id):
     except Exception as e:
         flash(f'Error en pago: {str(e)}', 'error')
         return redirect(url_for('checkout', producto_id=producto_id))
-    
-@app.route('/eliminar-producto/<int:producto_id>', methods=['DELETE'])
-def eliminar_producto(producto_id):
+
+
+# ==================== CARRITO DE COMPRAS ====================
+
+# ==================== CARRITO DE COMPRAS ====================
+
+@app.route('/carrito')
+def ver_carrito():
+    """Muestra la página del carrito"""
     if 'user' not in session:
-        return {'error': 'No autorizado'}, 401
+        flash('Inicia sesión para ver tu carrito', 'error')
+        return redirect(url_for('home'))
+    return render_template('carrito.html')
+
+@app.route('/checkout-carrito', methods=['GET', 'POST'])
+def checkout_carrito():
+    if 'user' not in session:
+        flash('Inicia sesión para continuar', 'error')
+        return redirect(url_for('home'))
     
+    if request.method == 'POST':
+        items = request.json.get('items', [])
+        session['carrito_items'] = items
+        return jsonify({'success': True})
+    else:
+        items = session.get('carrito_items', [])
+        if not items:
+            flash('No hay productos en el carrito', 'warning')
+            return redirect(url_for('ver_carrito'))
+        total = sum(item['precio'] * item['cantidad'] for item in items)
+        # 👇 AHORA USA checkout.html
+        return render_template('checkout.html', items=items, total=total)
+
+@app.route('/procesar-pago-carrito', methods=['POST'])
+def procesar_pago_carrito():
+    """Registra las ventas de todos los productos del carrito"""
+    if 'user' not in session:
+        flash('Inicia sesión', 'error')
+        return redirect(url_for('home'))
+    
+    items = session.get('carrito_items', [])
+    if not items:
+        flash('No hay productos en el carrito', 'error')
+        return redirect(url_for('ver_carrito'))
+    
+    comprador_id = session['user']['id']
     try:
-        # Obtener el producto completo (incluyendo URLs de archivos)
-        producto = supabase.table('productos').select('*').eq('id', producto_id).single().execute()
-        if not producto.data:
-            return {'error': 'Producto no encontrado'}, 404
+        for item in items:
+            # Verificar que el producto existe y está activo
+            prod = supabase.table('productos').select('vendedor_id, precio, estado').eq('id', item['id']).single().execute()
+            if not prod.data or prod.data.get('estado') != 'activo':
+                flash(f'El producto "{item["titulo"]}" ya no está disponible', 'error')
+                return redirect(url_for('ver_carrito'))
+            
+            # Crear la venta
+            venta_data = {
+                'producto_id': item['id'],
+                'comprador_id': comprador_id,
+                'vendedor_id': prod.data['vendedor_id'],
+                'monto': item['precio'] * item['cantidad'],
+                'estado': 'pendiente'
+            }
+            # Si tu tabla ventas tiene columna 'cantidad', descomenta la línea siguiente:
+            # venta_data['cantidad'] = item['cantidad']
+            supabase.table('ventas').insert(venta_data).execute()
         
-        if producto.data['vendedor_id'] != session['user']['id']:
-            return {'error': 'No autorizado'}, 403
-        
-        # Eliminar archivos físicos si existen
-        if producto.data.get('imagen_url'):
-            file_path = producto.data['imagen_url'].replace('/static/', 'static/')
-            if os.path.exists(file_path):
-                os.remove(file_path)
-        
-        if producto.data.get('archivo_url'):
-            file_path = producto.data['archivo_url'].replace('/static/', 'static/')
-            if os.path.exists(file_path):
-                os.remove(file_path)
-        
-        # Eliminar el producto de la base de datos
-        supabase.table('productos').delete().eq('id', producto_id).execute()
-        
-        return {'success': True}, 200
+        # Limpiar sesión
+        session.pop('carrito_items', None)
+        flash('¡Compra realizada con éxito!', 'success')
+        return redirect(url_for('mis_compras'))
     except Exception as e:
-        return {'error': str(e)}, 400
+        flash(f'Error al procesar pago: {str(e)}', 'error')
+        return redirect(url_for('ver_carrito'))
     
 @app.route('/productos-destacados')
 def productos_destacados():
-    """Obtener productos destacados para el home"""
     try:
-        productos = supabase.table('productos')\
+        # Obtener productos activos, ordenados por fecha (los más nuevos primero)
+        # Si tu tabla tiene 'fecha_publicacion' úsala; si no, usa 'created_at' o 'id' descendente
+        response = supabase.table('productos')\
             .select('*')\
             .eq('estado', 'activo')\
             .order('fecha_publicacion', desc=True)\
-            .limit(4)\
+            .limit(8)\
             .execute()
-        return {'productos': productos.data}, 200
+        
+        return jsonify({'productos': response.data})
     except Exception as e:
-        return {'error': str(e)}, 400
-    
-@app.route('/publicar-producto')
-def publicar_producto():
+        print(f"Error en productos-destacados: {e}")
+        return jsonify({'productos': []})
+
+@app.route('/eliminar-producto/<int:producto_id>', methods=['DELETE'])
+def eliminar_producto(producto_id):
+    # Verificar que el usuario esté logueado
     if 'user' not in session:
-        flash('Inicia sesión para publicar', 'error')
-        return redirect(url_for('home'))
+        return jsonify({'success': False, 'error': 'No autorizado'}), 401
     
-    # Verificar que el usuario es estudiante/vendedor
     user_id = session['user']['id']
-    respuesta = supabase.table('perfiles').select('rol').eq('id', user_id).execute()
-    rol = respuesta.data[0]['rol'] if respuesta.data else None
     
-    if rol != 'estudiante':
-        flash('Solo los vendedores pueden publicar productos', 'error')
-        return redirect(url_for('dashboard'))
+    try:
+        # Buscar el producto y verificar que pertenezca al usuario actual
+        producto = supabase.table('productos').select('*').eq('id', producto_id).single().execute()
+        
+        if not producto.data:
+            return jsonify({'success': False, 'error': 'Producto no encontrado'}), 404
+        
+        if producto.data['vendedor_id'] != user_id:
+            return jsonify({'success': False, 'error': 'No tienes permiso para eliminar este producto'}), 403
+        
+        # Opción 1: Eliminación física (borra el registro)
+        supabase.table('productos').delete().eq('id', producto_id).execute()
+        
+        # Opción 2: Eliminación lógica (cambiar estado a 'eliminado') - recomendado
+        # supabase.table('productos').update({'estado': 'eliminado'}).eq('id', producto_id).execute()
+        
+        return jsonify({'success': True})
     
-    return render_template('publicar_producto.html')
+    except Exception as e:
+        print(f"Error eliminando producto: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500    
     
+# ROL ADMI
+@app.route('/admin/dashboard')
+@admin_required
+def admin_dashboard():
+    # Estadísticas: total productos pendientes, ventas pendientes, etc.
+    try:
+        productos_pendientes = supabase.table('productos').select('id', count='exact').eq('estado', 'pendiente').execute()
+        ventas_pendientes = supabase.table('ventas').select('id', count='exact').eq('estado', 'pendiente').execute()
+        total_categorias = supabase.table('categorias').select('id', count='exact').execute()
+        stats = {
+            'productos_pendientes': productos_pendientes.count or 0,
+            'ventas_pendientes': ventas_pendientes.count or 0,
+            'total_categorias': total_categorias.count or 0
+        }
+    except Exception as e:
+        stats = {}
+    return render_template('admin/dashboard.html', stats=stats)
+
+@app.route('/admin/categorias')
+@admin_required
+def admin_categorias():
+    categorias = supabase.table('categorias').select('*').order('id').execute()
+    return render_template('admin/categorias.html', categorias=categorias.data)
+
+@app.route('/admin/categoria/crear', methods=['POST'])
+@admin_required
+def admin_categoria_crear():
+    nombre = request.form.get('nombre')
+    descripcion = request.form.get('descripcion')
+    if not nombre:
+        flash('El nombre es obligatorio', 'error')
+        return redirect(url_for('admin_categorias'))
+    supabase.table('categorias').insert({'nombre': nombre, 'descripcion': descripcion}).execute()
+    flash('Categoría creada', 'success')
+    return redirect(url_for('admin_categorias'))
+
+@app.route('/admin/categoria/editar/<int:categoria_id>', methods=['POST'])
+@admin_required
+def admin_categoria_editar(categoria_id):
+    nombre = request.form.get('nombre')
+    descripcion = request.form.get('descripcion')
+    supabase.table('categorias').update({'nombre': nombre, 'descripcion': descripcion}).eq('id', categoria_id).execute()
+    flash('Categoría actualizada', 'success')
+    return redirect(url_for('admin_categorias'))
+
+@app.route('/admin/categoria/eliminar/<int:categoria_id>', methods=['DELETE'])
+@admin_required
+def admin_categoria_eliminar(categoria_id):
+    try:
+        supabase.table('categorias').delete().eq('id', categoria_id).execute()
+        return jsonify({'success': True})
+    except:
+        return jsonify({'success': False, 'error': 'No se puede eliminar si tiene productos asociados'}), 400
+    
+@app.route('/admin/publicaciones')
+@admin_required
+def admin_publicaciones():
+    productos = supabase.table('productos')\
+        .select('*, perfiles(nombre)')\
+        .in_('estado', ['pendiente', 'activo', 'rechazado'])\
+        .order('fecha_publicacion', desc=True)\
+        .execute()
+    return render_template('admin/publicaciones.html', productos=productos.data)
+
+@app.route('/admin/publicacion/aprobar/<int:producto_id>', methods=['POST'])
+@admin_required
+def admin_aprobar_producto(producto_id):
+    supabase.table('productos').update({'estado': 'activo'}).eq('id', producto_id).execute()
+    flash('✅ Producto aprobado y visible para los compradores', 'success')
+    return redirect(url_for('admin_publicaciones'))
+
+@app.route('/admin/publicacion/rechazar/<int:producto_id>', methods=['POST'])
+@admin_required
+def admin_rechazar_producto(producto_id):
+    supabase.table('productos').update({'estado': 'rechazado'}).eq('id', producto_id).execute()
+    flash('❌ Producto rechazado. El vendedor deberá modificar o volver a publicar', 'warning')
+    return redirect(url_for('admin_publicaciones'))
+
+@app.route('/admin/transacciones')
+@admin_required
+def admin_transacciones():
+    ventas = supabase.table('ventas')\
+        .select('*, producto:productos(titulo), comprador:perfiles!comprador_id(nombre), vendedor:perfiles!vendedor_id(nombre)')\
+        .order('fecha_venta', desc=True)\
+        .execute()
+    return render_template('admin/transacciones.html', ventas=ventas.data)
+
+@app.route('/admin/transaccion/aprobar/<int:venta_id>', methods=['POST'])
+@admin_required
+def admin_aprobar_transaccion(venta_id):
+    supabase.table('ventas').update({'estado': 'completado'}).eq('id', venta_id).execute()
+    flash('✅ Transacción aprobada. El vendedor recibirá el pago', 'success')
+    return redirect(url_for('admin_transacciones'))
+
+@app.route('/admin/transaccion/cancelar/<int:venta_id>', methods=['POST'])
+@admin_required
+def admin_cancelar_transaccion(venta_id):
+    supabase.table('ventas').update({'estado': 'cancelado'}).eq('id', venta_id).execute()
+    flash('❌ Transacción cancelada. El comprador no será cobrado', 'warning')
+    return redirect(url_for('admin_transacciones'))  
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

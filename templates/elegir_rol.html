@@ -17,6 +17,46 @@
             <h3>🛒 Comprador</h3>
             <p>Explora y compra productos</p>
         </a>
+
+        <!-- zona secreta: se muestra solo si escriben la clave -->
+        <div id="adminSecret" style="margin-top: 2rem; text-align: center;">
+            <button onclick="mostrarAdmin()" style="background: none; border: none; color: #ccc; font-size: 0.7rem;">🔧</button>
+            <div id="adminForm" style="display: none; margin-top: 1rem;">
+                <input type="password" id="claveAdmin" placeholder="Contraseña de administrador">
+                <button onclick="verificarAdmin()">Validar</button>
+                <div id="adminLink" style="display: none; margin-top: 1rem;">
+                    <a href="{{ url_for('guardar_rol', rol='admin', user_id=user_id) }}" class="rol-card admin" style="background: #ef4444; color: white; padding: 1rem; border-radius: 16px; text-decoration: none;">
+                        <h3>👑 Administrador</h3>
+                        <p>Gestionar todo el sistema</p>
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+<script>
+    function mostrarAdmin() {
+        document.getElementById('adminForm').style.display = 'block';
+    }
+    function verificarAdmin() {
+        const clave = document.getElementById('claveAdmin').value;
+        // Cambia "tu_clave_secreta" por la que quieras (ej. "MarketAdmin2025")
+        if (clave === 'MarketAdmin2025') {
+            document.getElementById('adminLink').style.display = 'block';
+            document.getElementById('claveAdmin').style.display = 'none';
+        } else {
+            alert('Clave incorrecta');
+        }
+    }
+</script>
+
+<style>
+    .rol-card.admin {
+        background: linear-gradient(135deg, #dc2626, #991b1b);
+    }
+    .rol-card.admin:hover {
+        transform: translateY(-5px);
+    }
+</style>
 {% endblock %}
