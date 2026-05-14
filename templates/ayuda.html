@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}Ayuda - Marketplace Estudiantil{% endblock %}
+{% block extra_css %}
+<style>
+    .ayuda-container {
+        max-width: 1000px;
+        margin: 120px auto 4rem;
+        padding: 0 2rem;
+    }
+    .ayuda-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    .ayuda-header h1 {
+        font-size: 2rem;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+    }
+    .faq-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 1.5rem;
+    }
+    .faq-card {
+        background: white;
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    .faq-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    .faq-card h3 {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+        color: #1e293b;
+    }
+    .faq-card h3 i {
+        color: #667eea;
+    }
+    .faq-card p {
+        color: #64748b;
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+    .contact-support {
+        margin-top: 3rem;
+        text-align: center;
+        padding: 2rem;
+        background: #f8fafc;
+        border-radius: 24px;
+    }
+    .btn-soporte {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border: none;
+        padding: 0.8rem 2rem;
+        border-radius: 50px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="ayuda-container">
+    <div class="ayuda-header">
+        <h1><i class="fas fa-question-circle"></i> Centro de Ayuda</h1>
+        <p>Encuentra respuestas a tus preguntas frecuentes</p>
+    </div>
+
+    <div class="faq-grid">
+        <div class="faq-card">
+            <h3><i class="fas fa-user-plus"></i> ¿Cómo me registro?</h3>
+            <p>Haz clic en "Iniciar Sesión" y usa tu cuenta de Google. Luego elige tu rol: Vendedor o Comprador.</p>
+        </div>
+        <div class="faq-card">
+            <h3><i class="fas fa-store"></i> ¿Cómo publico un producto?</h3>
+            <p>Regístrate como Vendedor, ve a tu Dashboard y haz clic en "Publicar Producto". Completa el formulario.</p>
+        </div>
+        <div class="faq-card">
+            <h3><i class="fas fa-shopping-cart"></i> ¿Cómo compro un servicio?</h3>
+            <p>Explora productos, agrega al carrito y procede al pago. Puedes pagar con tarjeta de crédito/débito.</p>
+        </div>
+        <div class="faq-card">
+            <h3><i class="fas fa-credit-card"></i> ¿Es seguro pagar aquí?</h3>
+            <p>Sí, utilizamos encriptación SSL y procesamiento seguro de pagos. Tus datos están protegidos.</p>
+        </div>
+        <div class="faq-card">
+            <h3><i class="fas fa-undo-alt"></i> ¿Puedo cancelar una compra?</h3>
+            <p>Contacta al vendedor directamente. Las políticas de reembolso son establecidas por cada vendedor.</p>
+        </div>
+        <div class="faq-card">
+            <h3><i class="fas fa-star"></i> ¿Cómo califico un producto?</h3>
+            <p>Después de comprar, ve a "Mis Compras" y podrás dejar una reseña y calificación.</p>
+        </div>
+    </div>
+
+    <div class="contact-support">
+        <i class="fas fa-headset" style="font-size: 3rem; color: #667eea;"></i>
+        <h3>¿No encontraste lo que buscabas?</h3>
+        <p>Nuestro equipo de soporte está disponible para ayudarte</p>
+        <a href="{{ url_for('contacto') }}" class="btn-soporte">
+            <i class="fas fa-envelope"></i> Contactar soporte
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Política de Privacidad - Marketplace Estudiantil{% endblock %}
+{% block extra_css %}
+<style>
+    .legal-container {
+        max-width: 900px;
+        margin: 120px auto 4rem;
+        padding: 0 2rem;
+    }
+    .legal-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    .legal-header h1 {
+        font-size: 2rem;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+    }
+    .legal-content {
+        background: white;
+        border-radius: 24px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+    .legal-content h2 {
+        font-size: 1.3rem;
+        margin: 1.5rem 0 1rem;
+        color: #1e293b;
+    }
+    .legal-content p {
+        color: #475569;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+    .legal-content ul {
+        margin: 1rem 0 1rem 2rem;
+        color: #475569;
+    }
+    .last-update {
+        text-align: right;
+        font-size: 0.8rem;
+        color: #94a3b8;
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e2e8f0;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="legal-container">
+    <div class="legal-header">
+        <h1><i class="fas fa-shield-alt"></i> Política de Privacidad</h1>
+        <p>Cómo protegemos y utilizamos tu información</p>
+    </div>
+    <div class="legal-content">
+        <h2>1. Información que recopilamos</h2>
+        <p>Recopilamos la información que nos proporcionas al registrarte, incluyendo nombre, correo electrónico e imagen de perfil a través de Google. También recopilamos información sobre tus transacciones y actividad en la plataforma.</p>
+
+        <h2>2. Uso de la información</h2>
+        <p>Utilizamos tu información para:</p>
+        <ul>
+            <li>Operar y mantener la plataforma</li>
+            <li>Procesar tus transacciones</li>
+            <li>Comunicarnos contigo sobre actualizaciones</li>
+            <li>Mejorar nuestros servicios</li>
+        </ul>
+
+        <h2>3. Compartición de datos</h2>
+        <p>No vendemos ni alquilamos tu información personal. Compartimos información solo cuando es necesario para procesar transacciones (entre comprador y vendedor) o cuando la ley lo requiera.</p>
+
+        <h2>4. Seguridad</h2>
+        <p>Implementamos medidas de seguridad para proteger tu información, incluyendo encriptación SSL y autenticación con Google.</p>
+
+        <h2>5. Tus derechos</h2>
+        <p>Tienes derecho a acceder, corregir o eliminar tu información personal. Puedes hacerlo desde la sección de configuración de tu perfil.</p>
+
+        <h2>6. Cookies</h2>
+        <p>Utilizamos cookies para mejorar tu experiencia y recordar tus preferencias. Puedes deshabilitarlas desde tu navegador.</p>
+
+        <h2>7. Cambios a esta política</h2>
+        <p>Notificaremos cualquier cambio significativo a través de la plataforma o por correo electrónico.</p>
+
+        <div class="last-update">
+            <i class="fas fa-calendar-alt"></i> Última actualización: Mayo 2026
+        </div>
+    </div>
+</div>
+{% endblock %}

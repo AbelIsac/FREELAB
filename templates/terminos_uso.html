@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Términos de Uso - Marketplace Estudiantil{% endblock %}
+{% block extra_css %}
+<style>
+    .legal-container {
+        max-width: 900px;
+        margin: 120px auto 4rem;
+        padding: 0 2rem;
+    }
+    .legal-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    .legal-header h1 {
+        font-size: 2rem;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+    }
+    .legal-content {
+        background: white;
+        border-radius: 24px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+    .legal-content h2 {
+        font-size: 1.3rem;
+        margin: 1.5rem 0 1rem;
+        color: #1e293b;
+    }
+    .legal-content h2:first-of-type {
+        margin-top: 0;
+    }
+    .legal-content p {
+        color: #475569;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+    .legal-content ul {
+        margin: 1rem 0 1rem 2rem;
+        color: #475569;
+    }
+    .legal-content li {
+        margin-bottom: 0.5rem;
+    }
+    .last-update {
+        text-align: right;
+        font-size: 0.8rem;
+        color: #94a3b8;
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e2e8f0;
+    }
+    @media (max-width: 768px) {
+        .legal-container {
+            margin: 100px auto 2rem;
+            padding: 0 1rem;
+        }
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="legal-container">
+    <div class="legal-header">
+        <h1><i class="fas fa-file-contract"></i> Términos de Uso</h1>
+        <p>Lee nuestros términos y condiciones antes de usar la plataforma</p>
+    </div>
+    <div class="legal-content">
+        <h2>1. Aceptación de los términos</h2>
+        <p>Al acceder y utilizar Marketplace Estudiantil, aceptas cumplir con estos términos de uso. Si no estás de acuerdo, por favor no utilices nuestra plataforma.</p>
+
+        <h2>2. Registro de cuenta</h2>
+        <p>Para publicar o comprar productos, debes registrarte con tu cuenta de Google. Eres responsable de mantener la confidencialidad de tu cuenta y de todas las actividades que ocurran bajo ella.</p>
+
+        <h2>3. Publicación de productos</h2>
+        <p>Los estudiantes/vendedores son responsables del contenido que publican. Los productos deben ser legales, no fraudulentos y respetar los derechos de propiedad intelectual.</p>
+        <ul>
+            <li>No se permiten productos ilegales o prohibidos</li>
+            <li>No se permite la publicación de contenido ofensivo o discriminatorio</li>
+            <li>Los precios deben ser claros y verdaderos</li>
+        </ul>
+
+        <h2>4. Compras y pagos</h2>
+        <p>Las transacciones son entre compradores y vendedores. Marketplace Estudiantil actúa como intermediario y no se hace responsable por la calidad de los servicios prestados.</p>
+
+        <h2>5. Cancelaciones y reembolsos</h2>
+        <p>Las políticas de reembolso son establecidas por cada vendedor. En caso de disputas, recomendamos contactar al vendedor directamente.</p>
+
+        <h2>6. Conducta del usuario</h2>
+        <p>Los usuarios deben comportarse de manera respetuosa. No se permite:</p>
+        <ul>
+            <li>Acoso o intimidación a otros usuarios</li>
+            <li>Publicación de información falsa o engañosa</li>
+            <li>Intento de hackear o dañar la plataforma</li>
+        </ul>
+
+        <h2>7. Modificaciones</h2>
+        <p>Nos reservamos el derecho de modificar estos términos en cualquier momento. Los cambios serán notificados a través de la plataforma.</p>
+
+        <h2>8. Contacto</h2>
+        <p>Si tienes preguntas sobre estos términos, contáctanos a: <strong>legal@marketplaceest.cl</strong></p>
+
+        <div class="last-update">
+            <i class="fas fa-calendar-alt"></i> Última actualización: Mayo 2026
+        </div>
+    </div>
+</div>
+{% endblock %}

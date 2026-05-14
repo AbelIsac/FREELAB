@@ -264,7 +264,7 @@ def guardar_producto():
     
     try:
         supabase.table('productos').insert(data).execute()
-        flash('✅ Producto publicado exitosamente!', 'success')
+        flash('Producto publicado exitosamente!', 'success')
         return redirect(url_for('dashboard_estudiante', user_id=session['user']['id']))
     except Exception as e:
         flash(f'Error al publicar: {str(e)}', 'error')
@@ -799,14 +799,14 @@ def admin_publicaciones():
 @admin_required
 def admin_aprobar_producto(producto_id):
     supabase.table('productos').update({'estado': 'activo'}).eq('id', producto_id).execute()
-    flash('✅ Producto aprobado y visible para los compradores', 'success')
+    flash('Producto aprobado y visible para los compradores', 'success')
     return redirect(url_for('admin_publicaciones'))
 
 @app.route('/admin/publicacion/rechazar/<int:producto_id>', methods=['POST'])
 @admin_required
 def admin_rechazar_producto(producto_id):
     supabase.table('productos').update({'estado': 'rechazado'}).eq('id', producto_id).execute()
-    flash('❌ Producto rechazado. El vendedor deberá modificar o volver a publicar', 'warning')
+    flash('Producto rechazado. El vendedor deberá modificar o volver a publicar', 'warning')
     return redirect(url_for('admin_publicaciones'))
 
 @app.route('/admin/transacciones')
@@ -822,14 +822,14 @@ def admin_transacciones():
 @admin_required
 def admin_aprobar_transaccion(venta_id):
     supabase.table('ventas').update({'estado': 'completado'}).eq('id', venta_id).execute()
-    flash('✅ Transacción aprobada. El vendedor recibirá el pago', 'success')
+    flash('Transacción aprobada. El vendedor recibirá el pago', 'success')
     return redirect(url_for('admin_transacciones'))
 
 @app.route('/admin/transaccion/cancelar/<int:venta_id>', methods=['POST'])
 @admin_required
 def admin_cancelar_transaccion(venta_id):
     supabase.table('ventas').update({'estado': 'cancelado'}).eq('id', venta_id).execute()
-    flash('❌ Transacción cancelada. El comprador no será cobrado', 'warning')
+    flash('Transacción cancelada. El comprador no será cobrado', 'warning')
     return redirect(url_for('admin_transacciones'))
 
 @app.route('/producto/<int:producto_id>')
@@ -899,5 +899,17 @@ def como_funciona():
 @app.route('/contacto')
 def contacto():
     return render_template('contacto.html')
+
+@app.route('/terminos-uso')
+def terminos_uso():
+    return render_template('terminos_uso.html')
+
+@app.route('/politica-privacidad')
+def politica_privacidad():
+    return render_template('politica_privacidad.html')
+
+@app.route('/ayuda')
+def ayuda():
+    return render_template('ayuda.html')
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
