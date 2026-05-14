@@ -1,38 +1,277 @@
 {% extends "base.html" %}
 {% block title %}Gestionar Categorías{% endblock %}
 {% block content %}
-<div class="admin-categorias">
-    <h1>Gestionar Categorías</h1>
-    <form method="POST" action="{{ url_for('admin_categoria_crear') }}" class="form-inline">
-        <input type="text" name="nombre" placeholder="Nombre" required>
-        <input type="text" name="descripcion" placeholder="Descripción">
-        <button type="submit">Crear</button>
-    </form>
-    <table class="table">
-        <thead>
-            <tr><th>ID</th><th>Nombre</th><th>Descripción</th><th>Acciones</th></tr>
-        </thead>
-        <tbody>
-            {% for cat in categorias %}
-            <tr>
-                <td>{{ cat.id }}</td>
-                <td>
-                    <form method="POST" action="{{ url_for('admin_categoria_editar', categoria_id=cat.id) }}" style="display: inline;">
-                        <input type="text" name="nombre" value="{{ cat.nombre }}">
-                        <input type="text" name="descripcion" value="{{ cat.descripcion or '' }}">
-                        <button type="submit">Editar</button>
-                    </form>
-                </td>
-                <td>
-                    <button class="delete-cat" data-id="{{ cat.id }}">Eliminar</button>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="admin-categorias-modern">
+    <div class="admin-header">
+        <h1><i class="fas fa-tags"></i> Gestionar Categorías</h1>
+        <p>Administra las categorías de productos del marketplace</p>
+    </div>
+
+    <div class="form-card">
+        <h3><i class="fas fa-plus-circle"></i> Nueva categoría</h3>
+        <form method="POST" action="{{ url_for('admin_categoria_crear') }}" class="form-modern">
+            <div class="form-group-row">
+                <input type="text" name="nombre" placeholder="Nombre de la categoría" required>
+                <input type="text" name="descripcion" placeholder="Descripción (opcional)">
+                <button type="submit" class="btn-crear">
+                    <i class="fas fa-save"></i> Crear categoría
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="table-container">
+        <table class="table-modern">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cat in categorias %}
+                <tr>
+                    <td data-label="ID">{{ cat.id }}</td>
+                    <td data-label="Nombre">
+                        <form method="POST" action="{{ url_for('admin_categoria_editar', categoria_id=cat.id) }}" class="edit-form">
+                            <input type="text" name="nombre" value="{{ cat.nombre }}" class="edit-input">
+                    </td>
+                    <td data-label="Descripción">
+                            <input type="text" name="descripcion" value="{{ cat.descripcion or '' }}" class="edit-input">
+                    </td>
+                    <td data-label="Acciones">
+                            <button type="submit" class="btn-edit">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+                        </form>
+                        <button class="btn-delete" data-id="{{ cat.id }}">
+                            <i class="fas fa-trash-alt"></i> Eliminar
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
+
+<style>
+.admin-categorias-modern {
+    max-width: 1200px;
+    margin: 100px auto 2rem auto;
+    padding: 1rem 2rem;
+}
+
+.admin-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.admin-header h1 {
+    font-size: 2rem;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+}
+
+.admin-header p {
+    color: #64748b;
+}
+
+.form-card {
+    background: white;
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    border: 1px solid #e9ecef;
+}
+
+.form-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: #1e293b;
+}
+
+.form-group-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.form-group-row input {
+    flex: 1;
+    padding: 0.8rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.form-group-row input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+}
+
+.btn-crear {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-crear:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102,126,234,0.4);
+}
+
+.table-container {
+    background: white;
+    border-radius: 20px;
+    overflow-x: auto;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    border: 1px solid #e9ecef;
+}
+
+.table-modern {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-modern th {
+    padding: 1rem;
+    background: #f8fafc;
+    color: #1e293b;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.table-modern td {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid #e9ecef;
+    vertical-align: middle;
+}
+
+.edit-form {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.edit-input {
+    padding: 0.5rem 0.8rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    width: 150px;
+}
+
+.edit-input:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.btn-edit {
+    background: #f1f5f9;
+    color: #475569;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.btn-edit:hover {
+    background: #e2e8f0;
+    transform: translateY(-1px);
+}
+
+.btn-delete {
+    background: #fee2e2;
+    color: #dc2626;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    transition: all 0.3s ease;
+    margin-left: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.btn-delete:hover {
+    background: #fecaca;
+    transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+    .admin-categorias-modern {
+        margin: 80px auto 1rem;
+        padding: 1rem;
+    }
+    
+    .form-group-row {
+        flex-direction: column;
+    }
+    
+    .table-modern thead {
+        display: none;
+    }
+    
+    .table-modern tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0.5rem;
+    }
+    
+    .table-modern td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem;
+        border: none;
+        gap: 1rem;
+    }
+    
+    .table-modern td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #1e293b;
+    }
+    
+    .edit-form {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .edit-input {
+        width: 100%;
+    }
+}
+</style>
+
 <script>
-document.querySelectorAll('.delete-cat').forEach(btn => {
+document.querySelectorAll('.btn-delete').forEach(btn => {
     btn.addEventListener('click', () => {
         const id = btn.dataset.id;
         Swal.fire({
@@ -40,12 +279,22 @@ document.querySelectorAll('.delete-cat').forEach(btn => {
             text: 'Esta acción eliminará la categoría. Los productos asociados quedarán sin categoría.',
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonText: 'Eliminar'
+            confirmButtonColor: '#dc2626',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: '<i class="fas fa-trash"></i> Sí, eliminar',
+            cancelButtonText: '<i class="fas fa-times"></i> Cancelar'
         }).then(res => {
             if (res.isConfirmed) {
                 fetch(`/admin/categoria/eliminar/${id}`, {method: 'DELETE'})
                 .then(r => r.json())
-                .then(data => { if(data.success) location.reload(); else Swal.fire('Error', data.error, 'error'); });
+                .then(data => { 
+                    if(data.success) {
+                        Swal.fire('Eliminado', 'Categoría eliminada correctamente', 'success');
+                        location.reload();
+                    } else {
+                        Swal.fire('Error', data.error, 'error');
+                    }
+                });
             }
         });
     });

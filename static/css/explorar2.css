@@ -272,6 +272,99 @@
     animation: modalSlideIn 0.3s ease;
 }
 
+/* Botones modernos para acciones */
+.producto-actions {
+    display: flex;
+    gap: 0.8rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+}
+
+.btn-comprar-moderno {
+    flex: 1;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    padding: 0.8rem 1rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-comprar-moderno:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-comprar-moderno:active {
+    transform: translateY(0);
+}
+
+.btn-favorito-moderno {
+    background: white;
+    border: 2px solid #e2e8f0;
+    color: #64748b;
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.btn-favorito-moderno:hover {
+    border-color: #ef4444;
+    color: #ef4444;
+    transform: translateY(-3px);
+}
+
+.btn-favorito-moderno.activo {
+    background: #fee2e2;
+    border-color: #ef4444;
+    color: #ef4444;
+}
+
+.admin-view-badge {
+    background: #f1f5f9;
+    color: #64748b;
+    padding: 0.8rem;
+    border-radius: 12px;
+    text-align: center;
+    font-size: 0.85rem;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.admin-view-badge i {
+    color: #667eea;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .btn-comprar-moderno {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.75rem;
+    }
+    
+    .btn-favorito-moderno {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+}
+
 @keyframes modalSlideIn {
     from { transform: translateY(-50px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }

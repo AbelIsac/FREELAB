@@ -5,6 +5,7 @@ from flask import Flask, render_template, redirect, request, url_for, flash, ses
 from config.supabase import supabase
 from werkzeug.utils import secure_filename
 from flask import Flask, render_template, redirect, request, url_for, flash, session, jsonify
+from functools import wraps
 
 load_dotenv(override=True)
 
@@ -146,10 +147,30 @@ def guardar_rol():
 # ==================== VENDEDOR ====================
 @app.route('/dashboard/estudiante')
 def dashboard_estudiante():
+    if 'user' not in session:
+        flash('Inicia sesión', 'error')
+        return redirect(url_for('home'))
+    
     user_id = request.args.get('user_id')
-    if not user_id or 'user' not in session or session['user']['id'] != user_id:
+    
+    # VERIFICACIÓN DE ROL - SOLO ESTUDIANTES
+    respuesta_rol = supabase.table('perfiles').select('rol').eq('id', session['user']['id']).execute()
+    rol = respuesta_rol.data[0]['rol'] if respuesta_rol.data else None
+    
+    if rol != 'estudiante':
+        flash('Acceso no autorizado. Esta sección es solo para vendedores.', 'error')
+        if rol == 'comprador':
+            return redirect(url_for('dashboard_comprador', user_id=session['user']['id']))
+        elif rol == 'admin':
+            return redirect(url_for('admin_dashboard'))
+        else:
+            return redirect(url_for('home'))
+    
+    # Resto del código existente...
+    if not user_id or session['user']['id'] != user_id:
         flash('Acceso no autorizado', 'error')
         return redirect(url_for('home'))
+    
     try:
         productos_count = supabase.table('productos').select('id', count='exact').eq('vendedor_id', user_id).eq('estado', 'activo').execute()
         total_productos = productos_count.count or 0
@@ -182,6 +203,20 @@ def publicar_producto():
     if 'user' not in session:
         flash('Inicia sesión', 'error')
         return redirect(url_for('home'))
+    
+    # VERIFICAR QUE SEA ESTUDIANTE
+    respuesta_rol = supabase.table('perfiles').select('rol').eq('id', session['user']['id']).execute()
+    rol = respuesta_rol.data[0]['rol'] if respuesta_rol.data else None
+    
+    if rol != 'estudiante':
+        flash('Solo los vendedores pueden publicar productos', 'error')
+        if rol == 'comprador':
+            return redirect(url_for('dashboard_comprador', user_id=session['user']['id']))
+        elif rol == 'admin':
+            return redirect(url_for('admin_dashboard'))
+        else:
+            return redirect(url_for('home'))
+    
     return render_template('publicar_producto.html')
 
 @app.route('/guardar-producto', methods=['POST'])
@@ -240,6 +275,15 @@ def mis_productos():
     if 'user' not in session:
         flash('Inicia sesión', 'error')
         return redirect(url_for('home'))
+    
+    # VERIFICAR QUE SEA ESTUDIANTE
+    respuesta_rol = supabase.table('perfiles').select('rol').eq('id', session['user']['id']).execute()
+    rol = respuesta_rol.data[0]['rol'] if respuesta_rol.data else None
+    
+    if rol != 'estudiante':
+        flash('Acceso no autorizado', 'error')
+        return redirect(url_for('home'))
+    
     productos = supabase.table('productos').select('*, categorias(nombre)').eq('vendedor_id', session['user']['id']).order('fecha_publicacion', desc=True).execute()
     return render_template('mis_productos.html', productos=productos.data)
 
@@ -248,8 +292,18 @@ def estadisticas():
     if 'user' not in session:
         flash('Inicia sesión', 'error')
         return redirect(url_for('home'))
+    
+    # VERIFICAR QUE SEA ESTUDIANTE
+    respuesta_rol = supabase.table('perfiles').select('rol').eq('id', session['user']['id']).execute()
+    rol = respuesta_rol.data[0]['rol'] if respuesta_rol.data else None
+    
+    if rol != 'estudiante':
+        flash('Acceso no autorizado', 'error')
+        return redirect(url_for('home'))
+    
     user_id = session['user']['id']
     try:
+        # resto del código igual...
         ventas_count = supabase.table('ventas').select('id', count='exact').eq('vendedor_id', user_id).execute()
         total_ventas = ventas_count.count or 0
         ingresos_data = supabase.table('ventas').select('monto').eq('vendedor_id', user_id).execute()
@@ -279,10 +333,30 @@ def configuracion():
 # ==================== COMPRADOR ====================
 @app.route('/dashboard/comprador')
 def dashboard_comprador():
+    if 'user' not in session:
+        flash('Inicia sesión', 'error')
+        return redirect(url_for('home'))
+    
     user_id = request.args.get('user_id')
-    if not user_id or 'user' not in session or session['user']['id'] != user_id:
+    
+    # VERIFICACIÓN DE ROL - SOLO COMPRADORES
+    respuesta_rol = supabase.table('perfiles').select('rol').eq('id', session['user']['id']).execute()
+    rol = respuesta_rol.data[0]['rol'] if respuesta_rol.data else None
+    
+    if rol != 'comprador':
+        flash('Acceso no autorizado. Esta sección es solo para compradores.', 'error')
+        if rol == 'estudiante':
+            return redirect(url_for('dashboard_estudiante', user_id=session['user']['id']))
+        elif rol == 'admin':
+            return redirect(url_for('admin_dashboard'))
+        else:
+            return redirect(url_for('home'))
+    
+    # Resto del código existente...
+    if not user_id or session['user']['id'] != user_id:
         flash('Acceso no autorizado', 'error')
         return redirect(url_for('home'))
+    
     try:
         compras = supabase.table('ventas').select('id', count='exact').eq('comprador_id', user_id).execute()
         favs = supabase.table('favoritos').select('id', count='exact').eq('usuario_id', user_id).execute()
@@ -322,6 +396,10 @@ def comprar_producto(producto_id):
     if 'user' not in session:
         flash('Inicia sesión', 'error')
         return redirect(url_for('home'))
+    # VERIFICAR QUE NO SEA ADMIN
+    if session['user'].get('rol') == 'admin':
+        flash('Los administradores no pueden realizar compras', 'error')
+        return redirect(url_for('admin_dashboard'))
     comprador_id = session['user']['id']
     try:
         prod = supabase.table('productos').select('*').eq('id', producto_id).single().execute()
@@ -434,14 +512,17 @@ def dashboard():
     if 'user' not in session:
         flash('Inicia sesión', 'error')
         return redirect(url_for('home'))
+    
     user_id = session['user']['id']
     respuesta = supabase.table('perfiles').select('rol').eq('id', user_id).execute()
     if respuesta.data and respuesta.data[0].get('rol'):
         rol = respuesta.data[0]['rol']
         if rol == 'estudiante':
             return redirect(url_for('dashboard_estudiante', user_id=user_id))
-        else:
+        elif rol == 'comprador':
             return redirect(url_for('dashboard_comprador', user_id=user_id))
+        elif rol == 'admin':
+            return redirect(url_for('admin_dashboard'))
     else:
         return redirect(url_for('elegir_rol', user_id=user_id))
 
@@ -639,6 +720,41 @@ def admin_categorias():
     categorias = supabase.table('categorias').select('*').order('id').execute()
     return render_template('admin/categorias.html', categorias=categorias.data)
 
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user' not in session:
+            flash('Inicia sesión', 'error')
+            return redirect(url_for('home'))
+        
+        user_id = session['user']['id']
+        respuesta = supabase.table('perfiles').select('rol').eq('id', user_id).execute()
+        rol = respuesta.data[0]['rol'] if respuesta.data else None
+        
+        if rol != 'admin':
+            flash('Acceso no autorizado. Se requieren permisos de administrador.', 'error')
+            return redirect(url_for('home'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+@app.route('/admin/usuarios')
+@admin_required
+def admin_usuarios():
+    usuarios = supabase.table('perfiles').select('*').execute()
+    return render_template('admin/usuarios.html', usuarios=usuarios.data)
+
+@app.route('/admin/productos')
+@admin_required
+def admin_productos():
+    productos = supabase.table('productos').select('*, perfiles(nombre)').order('fecha_publicacion', desc=True).execute()
+    return render_template('admin/productos.html', productos=productos.data)
+
+@app.route('/admin/ventas')
+@admin_required
+def admin_ventas():
+    ventas = supabase.table('ventas').select('*, producto:productos(titulo), comprador:perfiles!comprador_id(nombre), vendedor:perfiles!vendedor_id(nombre)').order('fecha_venta', desc=True).execute()
+    return render_template('admin/ventas.html', ventas=ventas.data)
+
 @app.route('/admin/categoria/crear', methods=['POST'])
 @admin_required
 def admin_categoria_crear():
@@ -714,7 +830,74 @@ def admin_aprobar_transaccion(venta_id):
 def admin_cancelar_transaccion(venta_id):
     supabase.table('ventas').update({'estado': 'cancelado'}).eq('id', venta_id).execute()
     flash('❌ Transacción cancelada. El comprador no será cobrado', 'warning')
-    return redirect(url_for('admin_transacciones'))  
+    return redirect(url_for('admin_transacciones'))
 
+@app.route('/producto/<int:producto_id>')
+def detalle_producto(producto_id):
+    try:
+        producto = supabase.table('productos').select('*').eq('id', producto_id).single().execute()
+        if not producto.data:
+            flash('Producto no encontrado', 'error')
+            return redirect(url_for('explorar_productos'))
+        
+        # Obtener nombre del vendedor
+        vendedor = supabase.table('perfiles').select('nombre').eq('id', producto.data['vendedor_id']).execute()
+        vendedor_nombre = vendedor.data[0]['nombre'] if vendedor.data else 'Vendedor'
+        
+        return render_template('detalle_producto.html', producto=producto.data, vendedor_nombre=vendedor_nombre)
+    except Exception as e:
+        flash(f'Error: {str(e)}', 'error')
+        return redirect(url_for('explorar_productos'))
+
+@app.route('/admin/todas-publicaciones')
+@admin_required
+def admin_todas_publicaciones():
+    """Admin puede ver y gestionar TODAS las publicaciones"""
+    try:
+        # Obtener todos los productos, ordenados por fecha
+        productos = supabase.table('productos')\
+            .select('*, perfiles(nombre)')\
+            .order('fecha_publicacion', desc=True)\
+            .execute()
+        return render_template('admin/todas_publicaciones.html', productos=productos.data)
+    except Exception as e:
+        flash(f'Error: {str(e)}', 'error')
+        return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/eliminar-publicacion/<int:producto_id>', methods=['DELETE'])
+@admin_required
+def admin_eliminar_publicacion(producto_id):
+    """Admin puede eliminar CUALQUIER publicación permanentemente"""
+    try:
+        # Verificar que el producto existe
+        producto = supabase.table('productos').select('*').eq('id', producto_id).single().execute()
+        if not producto.data:
+            return jsonify({'success': False, 'error': 'Producto no encontrado'}), 404
+        
+        # Eliminar archivos físicos si existen
+        if producto.data.get('imagen_url'):
+            file_path = producto.data['imagen_url'].replace('/static/', 'static/')
+            if os.path.exists(file_path):
+                os.remove(file_path)
+        
+        if producto.data.get('archivo_url'):
+            file_path = producto.data['archivo_url'].replace('/static/', 'static/')
+            if os.path.exists(file_path):
+                os.remove(file_path)
+        
+        # Eliminar de la base de datos
+        supabase.table('productos').delete().eq('id', producto_id).execute()
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+    
+@app.route('/como-funciona')
+def como_funciona():
+    return render_template('como_funciona.html')
+
+@app.route('/contacto')
+def contacto():
+    return render_template('contacto.html')
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

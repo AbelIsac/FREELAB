@@ -226,5 +226,37 @@ document.addEventListener('DOMContentLoaded', function() {
         text-align: center;
     }
 }
+ /* Agrega esto al principio del style */
+    .checkout-container {
+        max-width: 1200px;
+        margin: 120px auto 2rem auto;  /* ← 120px de margen superior para el header */
+        padding: 0 1rem;
+    }
+    
+    .product-card {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        padding: 1rem;
+        background: #f8fafc;
+        border-radius: 16px;
+        margin-bottom: 0.75rem;
+    }
+
+    /* También mejora el wrapper */
+    .checkout-wrapper {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    @media (max-width: 640px) {
+        .product-card {
+            flex-direction: column;
+            text-align: center;
+        }
+        .checkout-container {
+            margin: 100px auto 1rem auto;
+        }
+    }
 </style>
 {% endblock %}

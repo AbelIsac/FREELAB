@@ -1,0 +1,601 @@
+{% extends "base.html" %}
+{% block title %}Todas las Publicaciones - Admin{% endblock %}
+{% block content %}
+<div class="admin-publicaciones-modern">
+    <div class="admin-header">
+        <h1><i class="fas fa-boxes"></i> Todas las Publicaciones</h1>
+        <p>Administra todos los productos publicados en la plataforma</p>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filtros-admin">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchPublicacion" placeholder="Buscar por título o vendedor...">
+        </div>
+        <select id="estadoFilter" class="filtro-estado">
+            <option value="todos">📋 Todos los estados</option>
+            <option value="pendiente">⏳ Pendientes</option>
+            <option value="activo">✅ Activos</option>
+            <option value="rechazado">❌ Rechazados</option>
+        </select>
+        <button id="refreshBtn" class="btn-refresh">
+            <i class="fas fa-sync-alt"></i> Actualizar
+        </button>
+    </div>
+
+    <div class="stats-resumen-admin">
+        <div class="stat-card-admin">
+            <i class="fas fa-box"></i>
+            <div>
+                <h3>Total</h3>
+                <span id="totalProductos">0</span>
+            </div>
+        </div>
+        <div class="stat-card-admin pendiente">
+            <i class="fas fa-clock"></i>
+            <div>
+                <h3>Pendientes</h3>
+                <span id="pendientesCount">0</span>
+            </div>
+        </div>
+        <div class="stat-card-admin activo">
+            <i class="fas fa-check-circle"></i>
+            <div>
+                <h3>Activos</h3>
+                <span id="activosCount">0</span>
+            </div>
+        </div>
+        <div class="stat-card-admin rechazado">
+            <i class="fas fa-times-circle"></i>
+            <div>
+                <h3>Rechazados</h3>
+                <span id="rechazadosCount">0</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-container-admin">
+        <table class="table-admin-publicaciones">
+            <thead>
+                <tr>
+                    <th><i class="fas fa-hashtag"></i> ID</th>
+                    <th><i class="fas fa-image"></i> Imagen</th>
+                    <th><i class="fas fa-heading"></i> Título</th>
+                    <th><i class="fas fa-user"></i> Vendedor</th>
+                    <th><i class="fas fa-dollar-sign"></i> Precio</th>
+                    <th><i class="fas fa-flag-checkered"></i> Estado</th>
+                    <th><i class="fas fa-cog"></i> Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for prod in productos %}
+                <tr data-estado="{{ prod.estado }}" data-titulo="{{ prod.titulo.lower() }}" data-vendedor="{{ (prod.perfiles.nombre if prod.perfiles else '').lower() }}">
+                    <td data-label="ID">#{{ prod.id }}</td>
+                    <td data-label="Imagen" class="imagen-cell">
+                        {% if prod.imagen_url %}
+                            <img src="{{ prod.imagen_url }}" alt="{{ prod.titulo }}" class="mini-img">
+                        {% else %}
+                            <div class="no-img"><i class="fas fa-image"></i></div>
+                        {% endif %}
+                    </td>
+                    <td data-label="Título">
+                        <strong>{{ prod.titulo }}</strong>
+                        <div class="producto-desc-corta">{{ prod.descripcion[:60] if prod.descripcion else 'Sin descripción' }}...</div>
+                    </td>
+                    <td data-label="Vendedor">
+                        <div class="vendedor-info">
+                            <i class="fas fa-user-circle"></i>
+                            {{ prod.perfiles.nombre if prod.perfiles and prod.perfiles.nombre else 'Desconocido' }}
+                        </div>
+                    </td>
+                    <td data-label="Precio" class="precio-cell">${{ "{:,.0f}".format(prod.precio) }}</td>
+                    <td data-label="Estado">
+                        {% if prod.estado == 'pendiente' %}
+                            <span class="badge-pendiente"><i class="fas fa-clock"></i> Pendiente</span>
+                        {% elif prod.estado == 'activo' %}
+                            <span class="badge-activo"><i class="fas fa-check-circle"></i> Activo</span>
+                        {% elif prod.estado == 'rechazado' %}
+                            <span class="badge-rechazado"><i class="fas fa-times-circle"></i> Rechazado</span>
+                        {% else %}
+                            <span class="badge-default">{{ prod.estado }}</span>
+                        {% endif %}
+                    </td>
+                    <td data-label="Acciones" class="actions-cell-admin">
+                        <button class="btn-ver" onclick="window.location.href='/producto/{{ prod.id }}'">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn-eliminar" data-id="{{ prod.id }}" data-titulo="{{ prod.titulo }}">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7" class="no-data-admin">
+                        <i class="fas fa-inbox"></i>
+                        <p>No hay publicaciones en la plataforma</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function actualizarEstadisticas() {
+        const rows = document.querySelectorAll('.table-admin-publicaciones tbody tr');
+        let total = 0;
+        let pendientes = 0;
+        let activos = 0;
+        let rechazados = 0;
+        
+        rows.forEach(row => {
+            // Verificar que la fila tiene data-estado y no es el mensaje "No hay publicaciones"
+            if (row.getAttribute('data-estado')) {
+                const estado = row.getAttribute('data-estado');
+                total++;
+                if (estado === 'pendiente') pendientes++;
+                if (estado === 'activo') activos++;
+                if (estado === 'rechazado') rechazados++;
+            }
+        });
+        
+        document.getElementById('totalProductos').innerText = total;
+        document.getElementById('pendientesCount').innerText = pendientes;
+        document.getElementById('activosCount').innerText = activos;
+        document.getElementById('rechazadosCount').innerText = rechazados;
+    }
+    
+    function filtrarPublicaciones() {
+        const searchTerm = document.getElementById('searchPublicacion').value.toLowerCase();
+        const estadoFilter = document.getElementById('estadoFilter').value;
+        const rows = document.querySelectorAll('.table-admin-publicaciones tbody tr');
+        
+        rows.forEach(row => {
+            const estado = row.getAttribute('data-estado');
+            // Si no tiene data-estado, es el mensaje de "No hay publicaciones", lo mostramos solo si no hay filas
+            if (!estado) return;
+            
+            const titulo = row.getAttribute('data-titulo') || '';
+            const vendedor = row.getAttribute('data-vendedor') || '';
+            
+            let mostrar = true;
+            
+            // Filtrar por estado
+            if (estadoFilter !== 'todos' && estado !== estadoFilter) {
+                mostrar = false;
+            }
+            
+            // Filtrar por búsqueda
+            if (searchTerm && !titulo.includes(searchTerm) && !vendedor.includes(searchTerm)) {
+                mostrar = false;
+            }
+            
+            row.style.display = mostrar ? '' : 'none';
+        });
+        
+        actualizarEstadisticas();
+    }
+    
+    function eliminarPublicacion(id, titulo) {
+        Swal.fire({
+            title: '¿Eliminar publicación?',
+            html: `¿Estás seguro de que deseas eliminar <strong>"${titulo}"</strong>?<br><br>Esta acción es irreversible y eliminará el producto permanentemente.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc2626',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: '<i class="fas fa-trash"></i> Sí, eliminar',
+            cancelButtonText: '<i class="fas fa-times"></i> Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Eliminando...',
+                    text: 'Por favor espera',
+                    allowOutsideClick: false,
+                    didOpen: () => { Swal.showLoading(); }
+                });
+                
+                fetch(`/admin/eliminar-publicacion/${id}`, {method: 'DELETE'})
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: '¡Eliminado!',
+                                text: 'La publicación ha sido eliminada',
+                                icon: 'success',
+                                confirmButtonColor: '#10b981',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                            setTimeout(() => location.reload(), 2000);
+                        } else {
+                            Swal.fire('Error', data.error || 'No se pudo eliminar', 'error');
+                        }
+                    })
+                    .catch(() => {
+                        Swal.fire('Error', 'Error al conectar con el servidor', 'error');
+                    });
+            }
+        });
+    }
+    
+    document.getElementById('searchPublicacion').addEventListener('input', filtrarPublicaciones);
+    document.getElementById('estadoFilter').addEventListener('change', filtrarPublicaciones);
+    document.getElementById('refreshBtn').addEventListener('click', () => location.reload());
+    
+    document.querySelectorAll('.btn-eliminar').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const id = btn.dataset.id;
+            const titulo = btn.dataset.titulo;
+            eliminarPublicacion(id, titulo);
+        });
+    });
+    
+    // Botón ver con animación
+    document.querySelectorAll('.btn-ver').forEach(btn => {
+        btn.addEventListener('click', function() {
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => { this.style.transform = ''; }, 200);
+        });
+    });
+    
+    actualizarEstadisticas();
+</script>
+
+<style>
+.admin-publicaciones-modern {
+    max-width: 1400px;
+    margin: 100px auto 2rem auto;
+    padding: 1rem 2rem;
+}
+
+.admin-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.admin-header h1 {
+    font-size: 2rem;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+}
+
+.admin-header p {
+    color: #64748b;
+}
+
+/* Filtros */
+.filtros-admin {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.search-box {
+    flex: 2;
+    position: relative;
+}
+
+.search-box i {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 0.8rem 1rem 0.8rem 2.5rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+}
+
+.filtro-estado {
+    padding: 0.8rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    background: white;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+}
+
+.btn-refresh {
+    background: #f1f5f9;
+    color: #475569;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-refresh:hover {
+    background: #e2e8f0;
+    transform: translateY(-2px);
+}
+
+/* Tarjetas estadísticas */
+.stats-resumen-admin {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card-admin {
+    background: white;
+    border-radius: 16px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.stat-card-admin:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.stat-card-admin i {
+    font-size: 1.8rem;
+    color: #64748b;
+    background: #f1f5f9;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.stat-card-admin.pendiente i { color: #f59e0b; background: #fef3c7; }
+.stat-card-admin.activo i { color: #10b981; background: #d1fae5; }
+.stat-card-admin.rechazado i { color: #ef4444; background: #fee2e2; }
+
+.stat-card-admin div h3 {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #64748b;
+    margin-bottom: 0.3rem;
+}
+
+.stat-card-admin div span {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+/* Tabla */
+.table-container-admin {
+    background: white;
+    border-radius: 20px;
+    overflow-x: auto;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.05);
+    border: 1px solid #e9ecef;
+}
+
+.table-admin-publicaciones {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px;
+}
+
+.table-admin-publicaciones th {
+    padding: 1rem;
+    background: #f8fafc;
+    color: #1e293b;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.table-admin-publicaciones td {
+    padding: 1rem;
+    border-bottom: 1px solid #e9ecef;
+    vertical-align: middle;
+}
+
+.table-admin-publicaciones tr:hover {
+    background: #f8fafc;
+}
+
+.mini-img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.mini-img:hover {
+    transform: scale(1.5);
+    cursor: pointer;
+}
+
+.no-img {
+    width: 50px;
+    height: 50px;
+    background: #f1f5f9;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #cbd5e1;
+}
+
+.producto-desc-corta {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-top: 0.3rem;
+}
+
+.vendedor-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #475569;
+}
+
+.vendedor-info i {
+    color: #667eea;
+}
+
+.precio-cell {
+    font-weight: 600;
+    color: #059669;
+}
+
+/* Badges */
+.badge-pendiente, .badge-activo, .badge-rechazado, .badge-default {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.3rem 0.8rem;
+    border-radius: 50px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.badge-pendiente {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.badge-activo {
+    background: #d1fae5;
+    color: #059669;
+}
+
+.badge-rechazado {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.badge-default {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+/* Botones acción animados */
+.actions-cell-admin {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-ver, .btn-eliminar {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+.btn-ver {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    box-shadow: 0 2px 5px rgba(102,126,234,0.3);
+}
+
+.btn-ver:hover {
+    transform: scale(1.1) translateY(-3px);
+    box-shadow: 0 8px 20px rgba(102,126,234,0.4);
+}
+
+.btn-ver:active {
+    transform: scale(0.95);
+}
+
+.btn-eliminar {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    box-shadow: 0 2px 5px rgba(239,68,68,0.3);
+}
+
+.btn-eliminar:hover {
+    transform: scale(1.1) translateY(-3px);
+    box-shadow: 0 8px 20px rgba(239,68,68,0.4);
+}
+
+.btn-eliminar:active {
+    transform: scale(0.95);
+}
+
+.no-data-admin {
+    text-align: center;
+    padding: 3rem !important;
+    color: #64748b;
+}
+
+.no-data-admin i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+    color: #cbd5e1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .admin-publicaciones-modern {
+        margin: 80px auto 1rem;
+        padding: 1rem;
+    }
+    
+    .filtros-admin {
+        flex-direction: column;
+    }
+    
+    .filtro-estado, .btn-refresh {
+        width: 100%;
+    }
+    
+    .stats-resumen-admin {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.8rem;
+    }
+    
+    .stat-card-admin i {
+        width: 40px;
+        height: 40px;
+        font-size: 1.3rem;
+    }
+    
+    .stat-card-admin div span {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-resumen-admin {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

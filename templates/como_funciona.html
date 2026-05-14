@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block title %}Cómo funciona - Marketplace Estudiantil{% endblock %}
+{% block extra_css %}
+<style>
+    .como-funciona-container {
+        max-width: 1200px;
+        margin: 120px auto 4rem;
+        padding: 0 2rem;
+    }
+    .hero-funciona {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    .hero-funciona h1 {
+        font-size: 2.5rem;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1rem;
+    }
+    .steps-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        margin: 3rem 0;
+    }
+    .step-card {
+        background: white;
+        border-radius: 24px;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+    }
+    .step-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+    }
+    .step-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+    }
+    .step-icon i {
+        font-size: 2.5rem;
+        color: white;
+    }
+    .step-card h3 {
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+    }
+    .step-card p {
+        color: #64748b;
+        line-height: 1.6;
+    }
+    .roles-section {
+        background: #f8fafc;
+        border-radius: 24px;
+        padding: 2rem;
+        margin-top: 3rem;
+    }
+    .roles-section h2 {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    .roles-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+    .role-card {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        text-align: center;
+    }
+    .role-card i {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+    .role-card.estudiante i { color: #10b981; }
+    .role-card.comprador i { color: #3b82f6; }
+    .role-card h4 { margin-bottom: 0.5rem; }
+    .role-card p { color: #64748b; font-size: 0.9rem; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="como-funciona-container">
+    <div class="hero-funciona">
+        <h1>¿Cómo funciona MarketplaceEst?</h1>
+        <p>Una plataforma diseñada para conectar estudiantes y facilitar el intercambio de servicios</p>
+    </div>
+
+    <div class="steps-grid">
+        <div class="step-card">
+            <div class="step-icon"><i class="fas fa-user-plus"></i></div>
+            <h3>1. Regístrate</h3>
+            <p>Crea tu cuenta gratis con Google. Elige tu rol: Vendedor o Comprador.</p>
+        </div>
+        <div class="step-card">
+            <div class="step-icon"><i class="fas fa-store"></i></div>
+            <h3>2. Publica o Explora</h3>
+            <p>Los vendedores publican sus servicios. Los compradores exploran el catálogo.</p>
+        </div>
+        <div class="step-card">
+            <div class="step-icon"><i class="fas fa-shopping-cart"></i></div>
+            <h3>3. Compra y Vende</h3>
+            <p>Agrega productos al carrito, paga de forma segura y recibe tu servicio.</p>
+        </div>
+    </div>
+
+    <div class="roles-section">
+        <h2><i class="fas fa-users"></i> ¿Qué rol te conviene?</h2>
+        <div class="roles-grid">
+            <div class="role-card estudiante">
+                <i class="fas fa-graduation-cap"></i>
+                <h4>Estudiante / Vendedor</h4>
+                <p>Publica tus trabajos, ofrece tus servicios y gana dinero extra mientras estudias.</p>
+            </div>
+            <div class="role-card comprador">
+                <i class="fas fa-shopping-bag"></i>
+                <h4>Comprador</h4>
+                <p>Encuentra servicios de calidad a precios estudiantiles y apoya a tu comunidad.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

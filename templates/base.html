@@ -8,6 +8,180 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/checkout.css') }}">
     {% block extra_css %}{% endblock %}
+    <style>
+    /* ========================
+       BOTONES FLOTANTES (Dashboard + Carrito)
+       ======================== */
+    .floating-buttons {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        z-index: 1000;
+    }
+
+    /* Botón Dashboard/Login */
+    .floating-action-btn {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 14px 24px;
+        border-radius: 50px;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 600;
+        box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+    }
+
+    .floating-action-btn:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 15px 45px rgba(102, 126, 234, 0.5);
+    }
+
+    /* Botón Carrito Flotante */
+    .cart-float {
+        background: white;
+        color: #667eea;
+        width: 55px;
+        height: 55px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        transition: all 0.3s ease;
+        position: relative;
+        border: 2px solid #667eea;
+    }
+
+    .cart-float:hover {
+        transform: translateY(-3px) scale(1.05);
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border-color: transparent;
+    }
+
+    .cart-float i {
+        font-size: 1.5rem;
+    }
+
+    .cart-count {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: #ef4444;
+        color: white;
+        font-size: 0.7rem;
+        font-weight: bold;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Responsive para botones flotantes */
+    @media (max-width: 768px) {
+        .floating-buttons {
+            bottom: 20px;
+            right: 20px;
+            gap: 12px;
+        }
+        
+        .floating-action-btn {
+            padding: 10px 18px;
+            font-size: 0.85rem;
+        }
+        
+        .cart-float {
+            width: 48px;
+            height: 48px;
+        }
+        
+        .cart-float i {
+            font-size: 1.2rem;
+        }
+        
+        .cart-count {
+            width: 20px;
+            height: 20px;
+            font-size: 0.65rem;
+            top: -6px;
+            right: -6px;
+        }
+    }
+  
+    /* Carrito en el header */
+    .cart-header {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #64748b;
+        text-decoration: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+        background: #f1f5f9;
+    }
+    
+    .cart-header:hover {
+        background: #e2e8f0;
+        color: #667eea;
+        transform: scale(1.05);
+    }
+    
+    .cart-header i {
+        font-size: 1.2rem;
+    }
+    
+    .cart-count-header {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: #ef4444;
+        color: white;
+        font-size: 0.65rem;
+        font-weight: bold;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Ajuste responsive para el carrito en header */
+    @media (max-width: 768px) {
+        .cart-header {
+            width: 35px;
+            height: 35px;
+        }
+        
+        .cart-header i {
+            font-size: 1rem;
+        }
+        
+        .cart-count-header {
+            width: 16px;
+            height: 16px;
+            font-size: 0.6rem;
+            top: -4px;
+            right: -4px;
+        }
+    }
+
+</style>
     <!-- SweetAlert2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 </head>
@@ -24,78 +198,101 @@
                 </div>
                 
                 <ul class="nav-menu">
-                    <li><a href="{{ url_for('productos') }}" class="nav-link">Productos</a></li>
-                    <li><a href="#como-funciona" class="nav-link">Cómo funciona</a></li>
-                    <li><a href="#contacto" class="nav-link">Contacto</a></li>
+                    
+                    <li><a href="{{ url_for('como_funciona') }}" class="nav-link">Cómo funciona</a></li>
+                    <li><a href="{{ url_for('contacto') }}" class="nav-link">Contacto</a></li>
                 </ul>
 
                 <div class="nav-actions">
-                    {% if session_user %}
-                        <!-- DROPDOWN MENU -->
-                        <div class="user-dropdown">
-                            <div class="user-info-btn">
-                                <img src="{{ session_user.get('avatar', 'https://ui-avatars.com/api/?background=667eea&color=fff&name=' + session_user.get('name', 'U')) }}" 
-                                     alt="Avatar" class="user-avatar">
-                                <span class="user-name">{{ session_user.get('name', 'Usuario').split()[0] }}</span>
-                                <i class="fas fa-chevron-down"></i>
-                            </div>
-                            <div class="dropdown-menu">
-                                {% if session_user.rol == 'estudiante' %}
-                                    <a href="{{ url_for('dashboard_estudiante', user_id=session_user.id) }}" class="dropdown-item">
-                                        <i class="fas fa-tachometer-alt"></i> Mi Dashboard
-                                    </a>
-                                    <a href="{{ url_for('mis_productos') }}" class="dropdown-item">
-                                        <i class="fas fa-store"></i> Mis Productos
-                                    </a>
-                                    <a href="{{ url_for('estadisticas') }}" class="dropdown-item">
-                                        <i class="fas fa-chart-line"></i> Mis Ventas
-                                    </a>
-                                    <a href="{{ url_for('publicar_producto') }}" class="dropdown-item">
-                                        <i class="fas fa-plus-circle"></i> Publicar Producto
-                                    </a>
-                                {% elif session_user.rol == 'comprador' %}
-                                    <a href="{{ url_for('dashboard_comprador', user_id=session_user.id) }}" class="dropdown-item">
-                                        <i class="fas fa-tachometer-alt"></i> Mi Dashboard
-                                    </a>
-                                    <a href="{{ url_for('mis_compras') }}" class="dropdown-item">
-                                        <i class="fas fa-shopping-bag"></i> Mis Compras
-                                    </a>
-                                    <a href="{{ url_for('favoritos') }}" class="dropdown-item">
-                                        <i class="fas fa-heart"></i> Lista de Deseos
-                                    </a>
-                                    <a href="{{ url_for('mis_resenas') }}" class="dropdown-item">
-                                        <i class="fas fa-star"></i> Mis Reseñas
-                                    </a>
-                                {% endif %}
+        <!-- CARRITO EN EL HEADER - SOLO para compradores -->
+        {% if session_user and session_user.rol == 'comprador' %}
+            <a href="{{ url_for('ver_carrito') }}" class="cart-header" id="cartHeader" title="Ver carrito">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-count-header" id="cartCount">0</span>
+            </a>
+        {% endif %}
 
-                                <!-- ========== NUEVO: Panel Admin ========== -->
-                                {% if session_user.rol == 'admin' %}
-                                    <a href="{{ url_for('admin_dashboard') }}" class="dropdown-item">
-                                        <i class="fas fa-shield-alt"></i> Panel Admin
-                                    </a>
-                                {% endif %}
+    
+    
+        {% if session_user %}
+            <!-- DROPDOWN MENU -->
+            <div class="user-dropdown">
+                <div class="user-info-btn">
+                    <img src="{{ session_user.get('avatar', 'https://ui-avatars.com/api/?background=667eea&color=fff&name=' + session_user.get('name', 'U')) }}" 
+                        alt="Avatar" class="user-avatar">
+                    <span class="user-name">{{ session_user.get('name', 'Usuario').split()[0] }}</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="dropdown-menu">
+                    {% if session_user.rol == 'estudiante' %}
+                        <a href="{{ url_for('dashboard_estudiante', user_id=session_user.id) }}" class="dropdown-item">
+                            <i class="fas fa-tachometer-alt"></i> Mi Dashboard
+                        </a>
+                        <a href="{{ url_for('mis_productos') }}" class="dropdown-item">
+                            <i class="fas fa-store"></i> Mis Productos
+                        </a>
+                        <a href="{{ url_for('estadisticas') }}" class="dropdown-item">
+                            <i class="fas fa-chart-line"></i> Mis Ventas
+                        </a>
+                        <a href="{{ url_for('publicar_producto') }}" class="dropdown-item">
+                            <i class="fas fa-plus-circle"></i> Publicar Producto
+                        </a>
+                    {% elif session_user.rol == 'comprador' %}
+                        <a href="{{ url_for('dashboard_comprador', user_id=session_user.id) }}" class="dropdown-item">
+                            <i class="fas fa-tachometer-alt"></i> Mi Dashboard
+                        </a>
+                        <a href="{{ url_for('mis_compras') }}" class="dropdown-item">
+                            <i class="fas fa-shopping-bag"></i> Mis Compras
+                        </a>
+                        <a href="{{ url_for('favoritos') }}" class="dropdown-item">
+                            <i class="fas fa-heart"></i> Lista de Deseos
+                        </a>
+                        <a href="{{ url_for('mis_resenas') }}" class="dropdown-item">
+                            <i class="fas fa-star"></i> Mis Reseñas
+                        </a>
+                    
 
-                                <div class="dropdown-divider"></div>
-                                
-                                <!-- Opciones comunes -->
-                                <a href="{{ url_for('configuracion') }}" class="dropdown-item">
-                                    <i class="fas fa-user-circle"></i> Mi Perfil
-                                </a>
-                                <a href="{{ url_for('configuracion') }}" class="dropdown-item">
-                                    <i class="fas fa-cog"></i> Configuración
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <a href="{{ url_for('logout') }}" class="dropdown-item logout">
-                                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-                                </a>
-                            </div>
-                        </div>
-                    {% else %}
-                        <a href="{{ url_for('login') }}" class="btn-login">
-                            <i class="fab fa-google"></i> Iniciar Sesión
+                    {% elif session_user.rol == 'admin' %}
+                        <a href="{{ url_for('admin_dashboard') }}" class="dropdown-item">
+                            <i class="fas fa-shield-alt"></i> Panel Admin
+                        </a>
+                        <a href="{{ url_for('admin_categorias') }}" class="dropdown-item">
+                            <i class="fas fa-tags"></i> Gestionar Categorías
+                        </a>
+                        <a href="{{ url_for('admin_publicaciones') }}" class="dropdown-item">
+                            <i class="fas fa-clock"></i> Publicaciones Pendientes
+                        </a>
+                        <a href="{{ url_for('admin_todas_publicaciones') }}" class="dropdown-item">  <!-- ← NUEVO -->
+                            <i class="fas fa-boxes"></i> Todas las Publicaciones
+                        </a>
+                        <a href="{{ url_for('admin_transacciones') }}" class="dropdown-item">
+                            <i class="fas fa-hourglass-half"></i> Transacciones Pendientes
+                        </a>
+                        <a href="{{ url_for('admin_usuarios') }}" class="dropdown-item">
+                            <i class="fas fa-users"></i> Gestionar Usuarios
                         </a>
                     {% endif %}
+
+                    <div class="dropdown-divider"></div>
+                    
+                    <a href="{{ url_for('configuracion') }}" class="dropdown-item">
+                        <i class="fas fa-user-circle"></i> Mi Perfil
+                    </a>
+                    <a href="{{ url_for('configuracion') }}" class="dropdown-item">
+                        <i class="fas fa-cog"></i> Configuración
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="{{ url_for('logout') }}" class="dropdown-item logout">
+                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                    </a>
                 </div>
+            </div>
+        {% else %}
+            <a href="{{ url_for('login') }}" class="btn-login">
+                <i class="fab fa-google"></i> Iniciar Sesión
+            </a>
+        {% endif %}
+    </div>
 
                 <div class="hamburger">
                     <span></span>
@@ -147,7 +344,7 @@
                     <div class="footer-column">
                         <h4>Plataforma</h4>
                         <ul>
-                            <li><a href="#">Cómo funciona</a></li>
+                            <li><a href="{{ url_for('como_funciona') }}" class="nav-link">Cómo funciona</a></li>
                             <li><a href="#">Publicar servicio</a></li>
                             <li><a href="#">Comprar</a></li>
                         </ul>
@@ -157,7 +354,7 @@
                         <ul>
                             <li><a href="#">Ayuda</a></li>
                             <li><a href="#">Preguntas frecuentes</a></li>
-                            <li><a href="#">Contactar</a></li>
+                            <li><a href="{{ url_for('contacto') }}" class="nav-link">Contacto</a></li>
                         </ul>
                     </div>
                     <div class="footer-column">
@@ -187,24 +384,10 @@
         </div>
     </footer>
 
-    <!-- Floating Button (único, no duplicado) -->
-    {% if session_user %}
-        <a href="{{ url_for('dashboard') }}" class="floating-action-btn">
-            <i class="fas fa-chart-line"></i>
-            <span>Dashboard</span>
-        </a>
-    {% else %}
-        <a href="{{ url_for('login') }}" class="floating-action-btn">
-            <i class="fab fa-google"></i>
-            <span>Ingresar</span>
-        </a>
-    {% endif %}
+  
 
-    <!-- CARRITO FLOTANTE -->
-    <a href="{{ url_for('ver_carrito') }}" class="cart-float" id="cartFloat">
-        <i class="fas fa-shopping-cart"></i>
-        <span class="cart-count" id="cartCount">0</span>
-    </a>
+
+
 
     <script>
         // Año actual
@@ -240,7 +423,7 @@
             });
         }, 5000);
 
-        // Contador carrito
+         // Contador carrito
         function actualizarContadorCarritoGlobal() {
             const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
             const totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
@@ -248,10 +431,15 @@
             if (contador) contador.innerText = totalItems;
         }
         document.addEventListener('DOMContentLoaded', actualizarContadorCarritoGlobal);
-        setInterval(actualizarContadorCarritoGlobal, 2000);
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'carrito') {
+                actualizarContadorCarritoGlobal();
+            }
+        });
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     {% block extra_js %}{% endblock %}
+
 </body>
 </html>

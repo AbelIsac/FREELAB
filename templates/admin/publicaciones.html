@@ -1,27 +1,50 @@
 {% extends "base.html" %}
 {% block title %}Revisar Publicaciones{% endblock %}
 {% block content %}
-<div class="admin-container">
-    <h1>📦 Gestión de Publicaciones</h1>
-    <div class="productos-grid">
+<div class="admin-container-modern">
+    <div class="admin-header">
+        <h1><i class="fas fa-boxes"></i> Gestión de Publicaciones</h1>
+        <p>Revisa y modera los productos publicados por los estudiantes</p>
+    </div>
+
+    <div class="productos-grid-modern">
         {% for prod in productos %}
-        <div class="producto-card">
-            <h3>{{ prod.titulo }}</h3>
-            <p>{{ prod.descripcion[:120] }}{% if prod.descripcion and prod.descripcion|length > 120 %}...{% endif %}</p>
-            <p><strong>Precio:</strong> ${{ "{:,.0f}".format(prod.precio) }}</p>
-            <p><strong>Vendedor:</strong> {{ prod.perfiles.nombre if prod.perfiles and prod.perfiles.nombre else 'Desconocido' }}</p>
-            <p><strong>Estado actual:</strong> 
+        <div class="producto-card-modern">
+            <div class="producto-estado">
                 {% if prod.estado == 'pendiente' %}
-                    <span class="badge-pendiente">⏳ Pendiente</span>
+                    <span class="badge-pendiente"><i class="fas fa-clock"></i> Pendiente</span>
                 {% elif prod.estado == 'activo' %}
-                    <span class="badge-activo">✅ Activo</span>
+                    <span class="badge-activo"><i class="fas fa-check-circle"></i> Activo</span>
                 {% elif prod.estado == 'rechazado' %}
-                    <span class="badge-rechazado">❌ Rechazado</span>
-                {% else %}
-                    <span>{{ prod.estado }}</span>
+                    <span class="badge-rechazado"><i class="fas fa-times-circle"></i> Rechazado</span>
                 {% endif %}
-            </p>
-            <div class="actions">
+            </div>
+            
+            {% if prod.imagen_url %}
+            <div class="producto-imagen-card">
+                <img src="{{ prod.imagen_url }}" alt="{{ prod.titulo }}">
+            </div>
+            {% endif %}
+            
+            <h3>{{ prod.titulo }}</h3>
+            <p class="producto-desc">{{ prod.descripcion[:120] }}{% if prod.descripcion and prod.descripcion|length > 120 %}...{% endif %}</p>
+            
+            <div class="producto-info-grid">
+                <div class="info-item">
+                    <i class="fas fa-tag"></i>
+                    <span>${{ "{:,.0f}".format(prod.precio) }}</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-user"></i>
+                    <span>{{ prod.perfiles.nombre if prod.perfiles and prod.perfiles.nombre else 'Desconocido' }}</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-calendar"></i>
+                    <span>{{ prod.fecha_publicacion[:10] if prod.fecha_publicacion else 'Fecha no disponible' }}</span>
+                </div>
+            </div>
+            
+            <div class="actions-modern">
                 {% if prod.estado == 'pendiente' %}
                 <form method="POST" action="{{ url_for('admin_aprobar_producto', producto_id=prod.id) }}" style="display:inline;">
                     <button type="submit" class="btn-aprobar">
@@ -34,29 +57,221 @@
                     </button>
                 </form>
                 {% else %}
-                <span class="info-text">Este producto ya fue {{ prod.estado }}</span>
+                <span class="info-text"><i class="fas fa-info-circle"></i> Producto {{ prod.estado }}</span>
                 {% endif %}
             </div>
         </div>
         {% else %}
-        <p class="no-data">📭 No hay publicaciones para revisar.</p>
+        <p class="no-data"><i class="fas fa-inbox"></i> No hay publicaciones para revisar.</p>
         {% endfor %}
     </div>
 </div>
 
 <style>
-.admin-container { max-width: 1200px; margin: 2rem auto; padding: 1rem; }
-.productos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
-.producto-card { background: white; border-radius: 16px; padding: 1.2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s; }
-.producto-card:hover { transform: translateY(-3px); }
-.actions { margin-top: 1rem; display: flex; gap: 0.8rem; flex-wrap: wrap; }
-.btn-aprobar { background: #10b981; color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 500; }
-.btn-aprobar:hover { background: #059669; }
-.btn-rechazar { background: #ef4444; color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 500; }
-.btn-rechazar:hover { background: #dc2626; }
-.badge-pendiente { background: #f59e0b; color: white; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.8rem; }
-.badge-activo { background: #10b981; color: white; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.8rem; }
-.badge-rechazado { background: #6b7280; color: white; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.8rem; }
-.no-data { text-align: center; padding: 2rem; color: #6b7280; }
+.admin-container-modern {
+    max-width: 1400px;
+    margin: 100px auto 2rem auto;
+    padding: 1rem 2rem;
+}
+
+.admin-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.admin-header h1 {
+    font-size: 2rem;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+}
+
+.admin-header p {
+    color: #64748b;
+}
+
+.productos-grid-modern {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 1.8rem;
+}
+
+.producto-card-modern {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    position: relative;
+    border: 1px solid #e9ecef;
+}
+
+.producto-card-modern:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+}
+
+.producto-estado {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 1;
+}
+
+.producto-imagen-card {
+    height: 180px;
+    overflow: hidden;
+    background: #f8fafc;
+}
+
+.producto-imagen-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.producto-card-modern:hover .producto-imagen-card img {
+    transform: scale(1.05);
+}
+
+.producto-card-modern h3 {
+    padding: 1rem 1rem 0.5rem;
+    font-size: 1.1rem;
+    color: #1e293b;
+}
+
+.producto-desc {
+    padding: 0 1rem;
+    color: #64748b;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.producto-info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    padding: 1rem;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: #475569;
+}
+
+.info-item i {
+    width: 20px;
+    color: #667eea;
+}
+
+.actions-modern {
+    padding: 1rem;
+    border-top: 1px solid #e9ecef;
+    display: flex;
+    gap: 0.8rem;
+    justify-content: center;
+}
+
+.btn-aprobar {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-aprobar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+}
+
+.btn-rechazar {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-rechazar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+}
+
+.badge-pendiente, .badge-activo, .badge-rechazado {
+    padding: 0.3rem 0.8rem;
+    border-radius: 50px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.badge-pendiente {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.badge-activo {
+    background: #d1fae5;
+    color: #059669;
+}
+
+.badge-rechazado {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.info-text {
+    color: #64748b;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.no-data {
+    text-align: center;
+    padding: 3rem;
+    color: #64748b;
+    font-size: 1rem;
+    grid-column: 1 / -1;
+}
+
+.no-data i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .admin-container-modern {
+        margin: 80px auto 1rem;
+        padding: 1rem;
+    }
+    .productos-grid-modern {
+        grid-template-columns: 1fr;
+    }
+    .producto-info-grid {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+}
 </style>
 {% endblock %}

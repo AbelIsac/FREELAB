@@ -10,7 +10,7 @@
 <div class="dashboard-vendedor-full">
     <div class="dashboard-full">
         <div class="explorar-header">
-            <h1>⭐ Mis reseñas</h1>
+            <h1><i class="fas fa-star"></i> Mis reseñas</h1>
             <p>Calificaciones que has dejado a los vendedores</p>
         </div>
 
@@ -23,7 +23,7 @@
                         <p><i class="fas fa-calendar"></i> Comprado el {{ venta.fecha_venta[:10] }}</p>
                     </div>
                     <div class="resena-stars">
-                        <span>{{ venta.valoraciones.calificacion }} ⭐</span>
+                        <span>{{ venta.valoraciones.calificacion }} <i class="fas fa-star"></i></span>
                     </div>
                 </div>
                 {% if venta.valoraciones.comentario %}

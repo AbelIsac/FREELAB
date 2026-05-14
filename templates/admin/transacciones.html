@@ -1,68 +1,426 @@
 {% extends "base.html" %}
 {% block title %}Aprobar Transacciones{% endblock %}
 {% block content %}
-<div class="admin-container">
-    <h1>💰 Gestión de Transacciones</h1>
-    <table class="table">
-        <thead>
-            <tr><th>ID</th><th>Producto</th><th>Comprador</th><th>Vendedor</th><th>Monto</th><th>Estado</th><th>Acciones</th></tr>
-        </thead>
-        <tbody>
-        {% for venta in ventas %}
-        <tr>
-            <td>#{{ venta.id }}</td>
-            <td>{{ venta.producto.titulo if venta.producto else 'N/A' }}</td>
-            <td>{{ venta.comprador.nombre if venta.comprador else 'Desconocido' }}</td>
-            <td>{{ venta.vendedor.nombre if venta.vendedor else 'Desconocido' }}</td>
-            <td>${{ "{:,.0f}".format(venta.monto) }}</td>
-            <td>
-                {% if venta.estado == 'pendiente' %}
-                    <span class="badge-pendiente">⏳ Pendiente</span>
-                {% elif venta.estado == 'completado' %}
-                    <span class="badge-completado">✅ Completado</span>
-                {% elif venta.estado == 'cancelado' %}
-                    <span class="badge-cancelado">❌ Cancelado</span>
-                {% else %}
-                    {{ venta.estado }}
-                {% endif %}
-            </td>
-            <td class="actions">
-                {% if venta.estado == 'pendiente' %}
-                <form method="POST" action="{{ url_for('admin_aprobar_transaccion', venta_id=venta.id) }}" style="display:inline;">
-                    <button type="submit" class="btn-aprobar">
-                        <i class="fas fa-check-circle"></i> Aprobar
-                    </button>
-                </form>
-                <form method="POST" action="{{ url_for('admin_cancelar_transaccion', venta_id=venta.id) }}" style="display:inline;">
-                    <button type="submit" class="btn-cancelar">
-                        <i class="fas fa-times-circle"></i> Cancelar
-                    </button>
-                </form>
-                {% else %}
-                <span class="info-text">—</span>
-                {% endif %}
-            </td>
-        </tr>
-        {% else %}
-        <tr><td colspan="7" class="no-data">📭 No hay transacciones pendientes.</td></tr>
-        {% endfor %}
-        </tbody>
-    </table>
+<div class="admin-transacciones-modern">
+    <div class="admin-header">
+        <h1><i class="fas fa-chart-line"></i> Gestión de Transacciones</h1>
+        <p>Revisa y administra los pagos realizados en la plataforma</p>
+    </div>
+
+    <div class="stats-resumen">
+        <div class="stat-card-resumen">
+            <i class="fas fa-hourglass-half"></i>
+            <div>
+                <h3>Pendientes</h3>
+                <span id="pendientesCount">0</span>
+            </div>
+        </div>
+        <div class="stat-card-resumen completado">
+            <i class="fas fa-check-circle"></i>
+            <div>
+                <h3>Completadas</h3>
+                <span id="completadasCount">0</span>
+            </div>
+        </div>
+        <div class="stat-card-resumen cancelado">
+            <i class="fas fa-times-circle"></i>
+            <div>
+                <h3>Canceladas</h3>
+                <span id="canceladasCount">0</span>
+            </div>
+        </div>
+        <div class="stat-card-resumen total">
+            <i class="fas fa-dollar-sign"></i>
+            <div>
+                <h3>Total recaudado</h3>
+                <span id="totalRecaudado">$0</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-container-modern">
+        <table class="table-modern-transacciones">
+            <thead>
+                <tr>
+                    <th><i class="fas fa-hashtag"></i> ID</th>
+                    <th><i class="fas fa-box"></i> Producto</th>
+                    <th><i class="fas fa-user"></i> Comprador</th>
+                    <th><i class="fas fa-store"></i> Vendedor</th>
+                    <th><i class="fas fa-dollar-sign"></i> Monto</th>
+                    <th><i class="fas fa-flag-checkered"></i> Estado</th>
+                    <th><i class="fas fa-cog"></i> Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for venta in ventas %}
+            <tr data-estado="{{ venta.estado }}" data-monto="{{ venta.monto }}">
+                <td data-label="ID">#{{ venta.id }}</td>
+                <td data-label="Producto">
+                    <span class="producto-nombre">{{ venta.producto.titulo if venta.producto else 'N/A' }}</span>
+                </td>
+                <td data-label="Comprador">
+                    <div class="usuario-info">
+                        <i class="fas fa-user-circle"></i>
+                        {{ venta.comprador.nombre if venta.comprador else 'Desconocido' }}
+                    </div>
+                </td>
+                <td data-label="Vendedor">
+                    <div class="usuario-info">
+                        <i class="fas fa-store"></i>
+                        {{ venta.vendedor.nombre if venta.vendedor else 'Desconocido' }}
+                    </div>
+                </td>
+                <td data-label="Monto" class="monto-cell">${{ "{:,.0f}".format(venta.monto) }}</td>
+                <td data-label="Estado">
+                    {% if venta.estado == 'pendiente' %}
+                        <span class="badge-pendiente"><i class="fas fa-clock"></i> Pendiente</span>
+                    {% elif venta.estado == 'completado' %}
+                        <span class="badge-completado"><i class="fas fa-check-circle"></i> Completado</span>
+                    {% elif venta.estado == 'cancelado' %}
+                        <span class="badge-cancelado"><i class="fas fa-times-circle"></i> Cancelado</span>
+                    {% else %}
+                        <span class="badge-default">{{ venta.estado }}</span>
+                    {% endif %}
+                </td>
+                <td data-label="Acciones" class="actions-cell">
+                    {% if venta.estado == 'pendiente' %}
+                    <form method="POST" action="{{ url_for('admin_aprobar_transaccion', venta_id=venta.id) }}" style="display:inline;">
+                        <button type="submit" class="btn-aprobar-modern">
+                            <i class="fas fa-check-circle"></i> Aprobar
+                        </button>
+                    </form>
+                    <form method="POST" action="{{ url_for('admin_cancelar_transaccion', venta_id=venta.id) }}" style="display:inline;">
+                        <button type="submit" class="btn-cancelar-modern">
+                            <i class="fas fa-times-circle"></i> Cancelar
+                        </button>
+                    </form>
+                    {% else %}
+                    <span class="info-text">—</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7" class="no-data-modern">
+                    <i class="fas fa-inbox"></i>
+                    <p>No hay transacciones registradas</p>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 
+<script>
+    // Contar estadísticas
+    document.addEventListener('DOMContentLoaded', function() {
+        const rows = document.querySelectorAll('.table-modern-transacciones tbody tr');
+        let pendientes = 0;
+        let completadas = 0;
+        let canceladas = 0;
+        let totalMonto = 0;
+        
+        rows.forEach(row => {
+            if (row.querySelector('[data-estado]')) {
+                const estado = row.dataset.estado;
+                const monto = parseFloat(row.dataset.monto) || 0;
+                
+                if (estado === 'pendiente') pendientes++;
+                if (estado === 'completado') {
+                    completadas++;
+                    totalMonto += monto;
+                }
+                if (estado === 'cancelado') canceladas++;
+            }
+        });
+        
+        document.getElementById('pendientesCount').innerText = pendientes;
+        document.getElementById('completadasCount').innerText = completadas;
+        document.getElementById('canceladasCount').innerText = canceladas;
+        document.getElementById('totalRecaudado').innerText = '$' + totalMonto.toLocaleString();
+    });
+</script>
+
 <style>
-.admin-container { max-width: 1200px; margin: 2rem auto; padding: 1rem; }
-.table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-.table th, .table td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
-.table th { background: #f1f5f9; font-weight: 600; }
-.actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-.btn-aprobar { background: #10b981; color: white; border: none; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
-.btn-aprobar:hover { background: #059669; }
-.btn-cancelar { background: #ef4444; color: white; border: none; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
-.btn-cancelar:hover { background: #dc2626; }
-.badge-pendiente { background: #f59e0b; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; }
-.badge-completado { background: #10b981; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; }
-.badge-cancelado { background: #6b7280; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; }
-.no-data { text-align: center; color: #6b7280; }
+.admin-transacciones-modern {
+    max-width: 1400px;
+    margin: 100px auto 2rem auto;
+    padding: 1rem 2rem;
+}
+
+.admin-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.admin-header h1 {
+    font-size: 2rem;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+}
+
+.admin-header p {
+    color: #64748b;
+}
+
+/* Tarjetas de estadísticas */
+.stats-resumen {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.2rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card-resumen {
+    background: white;
+    border-radius: 16px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.stat-card-resumen:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.stat-card-resumen i {
+    font-size: 2rem;
+    color: #f59e0b;
+    background: #fef3c7;
+    width: 55px;
+    height: 55px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+}
+
+.stat-card-resumen.completado i {
+    color: #10b981;
+    background: #d1fae5;
+}
+
+.stat-card-resumen.cancelado i {
+    color: #ef4444;
+    background: #fee2e2;
+}
+
+.stat-card-resumen.total i {
+    color: #667eea;
+    background: #e0e7ff;
+}
+
+.stat-card-resumen div h3 {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #64748b;
+    margin-bottom: 0.3rem;
+}
+
+.stat-card-resumen div span {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.stat-card-resumen.total div span {
+    color: #667eea;
+}
+
+/* Tabla */
+.table-container-modern {
+    background: white;
+    border-radius: 20px;
+    overflow-x: auto;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.05);
+    border: 1px solid #e9ecef;
+}
+
+.table-modern-transacciones {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px;
+}
+
+.table-modern-transacciones th {
+    padding: 1rem;
+    background: #f8fafc;
+    color: #1e293b;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.table-modern-transacciones td {
+    padding: 1rem;
+    border-bottom: 1px solid #e9ecef;
+    vertical-align: middle;
+    font-size: 0.9rem;
+}
+
+.table-modern-transacciones tr:hover {
+    background: #f8fafc;
+}
+
+.producto-nombre {
+    font-weight: 500;
+    color: #1e293b;
+    max-width: 200px;
+    display: inline-block;
+}
+
+.usuario-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #475569;
+}
+
+.usuario-info i {
+    color: #667eea;
+    font-size: 1rem;
+}
+
+.monto-cell {
+    font-weight: 600;
+    color: #059669;
+}
+
+/* Badges */
+.badge-pendiente, .badge-completado, .badge-cancelado, .badge-default {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.3rem 0.8rem;
+    border-radius: 50px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.badge-pendiente {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.badge-completado {
+    background: #d1fae5;
+    color: #059669;
+}
+
+.badge-cancelado {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.badge-default {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+/* Botones */
+.actions-cell {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.btn-aprobar-modern {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    border: none;
+    padding: 0.4rem 1rem;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: all 0.3s ease;
+}
+
+.btn-aprobar-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.btn-cancelar-modern {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    border: none;
+    padding: 0.4rem 1rem;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: all 0.3s ease;
+}
+
+.btn-cancelar-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+.info-text {
+    color: #94a3b8;
+    font-size: 0.8rem;
+}
+
+.no-data-modern {
+    text-align: center;
+    padding: 3rem !important;
+    color: #64748b;
+}
+
+.no-data-modern i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+    color: #cbd5e1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .admin-transacciones-modern {
+        margin: 80px auto 1rem;
+        padding: 1rem;
+    }
+    
+    .stats-resumen {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .stat-card-resumen {
+        padding: 0.8rem;
+    }
+    
+    .stat-card-resumen i {
+        width: 45px;
+        height: 45px;
+        font-size: 1.5rem;
+    }
+    
+    .stat-card-resumen div span {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-resumen {
+        grid-template-columns: 1fr;
+    }
+}
 </style>
 {% endblock %}

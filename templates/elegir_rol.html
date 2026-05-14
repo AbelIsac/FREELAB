@@ -4,17 +4,17 @@
 
 {% block content %}
 <div class="rol-selector">
-    <h1>🎯 Completa tu perfil</h1>
+    <h1><i class="fa-solid fa-bullseye"></i> Completa tu perfil</h1>
     <p>Elige tu rol en el marketplace:</p>
     
     <div class="rol-cards">
         <a href="{{ url_for('guardar_rol', rol='estudiante', user_id=user_id) }}" class="rol-card estudiante">
-            <h3>👨‍🎓 Vendedor (Estudiante)</h3>
+            <h3><i class="fa-solid fa-user-graduate"></i> Vendedor (Estudiante)</h3>
             <p>Publica tus productos y servicios</p>
         </a>
         
         <a href="{{ url_for('guardar_rol', rol='comprador', user_id=user_id) }}" class="rol-card comprador">
-            <h3>🛒 Comprador</h3>
+            <h3><i class="fas fa-shopping-cart"></i> Comprador</h3>
             <p>Explora y compra productos</p>
         </a>
 
@@ -26,7 +26,7 @@
                 <button onclick="verificarAdmin()">Validar</button>
                 <div id="adminLink" style="display: none; margin-top: 1rem;">
                     <a href="{{ url_for('guardar_rol', rol='admin', user_id=user_id) }}" class="rol-card admin" style="background: #ef4444; color: white; padding: 1rem; border-radius: 16px; text-decoration: none;">
-                        <h3>👑 Administrador</h3>
+                        <h3><i class="fa-solid fa-crown"></i> Administrador</h3>
                         <p>Gestionar todo el sistema</p>
                     </a>
                 </div>

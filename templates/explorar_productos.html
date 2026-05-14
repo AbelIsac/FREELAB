@@ -10,7 +10,7 @@
     <div class="dashboard-vendedor-full">
         <div class="dashboard-full">
             <div class="explorar-header">
-                <h1>✨ Explorar productos</h1>
+                <h1><i class="fa-solid fa-sparkles"></i> Explorar productos</h1>
                 <p>Descubre servicios ofrecidos por otros estudiantes</p>
             </div>
 
@@ -71,7 +71,7 @@
                             <img src="https://images.unsplash.com/photo-1516321310764-9f3c9619d7d4?w=400&h=200&fit=crop" alt="{{ prod.titulo }}">
                         {% endif %}
                         <div class="producto-overlay">
-                            <button class="btn-overlay" onclick="verDetalle({{ prod.id }})">
+                            <button class="btn-overlay" onclick="window.location.href='/producto/{{ prod.id }}'">
                                 <i class="fas fa-eye"></i> Ver detalles
                             </button>
                         </div>
@@ -83,19 +83,42 @@
                         <p class="producto-precio-explorar">${{ "{:,.0f}".format(prod.precio) }}</p>
                         <span class="producto-categoria">
                             <i class="fas fa-tag"></i> 
-                            {% if prod.categoria_id == 1 %}📚 Clases
-                            {% elif prod.categoria_id == 2 %}💻 Tecnología
-                            {% elif prod.categoria_id == 3 %}🎨 Diseño
-                            {% elif prod.categoria_id == 4 %}🎵 Arte
-                            {% else %}📦 Otros{% endif %}
+                            {% if prod.categoria_id == 1 %}<i class="fa-solid fa-book-open"></i> Clases
+                            {% elif prod.categoria_id == 2 %}<i class="fa-solid fa-laptop-code"></i> Tecnología
+                            {% elif prod.categoria_id == 3 %}<i class="fa-solid fa-palette"></i> Diseño
+                            {% elif prod.categoria_id == 4 %}<i class="fa-solid fa-music"></i> Arte
+                            {% else %}<i class="fas fa-box"></i> Otros{% endif %}
                         </span>
                         <div class="producto-actions">
-                            <button onclick="agregarAlCarrito({{ prod.id }}, '{{ prod.titulo|replace("'", "\\'") }}', {{ prod.precio }}, '{{ prod.imagen_url or '' }}')" class="btn-carrito">
-                                <i class="fas fa-cart-plus"></i> Agregar
-                            </button>
-                            <button onclick="agregarFavorito({{ prod.id }})" class="btn-favorito" id="fav-{{ prod.id }}">
-                                <i class="fas fa-heart"></i>
-                            </button>
+                            {% if session_user and session_user.rol == 'comprador' %}
+                                <button onclick="agregarAlCarrito({{ prod.id }}, '{{ prod.titulo|replace("'", "\\'") }}', {{ prod.precio }}, '{{ prod.imagen_url or '' }}')" class="btn-comprar-moderno">
+                                    <i class="fas fa-cart-plus"></i> Agregar
+                                </button>
+                                <button onclick="agregarFavorito({{ prod.id }})" class="btn-favorito-moderno" id="fav-{{ prod.id }}">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                                
+                            {% elif session_user and session_user.rol == 'estudiante' %}
+                                <button onclick="agregarAlCarrito({{ prod.id }}, '{{ prod.titulo|replace("'", "\\'") }}', {{ prod.precio }}, '{{ prod.imagen_url or '' }}')" class="btn-comprar-moderno">
+                                    <i class="fas fa-cart-plus"></i> Agregar
+                                </button>
+                                <button onclick="agregarFavorito({{ prod.id }})" class="btn-favorito-moderno" id="fav-{{ prod.id }}">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                                
+                            {% elif session_user and session_user.rol == 'admin' %}
+                                <div class="admin-view-badge">
+                                    <i class="fas fa-shield-alt"></i> Moderación
+                                </div>
+                                
+                            {% else %}
+                                <a href="{{ url_for('login') }}" class="btn-comprar-moderno">
+                                    <i class="fas fa-lock"></i> Inicia sesión
+                                </a>
+                                <button onclick="window.location.href='{{ url_for('login') }}'" class="btn-favorito-moderno">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -106,14 +129,6 @@
         </div>
     </div>
     
-
-    <!-- Modal de detalles del producto -->
-    <div id="modalDetalle" class="modal-detalle">
-        <div class="modal-content-detalle">
-            <span class="modal-close" onclick="cerrarModal()">&times;</span>
-            <div id="modalBody"></div>
-        </div>
-    </div>
 
     <script>
     // ---------- CARRITO (localStorage) ----------

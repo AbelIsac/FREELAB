@@ -1,37 +1,362 @@
 {% extends "base.html" %}
 {% block title %}Mi Carrito - Marketplace Estudiantil{% endblock %}
+
+{% block extra_css %}
+<style>
+    .carrito-page {
+        padding-top: 100px;
+        min-height: calc(100vh - 300px);
+    }
+    
+    .carrito-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1rem 2rem 4rem;
+    }
+    
+    .carrito-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .carrito-header h1 {
+        font-size: 2rem;
+        color: #1e293b;
+        margin-bottom: 0.5rem;
+    }
+    
+    .carrito-header p {
+        color: #64748b;
+    }
+    
+    /* Carrito vacío */
+    .carrito-vacio {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: 24px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+    
+    .carrito-vacio i {
+        font-size: 4rem;
+        color: #cbd5e1;
+        margin-bottom: 1rem;
+    }
+    
+    .carrito-vacio p {
+        font-size: 1.1rem;
+        color: #64748b;
+        margin-bottom: 1.5rem;
+    }
+    
+    .carrito-vacio .btn-explorar {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 0.8rem 1.5rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .carrito-vacio .btn-explorar:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102,126,234,0.4);
+    }
+    
+    /* Items del carrito */
+    .carrito-items {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        margin-bottom: 2rem;
+    }
+    
+    .carrito-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.2rem;
+        border-bottom: 1px solid #e2e8f0;
+        transition: all 0.3s ease;
+    }
+    
+    .carrito-item:hover {
+        background: #f8fafc;
+    }
+    
+    .item-imagen img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 12px;
+    }
+    
+    .item-detalles {
+        flex: 2;
+    }
+    
+    .item-detalles h4 {
+        margin: 0 0 0.5rem 0;
+        color: #1e293b;
+        font-size: 1rem;
+    }
+    
+    .item-precio {
+        color: #059669;
+        font-weight: 500;
+        margin: 0 0 0.5rem 0;
+        font-size: 0.9rem;
+    }
+    
+    .item-cantidad {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .cantidad-btn {
+        width: 32px;
+        height: 32px;
+        border: 1px solid #cbd5e1;
+        background: white;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-weight: bold;
+    }
+    
+    .cantidad-btn:hover {
+        background: #f1f5f9;
+        border-color: #667eea;
+    }
+    
+    .item-subtotal {
+        font-weight: bold;
+        font-size: 1.1rem;
+        color: #0f172a;
+        min-width: 100px;
+        text-align: right;
+    }
+    
+    .btn-eliminar {
+        background: none;
+        border: none;
+        color: #ef4444;
+        font-size: 1.2rem;
+        cursor: pointer;
+        padding: 0.5rem;
+        transition: all 0.2s;
+        border-radius: 50%;
+    }
+    
+    .btn-eliminar:hover {
+        background: #fee2e2;
+        transform: scale(1.1);
+    }
+    
+    /* Resumen de compra */
+    .carrito-resumen {
+        margin-top: 2rem;
+        display: flex;
+        justify-content: flex-end;
+    }
+    
+    .resumen-card {
+        background: white;
+        border-radius: 20px;
+        padding: 1.5rem;
+        width: 100%;
+        max-width: 400px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        position: sticky;
+        top: 100px;
+    }
+    
+    .resumen-card h3 {
+        margin-top: 0;
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+        color: #1e293b;
+    }
+    
+    .resumen-line {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.8rem;
+        color: #64748b;
+    }
+    
+    .resumen-line.total {
+        font-size: 1.2rem;
+        border-top: 1px solid #e2e8f0;
+        padding-top: 0.8rem;
+        margin-top: 0.8rem;
+        color: #1e293b;
+    }
+    
+    .btn-pagar {
+        width: 100%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border: none;
+        padding: 0.8rem;
+        border-radius: 12px;
+        font-weight: 600;
+        margin-top: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-pagar:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102,126,234,0.4);
+    }
+    
+    .btn-vaciar {
+        width: 100%;
+        background: #f1f5f9;
+        color: #ef4444;
+        border: none;
+        padding: 0.8rem;
+        border-radius: 12px;
+        font-weight: 600;
+        margin-top: 0.8rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-vaciar:hover {
+        background: #fee2e2;
+        transform: translateY(-2px);
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .carrito-page {
+            padding-top: 80px;
+        }
+        
+        .carrito-container {
+            padding: 1rem 1rem 3rem;
+        }
+        
+        .carrito-header h1 {
+            font-size: 1.5rem;
+        }
+        
+        .carrito-item {
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+        
+        .item-imagen {
+            width: 60px;
+        }
+        
+        .item-imagen img {
+            width: 60px;
+            height: 60px;
+        }
+        
+        .item-detalles {
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        .item-detalles h4 {
+            font-size: 0.9rem;
+        }
+        
+        .item-subtotal {
+            font-size: 0.9rem;
+            min-width: auto;
+            margin-left: auto;
+        }
+        
+        .btn-eliminar {
+            order: 3;
+        }
+        
+        .carrito-resumen {
+            justify-content: center;
+        }
+        
+        .resumen-card {
+            max-width: 100%;
+            position: static;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .carrito-item {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .item-cantidad {
+            justify-content: center;
+        }
+        
+        .item-subtotal {
+            text-align: center;
+            margin-left: 0;
+        }
+        
+        .btn-eliminar {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        
+        .carrito-item {
+            position: relative;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="carrito-container">
-    <div class="carrito-header">
-        <h1>🛒 Mi carrito</h1>
-        <p>Revisa los productos que has agregado</p>
-    </div>
+<div class="carrito-page">
+    <div class="carrito-container">
+        <div class="carrito-header">
+            <h1><i class="fas fa-shopping-cart"></i> Mi carrito</h1>
+            <p>Revisa los productos que has agregado</p>
+        </div>
 
-    <div id="carritoVacio" class="carrito-vacio" style="display: none;">
-        <i class="fas fa-shopping-cart" style="font-size: 4rem; color: #cbd5e1;"></i>
-        <p>Tu carrito está vacío</p>
-        <a href="{{ url_for('explorar_productos') }}" class="btn btn-primary">Explorar productos</a>
-    </div>
+        <div id="carritoVacio" class="carrito-vacio" style="display: none;">
+            <i class="fas fa-shopping-cart"></i>
+            <p>Tu carrito está vacío</p>
+            <a href="{{ url_for('explorar_productos') }}" class="btn-explorar">
+                <i class="fas fa-store"></i> Explorar productos
+            </a>
+        </div>
 
-    <div id="carritoLleno" style="display: none;">
-        <div class="carrito-items" id="carritoItems"></div>
-        <div class="carrito-resumen">
-            <div class="resumen-card">
-                <h3>Resumen de compra</h3>
-                <div class="resumen-line">
-                    <span>Subtotal:</span>
-                    <span id="subtotalCarrito">$0</span>
+        <div id="carritoLleno" style="display: none;">
+            <div class="carrito-items" id="carritoItems"></div>
+            <div class="carrito-resumen">
+                <div class="resumen-card">
+                    <h3>Resumen de compra</h3>
+                    <div class="resumen-line">
+                        <span>Subtotal:</span>
+                        <span id="subtotalCarrito">$0</span>
+                    </div>
+                    <div class="resumen-line total">
+                        <span><strong>Total:</strong></span>
+                        <span><strong id="totalCarrito">$0</strong></span>
+                    </div>
+                    <button id="procederPago" class="btn-pagar">
+                        <i class="fas fa-credit-card"></i> Proceder al pago
+                    </button>
+                    <button id="vaciarCarrito" class="btn-vaciar">
+                        <i class="fas fa-trash-alt"></i> Vaciar carrito
+                    </button>
                 </div>
-                <div class="resumen-line total">
-                    <span><strong>Total:</strong></span>
-                    <span><strong id="totalCarrito">$0</strong></span>
-                </div>
-                <button id="procederPago" class="btn-pagar">
-                    <i class="fas fa-credit-card"></i> Proceder al pago
-                </button>
-                <button id="vaciarCarrito" class="btn-vaciar">
-                    <i class="fas fa-trash-alt"></i> Vaciar carrito
-                </button>
             </div>
         </div>
     </div>
@@ -60,7 +385,7 @@
             itemDiv.className = 'carrito-item';
             itemDiv.innerHTML = `
                 <div class="item-imagen">
-                    <img src="${item.imagen || 'https://images.unsplash.com/photo-1516321310764-9f3c9619d7d4?w=100&h=100&fit=crop'}" alt="${item.titulo}">
+                    <img src="${item.imagen || 'https://images.unsplash.com/photo-1516321310764-9f3c9619d7d4?w=100&h=100&fit=crop'}" alt="${escapeHtml(item.titulo)}">
                 </div>
                 <div class="item-detalles">
                     <h4>${escapeHtml(item.titulo)}</h4>
@@ -81,6 +406,7 @@
     }
     
     function escapeHtml(str) {
+        if (!str) return '';
         return str.replace(/[&<>]/g, function(m) {
             if (m === '&') return '&amp;';
             if (m === '<') return '&lt;';
@@ -117,23 +443,46 @@
         const contador = document.getElementById('cartCount');
         if (contador) contador.innerText = totalItems;
     }
+
+    // También actualizar en todas las pestañas
+    window.addEventListener('storage', function(e) {
+        if (e.key === 'carrito') {
+            renderCarrito();
+            actualizarContadorGlobal();
+        }
+    });
     
     document.getElementById('vaciarCarrito')?.addEventListener('click', () => {
-        localStorage.removeItem('carrito');
-        renderCarrito();
-        actualizarContadorGlobal();
-        Swal.fire('Carrito vacío', 'Todos los productos han sido eliminados', 'info');
+        Swal.fire({
+            title: '¿Vaciar carrito?',
+            text: 'Todos los productos serán eliminados',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Sí, vaciar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                localStorage.removeItem('carrito');
+                renderCarrito();
+                actualizarContadorGlobal();
+                Swal.fire('Carrito vacío', 'Todos los productos han sido eliminados', 'success');
+            }
+        });
     });
     
     document.getElementById('procederPago')?.addEventListener('click', async () => {
         const carrito = JSON.parse(localStorage.getItem('carrito'));
         if (!carrito || carrito.length === 0) return;
+        
         Swal.fire({
             title: 'Procesando...',
             text: 'Preparando tu pago',
             allowOutsideClick: false,
             didOpen: () => { Swal.showLoading(); }
         });
+        
         try {
             const response = await fetch("{{ url_for('checkout_carrito') }}", {
                 method: 'POST',
@@ -152,167 +501,6 @@
     });
     
     renderCarrito();
+    actualizarContadorGlobal();
 </script>
-
-<style>
-    .carrito-container {
-        max-width: 1200px;
-        margin: 2rem auto;
-        padding: 1rem;
-    }
-    .carrito-header {
-        text-align: center;
-        margin-bottom: 2rem;
-    }
-    .carrito-header h1 {
-        font-size: 2rem;
-        color: #1e293b;
-    }
-    .carrito-header p {
-        color: #64748b;
-    }
-    .carrito-vacio {
-        text-align: center;
-        padding: 4rem;
-        background: white;
-        border-radius: 20px;
-    }
-    .carrito-items {
-        background: white;
-        border-radius: 20px;
-        overflow: hidden;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-    }
-    .carrito-item {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        padding: 1.2rem;
-        border-bottom: 1px solid #e2e8f0;
-    }
-    .item-imagen img {
-        width: 80px;
-        height: 80px;
-        object-fit: cover;
-        border-radius: 12px;
-    }
-    .item-detalles {
-        flex: 2;
-    }
-    .item-detalles h4 {
-        margin: 0 0 0.5rem 0;
-        color: #1e293b;
-    }
-    .item-precio {
-        color: #059669;
-        font-weight: 500;
-        margin: 0 0 0.5rem 0;
-    }
-    .item-cantidad {
-        display: flex;
-        align-items: center;
-        gap: 0.8rem;
-    }
-    .cantidad-btn {
-        width: 30px;
-        height: 30px;
-        border: 1px solid #cbd5e1;
-        background: white;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-    .cantidad-btn:hover {
-        background: #f1f5f9;
-    }
-    .item-subtotal {
-        font-weight: bold;
-        font-size: 1.1rem;
-        color: #0f172a;
-        min-width: 100px;
-        text-align: right;
-    }
-    .btn-eliminar {
-        background: none;
-        border: none;
-        color: #ef4444;
-        font-size: 1.2rem;
-        cursor: pointer;
-        padding: 0.5rem;
-        transition: transform 0.2s;
-    }
-    .btn-eliminar:hover {
-        transform: scale(1.1);
-    }
-    .carrito-resumen {
-        margin-top: 2rem;
-        display: flex;
-        justify-content: flex-end;
-    }
-    .resumen-card {
-        background: white;
-        border-radius: 20px;
-        padding: 1.5rem;
-        width: 100%;
-        max-width: 400px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-    }
-    .resumen-card h3 {
-        margin-top: 0;
-        margin-bottom: 1rem;
-    }
-    .resumen-line {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 0.8rem;
-    }
-    .resumen-line.total {
-        font-size: 1.2rem;
-        border-top: 1px solid #e2e8f0;
-        padding-top: 0.8rem;
-        margin-top: 0.8rem;
-    }
-    .btn-pagar {
-        width: 100%;
-        background: linear-gradient(135deg, #3b82f6, #2563eb);
-        color: white;
-        border: none;
-        padding: 0.8rem;
-        border-radius: 12px;
-        font-weight: 600;
-        margin-top: 1rem;
-        cursor: pointer;
-        transition: transform 0.2s;
-    }
-    .btn-pagar:hover {
-        transform: translateY(-2px);
-    }
-    .btn-vaciar {
-        width: 100%;
-        background: #f1f5f9;
-        color: #ef4444;
-        border: none;
-        padding: 0.8rem;
-        border-radius: 12px;
-        font-weight: 600;
-        margin-top: 0.8rem;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-    .btn-vaciar:hover {
-        background: #fee2e2;
-    }
-    @media (max-width: 768px) {
-        .carrito-item {
-            flex-wrap: wrap;
-        }
-        .item-subtotal {
-            text-align: left;
-            margin-left: auto;
-        }
-        .btn-eliminar {
-            order: 3;
-        }
-    }
-</style>
 {% endblock %}

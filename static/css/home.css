@@ -464,6 +464,43 @@
     }
 }
 
+/* Admin view badge para productos destacados */
+.admin-view-badge {
+    background: #f1f5f9;
+    color: #64748b;
+    padding: 0.5rem;
+    border-radius: 12px;
+    text-align: center;
+    font-size: 0.8rem;
+    width: 100%;
+}
+
+.admin-view-badge i {
+    margin-right: 0.5rem;
+    color: #667eea;
+}
+
+.btn-ver-detalle-home {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.8rem;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-ver-detalle-home:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
 @media (max-width: 480px) {
     .hero-content h1 {
         font-size: 1.5rem;

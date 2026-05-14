@@ -10,7 +10,7 @@
 <!-- Hero Section -->
 <section class="hero">
     <div class="hero-content">
-        <h1>🎓 Marketplace <span class="highlight">Estudiantil</span></h1>
+        <h1><i class="fa-solid fa-graduation-cap"></i> Marketplace <span class="highlight">Estudiantil</span></h1>
         <p class="hero-subtitle">
             Compra y vende servicios entre estudiantes.
             <strong>¡Precios diseñados para tu bolsillo!</strong>
@@ -60,7 +60,6 @@
         <p class="section-subtitle">Lo que están vendiendo otros estudiantes</p>
 
         <div class="productos-grid" id="productos-destacados">
-            <!-- Los productos se cargarán dinámicamente con JavaScript -->
             <div class="loading-spinner">
                 <i class="fas fa-spinner fa-pulse"></i> Cargando productos...
             </div>
@@ -68,33 +67,36 @@
 
         <div class="section-cta">
             {% if session_user %}
-                <!-- Usuario logueado - Mostrar según rol -->
+                <!-- Usuario logueado -->
                 <a href="{{ url_for('explorar_productos') }}" class="btn-cta">
                     <i class="fas fa-arrow-right"></i> Ver todos los productos
                     <span class="btn-cta-glow"></span>
                 </a>
                 
                 {% if session_user.rol == 'estudiante' %}
-                    <!-- Solo estudiantes/vendedores pueden publicar -->
                     <a href="{{ url_for('publicar_producto') }}" class="btn-cta btn-cta-secondary">
                         <i class="fas fa-plus-circle"></i> Publicar mi servicio
                         <span class="btn-cta-glow"></span>
                     </a>
                 {% elif session_user.rol == 'comprador' %}
-                    <!-- Compradores ven "Mis compras" en lugar de publicar -->
                     <a href="{{ url_for('mis_compras') }}" class="btn-cta btn-cta-secondary">
                         <i class="fas fa-shopping-bag"></i> Mis compras
                         <span class="btn-cta-glow"></span>
                     </a>
+                {% elif session_user.rol == 'admin' %}
+                    <a href="{{ url_for('admin_dashboard') }}" class="btn-cta btn-cta-secondary">
+                        <i class="fas fa-shield-alt"></i> Panel Administrativo
+                        <span class="btn-cta-glow"></span>
+                    </a>
                 {% else %}
-                    <!-- Si no tiene rol definido -->
                     <a href="{{ url_for('elegir_rol', user_id=session_user.id) }}" class="btn-cta btn-cta-secondary">
                         <i class="fas fa-user-plus"></i> Completar mi perfil
                         <span class="btn-cta-glow"></span>
                     </a>
                 {% endif %}
+                
             {% else %}
-                <!-- Usuario no logueado -->
+                <!-- Usuario NO logueado -->
                 <a href="{{ url_for('explorar_productos') }}" class="btn-cta">
                     <i class="fas fa-arrow-right"></i> Ver todos los productos
                     <span class="btn-cta-glow"></span>
@@ -189,13 +191,13 @@
     // Función para obtener nombre de categoría
     function getCategoriaNombre(categoriaId) {
         const categorias = {
-            1: '📚 Clases',
-            2: '💻 Tecnología',
-            3: '🎨 Diseño',
-            4: '🎵 Arte',
-            5: '📦 Otros'
+            1: '<i class="fa-solid fa-book-open"></i> Clases',
+            2: '<i class="fa-solid fa-laptop-code"></i> Tecnología',
+            3: '<i class="fa-solid fa-palette"></i> Diseño',
+            4: '<i class="fa-solid fa-music"></i> Arte',
+            5: '<i class="fas fa-box"></i> Otros'
         };
-        return categorias[categoriaId] || '📦 Producto';
+        return categorias[categoriaId] || '<i class="fas fa-box"></i> Producto';
     }
 
     // Función para comprar producto (redirige al checkout)
@@ -203,10 +205,14 @@
         window.location.href = '/checkout/' + productoId;
     }
 
-    // Cargar productos destacados desde la base de datos
+// Cargar productos destacados desde la base de datos
 function cargarProductosDestacados() {
     const container = document.getElementById('productos-destacados');
     container.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner fa-pulse"></i> Cargando productos...</div>';
+    
+    // Obtener rol del usuario desde una variable global
+    const userRole = '{{ session_user.rol if session_user else "" }}';
+    const isLoggedIn = {{ 'true' if session_user else 'false' }};
     
     fetch('/productos-destacados')
         .then(response => {
@@ -222,6 +228,34 @@ function cargarProductosDestacados() {
                     const precioFormateado = parseInt(prod.precio).toLocaleString();
                     const descripcionCorta = prod.descripcion ? escapeHtml(prod.descripcion.substring(0, 80)) + '...' : 'Sin descripción';
                     
+                    let accionesHTML = '';
+                    
+                    // ADMIN: solo puede ver, no comprar
+                    if (userRole === 'admin') {
+                        accionesHTML = `
+                            <div class="admin-view-badge">
+                                <i class="fas fa-shield-alt"></i> Modo supervisión
+                            </div>
+                        `;
+                    } 
+                    
+                    // Usuarios logueados (compradores y estudiantes) pueden ver detalles
+                    else if (isLoggedIn) {
+                        accionesHTML = `
+                            <a href="/producto/${prod.id}" class="btn-ver-detalle-home">
+                                <i class="fas fa-eye"></i> Ver detalles
+                            </a>
+                        `;
+                    }
+                    // Visitantes no logueados
+                    else {
+                        accionesHTML = `
+                            <button onclick="window.location.href='/login'" class="btn-buy-home">
+                                <i class="fas fa-lock"></i> Inicia sesión
+                            </button>
+                        `;
+                    }
+                    
                     const productoHTML = `
                         <article class="producto-card">
                             <div class="producto-imagen">
@@ -233,9 +267,7 @@ function cargarProductosDestacados() {
                                 <p class="producto-descripcion-corta">${descripcionCorta}</p>
                                 <div class="producto-precio">$${precioFormateado} <span>CLP</span></div>
                                 <div class="producto-actions-home">
-                                    <button onclick="window.location.href='/explorar'" class="btn-buy-home">
-                                        <i class="fas fa-shopping-cart"></i> Comprar
-                                    </button>
+                                    ${accionesHTML}
                                 </div>
                             </div>
                         </article>
