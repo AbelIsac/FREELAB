@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/checkout.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/loader.css') }}">
     {% block extra_css %}{% endblock %}
     <style>
     /* ========================
@@ -44,48 +45,60 @@
     }
 
     /* Botón Carrito Flotante */
-    .cart-float {
-        background: white;
-        color: #667eea;
-        width: 55px;
-        height: 55px;
-        border-radius: 50%;
+    /* Carrito en el header - Con pulso */
+    .cart-header {
+        position: relative;
         display: flex;
         align-items: center;
         justify-content: center;
         text-decoration: none;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
         transition: all 0.3s ease;
-        position: relative;
-        border: 2px solid #667eea;
+        background: #f1f5f9;
+        color: #667eea;
+        animation: pulse-header 2s infinite;
     }
 
-    .cart-float:hover {
-        transform: translateY(-3px) scale(1.05);
+    @keyframes pulse-header {
+        0% {
+            box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.4);
+        }
+        70% {
+            box-shadow: 0 0 0 10px rgba(102, 126, 234, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
+        }
+    }
+
+    .cart-header:hover {
         background: linear-gradient(135deg, #667eea, #764ba2);
         color: white;
-        border-color: transparent;
+        transform: scale(1.05);
+        animation: none;
     }
 
-    .cart-float i {
-        font-size: 1.5rem;
+    .cart-header i {
+        font-size: 1.1rem;
     }
 
-    .cart-count {
+    .cart-count-header {
         position: absolute;
-        top: -8px;
-        right: -8px;
+        top: -6px;
+        right: -6px;
         background: #ef4444;
         color: white;
-        font-size: 0.7rem;
+        font-size: 0.6rem;
         font-weight: bold;
-        width: 22px;
-        height: 22px;
+        width: 18px;
+        height: 18px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        border: 2px solid white;
     }
 
     /* Responsive para botones flotantes */
@@ -119,77 +132,77 @@
         }
     }
   
-    /* Carrito en el header */
-    .cart-header {
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #64748b;
-        text-decoration: none;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        transition: all 0.3s ease;
-        background: #f1f5f9;
-    }
-    
-    .cart-header:hover {
-        background: #e2e8f0;
-        color: #667eea;
-        transform: scale(1.05);
-    }
-    
-    .cart-header i {
-        font-size: 1.2rem;
-    }
-    
-    .cart-count-header {
-        position: absolute;
-        top: -5px;
-        right: -5px;
-        background: #ef4444;
-        color: white;
-        font-size: 0.65rem;
-        font-weight: bold;
-        width: 18px;
-        height: 18px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    }
-    
-    /* Ajuste responsive para el carrito en header */
-    @media (max-width: 768px) {
-        .cart-header {
-            width: 35px;
-            height: 35px;
-        }
-        
-        .cart-header i {
-            font-size: 1rem;
-        }
-        
-        .cart-count-header {
-            width: 16px;
-            height: 16px;
-            font-size: 0.6rem;
-            top: -4px;
-            right: -4px;
-        }
-    }
+
 
 </style>
     <!-- SweetAlert2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 </head>
 <body>
-    <!-- Header -->
+ <!-- ==================== LOADER INLINE (APARECE AL INSTANTE) ==================== -->
+    <div id="loaderScreen" style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        transition: opacity 0.8s ease;
+    ">
+        <div style="margin-bottom: 2rem; animation: bounceLoader 2s ease infinite;">
+            <i class="fas fa-graduation-cap" style="font-size: 4rem; background: linear-gradient(135deg, #667eea, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
+        </div>
+        
+        <div style="position: relative; width: 120px; height: 120px; margin-bottom: 2rem;">
+            <div style="position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 4px solid #667eea; border-top-color: transparent; animation: spinLoader 1.5s infinite;"></div>
+            <div style="position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 4px solid #f59e0b; border-right-color: transparent; animation: spinLoader 1.5s infinite -0.5s;"></div>
+            <div style="position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 4px solid #10b981; border-bottom-color: transparent; animation: spinLoader 1.5s infinite -1s;"></div>
+        </div>
+        
+        <div style="text-align: center; color: white;">
+            <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Marketplace Estudiantil</h2>
+            <p style="font-size: 0.9rem; opacity: 0.7;">Preparando tu galería virtual...</p>
+        </div>
+        
+        <div style="width: 300px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 10px; margin-top: 2rem; overflow: hidden;">
+            <div style="width: 0%; height: 100%; background: linear-gradient(90deg, #667eea, #f59e0b, #10b981); border-radius: 10px; animation: progressLoader 2.5s ease forwards;"></div>
+        </div>
+        
+        <div id="quoteText" style="margin-top: 2rem; font-size: 0.8rem; color: rgba(255,255,255,0.5); text-align: center; max-width: 300px;">
+            Conectando estudiantes con oportunidades
+        </div>
+    </div>
+
+    <style>
+        @keyframes spinLoader {
+            0% { transform: rotate(0deg) scale(1); opacity: 1; }
+            50% { transform: rotate(180deg) scale(1.1); opacity: 0.7; }
+            100% { transform: rotate(360deg) scale(1); opacity: 1; }
+        }
+        @keyframes bounceLoader {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes progressLoader {
+            0% { width: 0%; }
+            20% { width: 25%; }
+            40% { width: 45%; }
+            60% { width: 65%; }
+            80% { width: 85%; }
+            100% { width: 100%; }
+        }
+    </style>
+
+    <!-- ==================== HEADER (UNO SOLO) ==================== -->
     <header class="header">
         <nav class="navbar">
             <div class="nav-container">
+                <!-- Logo -->
                 <div class="nav-logo">
                     <a href="{{ url_for('home') }}">
                         <i class="fas fa-graduation-cap"></i>
@@ -197,103 +210,90 @@
                     </a>
                 </div>
                 
+                <!-- Menú principal CENTRADO -->
                 <ul class="nav-menu">
-                    
+                    <li><a href="{{ url_for('home') }}" class="nav-link">Inicio</a></li>
+                    <li><a href="{{ url_for('explorar_productos') }}" class="nav-link">Explorar</a></li>
                     <li><a href="{{ url_for('como_funciona') }}" class="nav-link">Cómo funciona</a></li>
                     <li><a href="{{ url_for('contacto') }}" class="nav-link">Contacto</a></li>
                 </ul>
 
+                <!-- Acciones derecha (carrito + usuario) -->
                 <div class="nav-actions">
-        <!-- CARRITO EN EL HEADER - SOLO para compradores -->
-        {% if session_user and session_user.rol == 'comprador' %}
-            <a href="{{ url_for('ver_carrito') }}" class="cart-header" id="cartHeader" title="Ver carrito">
-                <i class="fas fa-shopping-cart"></i>
-                <span class="cart-count-header" id="cartCount">0</span>
-            </a>
-        {% endif %}
-
-    
-    
-        {% if session_user %}
-            <!-- DROPDOWN MENU -->
-            <div class="user-dropdown">
-                <div class="user-info-btn">
-                    <img src="{{ session_user.get('avatar', 'https://ui-avatars.com/api/?background=667eea&color=fff&name=' + session_user.get('name', 'U')) }}" 
-                        alt="Avatar" class="user-avatar">
-                    <span class="user-name">{{ session_user.get('name', 'Usuario').split()[0] }}</span>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="dropdown-menu">
-                    {% if session_user.rol == 'estudiante' %}
-                        <a href="{{ url_for('dashboard_estudiante', user_id=session_user.id) }}" class="dropdown-item">
-                            <i class="fas fa-tachometer-alt"></i> Mi Dashboard
-                        </a>
-                        <a href="{{ url_for('mis_productos') }}" class="dropdown-item">
-                            <i class="fas fa-store"></i> Mis Productos
-                        </a>
-                        <a href="{{ url_for('estadisticas') }}" class="dropdown-item">
-                            <i class="fas fa-chart-line"></i> Mis Ventas
-                        </a>
-                        <a href="{{ url_for('publicar_producto') }}" class="dropdown-item">
-                            <i class="fas fa-plus-circle"></i> Publicar Producto
-                        </a>
-                    {% elif session_user.rol == 'comprador' %}
-                        <a href="{{ url_for('dashboard_comprador', user_id=session_user.id) }}" class="dropdown-item">
-                            <i class="fas fa-tachometer-alt"></i> Mi Dashboard
-                        </a>
-                        <a href="{{ url_for('mis_compras') }}" class="dropdown-item">
-                            <i class="fas fa-shopping-bag"></i> Mis Compras
-                        </a>
-                        <a href="{{ url_for('favoritos') }}" class="dropdown-item">
-                            <i class="fas fa-heart"></i> Lista de Deseos
-                        </a>
-                        <a href="{{ url_for('mis_resenas') }}" class="dropdown-item">
-                            <i class="fas fa-star"></i> Mis Reseñas
-                        </a>
-                    
-
-                    {% elif session_user.rol == 'admin' %}
-                        <a href="{{ url_for('admin_dashboard') }}" class="dropdown-item">
-                            <i class="fas fa-shield-alt"></i> Panel Admin
-                        </a>
-                        <a href="{{ url_for('admin_categorias') }}" class="dropdown-item">
-                            <i class="fas fa-tags"></i> Gestionar Categorías
-                        </a>
-                        <a href="{{ url_for('admin_publicaciones') }}" class="dropdown-item">
-                            <i class="fas fa-clock"></i> Publicaciones Pendientes
-                        </a>
-                        <a href="{{ url_for('admin_todas_publicaciones') }}" class="dropdown-item">  <!-- ← NUEVO -->
-                            <i class="fas fa-boxes"></i> Todas las Publicaciones
-                        </a>
-                        <a href="{{ url_for('admin_transacciones') }}" class="dropdown-item">
-                            <i class="fas fa-hourglass-half"></i> Transacciones Pendientes
-                        </a>
-                        <a href="{{ url_for('admin_usuarios') }}" class="dropdown-item">
-                            <i class="fas fa-users"></i> Gestionar Usuarios
+                    <!-- Carrito - solo compradores -->
+                    {% if session_user and session_user.rol == 'comprador' %}
+                        <a href="{{ url_for('ver_carrito') }}" class="cart-header" id="cartHeader" title="Ver carrito">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="cart-count-header" id="cartCount">0</span>
                         </a>
                     {% endif %}
 
-                    <div class="dropdown-divider"></div>
-                    
-                    <a href="{{ url_for('configuracion') }}" class="dropdown-item">
-                        <i class="fas fa-user-circle"></i> Mi Perfil
-                    </a>
-                    <a href="{{ url_for('configuracion') }}" class="dropdown-item">
-                        <i class="fas fa-cog"></i> Configuración
-                    </a>
-                    <div class="dropdown-divider"></div>
-                    <a href="{{ url_for('logout') }}" class="dropdown-item logout">
-                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-                    </a>
+                    {% if session_user %}
+                        <!-- Dropdown usuario -->
+                        <div class="user-dropdown">
+                            <div class="user-info-btn">
+                                <img src="{{ session_user.get('avatar', 'https://ui-avatars.com/api/?background=667eea&color=fff&name=' + session_user.get('name', 'U')) }}" 
+                                     alt="Avatar" class="user-avatar">
+                                <span class="user-name">{{ session_user.get('name', 'Usuario').split()[0] }}</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="dropdown-menu">
+                                <!-- Opciones según rol -->
+                                {% if session_user.rol == 'estudiante' %}
+                                    <a href="{{ url_for('dashboard_estudiante', user_id=session_user.id) }}" class="dropdown-item">
+                                        <i class="fas fa-tachometer-alt"></i> Mi Dashboard
+                                    </a>
+                                    <a href="{{ url_for('mis_productos') }}" class="dropdown-item">
+                                        <i class="fas fa-store"></i> Mis Productos
+                                    </a>
+                                    <a href="{{ url_for('estadisticas') }}" class="dropdown-item">
+                                        <i class="fas fa-chart-line"></i> Mis Ventas
+                                    </a>
+                                    <a href="{{ url_for('publicar_producto') }}" class="dropdown-item">
+                                        <i class="fas fa-plus-circle"></i> Publicar
+                                    </a>
+                                {% elif session_user.rol == 'comprador' %}
+                                    <a href="{{ url_for('dashboard_comprador', user_id=session_user.id) }}" class="dropdown-item">
+                                        <i class="fas fa-tachometer-alt"></i> Mi Dashboard
+                                    </a>
+                                    <a href="{{ url_for('mis_compras') }}" class="dropdown-item">
+                                        <i class="fas fa-shopping-bag"></i> Mis Compras
+                                    </a>
+                                    <a href="{{ url_for('favoritos') }}" class="dropdown-item">
+                                        <i class="fas fa-heart"></i> Favoritos
+                                    </a>
+                                {% elif session_user.rol == 'admin' %}
+                                    <a href="{{ url_for('admin_dashboard') }}" class="dropdown-item">
+                                        <i class="fas fa-shield-alt"></i> Panel Admin
+                                    </a>
+                                    <a href="{{ url_for('admin_categorias') }}" class="dropdown-item">
+                                        <i class="fas fa-tags"></i> Categorías
+                                    </a>
+                                    <a href="{{ url_for('admin_todas_publicaciones') }}" class="dropdown-item">
+                                        <i class="fas fa-boxes"></i> Publicaciones
+                                    </a>
+                                    <a href="{{ url_for('admin_transacciones') }}" class="dropdown-item">
+                                        <i class="fas fa-chart-line"></i> Transacciones
+                                    </a>
+                                {% endif %}
+                                
+                                <div class="dropdown-divider"></div>
+                                <a href="{{ url_for('configuracion') }}" class="dropdown-item">
+                                    <i class="fas fa-user-circle"></i> Mi Perfil
+                                </a>
+                                <a href="{{ url_for('logout') }}" class="dropdown-item logout">
+                                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                                </a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="btn-login">
+                            <i class="fab fa-google"></i> Ingresar
+                        </a>
+                    {% endif %}
                 </div>
-            </div>
-        {% else %}
-            <a href="{{ url_for('login') }}" class="btn-login">
-                <i class="fab fa-google"></i> Iniciar Sesión
-            </a>
-        {% endif %}
-    </div>
 
+                <!-- Hamburguesa móvil -->
                 <div class="hamburger">
                     <span></span>
                     <span></span>
@@ -344,7 +344,9 @@
                     <div class="footer-column">
                         <h4>Plataforma</h4>
                         <ul>
-                            <li><a href="{{ url_for('como_funciona') }}" class="nav-link">Cómo funciona</a></li>
+                            <li><a href="{{ url_for('como_funciona') }}">Cómo funciona</a></li>
+                            <li><a href="{{ url_for('publicar_producto') }}">Publicar servicio</a></li>
+                            <li><a href="{{ url_for('explorar_productos') }}">Comprar</a></li>
                         </ul>
                     </div>
                     <div class="footer-column">
@@ -352,7 +354,7 @@
                         <ul>
                             <li><a href="{{ url_for('ayuda') }}">Ayuda</a></li>
                             <li><a href="{{ url_for('ayuda') }}#faq">Preguntas frecuentes</a></li>
-                            <li><a href="{{ url_for('contacto') }}" class="nav-link">Contacto</a></li>
+                            <li><a href="{{ url_for('contacto') }}">Contacto</a></li>
                         </ul>
                     </div>
                     <div class="footer-column">
@@ -381,10 +383,6 @@
             </div>
         </div>
     </footer>
-
-  
-
-
 
 
     <script>
@@ -421,7 +419,7 @@
             });
         }, 5000);
 
-         // Contador carrito
+        // Contador carrito
         function actualizarContadorCarritoGlobal() {
             const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
             const totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
@@ -436,8 +434,95 @@
         });
     </script>
 
+    <!-- LOADER SCRIPT -->
+<script>
+    const quotes = [
+        '<i class="fas fa-wand-magic"></i> Conectando estudiantes con oportunidades',
+        '<i class="fas fa-palette"></i> Descubre el talento estudiantil',
+        '<i class="fas fa-lightbulb"></i> Comparte tus creaciones con el mundo',
+        '<i class="fas fa-rocket"></i> Potencia tu emprendimiento',
+        '<i class="fas fa-book-open"></i> Aprende y enseña en comunidad',
+        '<i class="fas fa-graduation-cap"></i> El talento estudiantil te espera',
+        '<i class="fas fa-star"></i> Califica y ayuda a mejorar',
+        '<i class="fas fa-cart-shopping"></i> Encuentra servicios únicos'
+    ];
+    
+    function createParticles() {
+        const container = document.getElementById('particles');
+        if (!container) return;
+        for (let i = 0; i < 100; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.width = Math.random() * 3 + 1 + 'px';
+            particle.style.height = particle.style.width;
+            particle.style.animationDuration = Math.random() * 3 + 2 + 's';
+            particle.style.animationDelay = Math.random() * 5 + 's';
+            particle.style.opacity = Math.random() * 0.5 + 0.1;
+            container.appendChild(particle);
+        }
+    }
+    
+    let quoteIndex = 0;
+    function rotateQuotes() {
+        const quoteEl = document.getElementById('quoteText');
+        if (quoteEl) {
+            quoteIndex = (quoteIndex + 1) % quotes.length;
+            quoteEl.style.opacity = '0';
+            setTimeout(() => {
+                quoteEl.innerHTML = quotes[quoteIndex];
+                quoteEl.style.opacity = '1';
+            }, 300);
+        }
+    }
+    
+    // ==================== LOADER INTELIGENTE ====================
+    // Iniciar partículas y rotación de frases
+    createParticles();
+    setInterval(rotateQuotes, 2000);
+
+    // Mostrar loader inmediatamente
+    const loader = document.getElementById('loaderScreen');
+    if (loader) {
+        loader.style.display = 'flex';
+        loader.style.opacity = '1';
+    }
+
+    // Detectar si es una página lenta
+    const isSlowPage = window.location.pathname.includes('/dashboard') || 
+                    window.location.pathname.includes('/estadisticas') ||
+                    window.location.pathname.includes('/mis-productos') ||
+                    window.location.pathname.includes('/admin');
+
+    // Páginas lentas: 2 segundos, rápidas: 500ms
+    const delayTime = isSlowPage ? 2000 : 500;
+
+    // Esperar a que TODA la página cargue completamente
+    window.addEventListener('load', function() {
+        setTimeout(function() {
+            const loaderEl = document.getElementById('loaderScreen');
+            if (loaderEl) {
+                loaderEl.style.opacity = '0';
+                setTimeout(function() {
+                    loaderEl.style.display = 'none';
+                }, 500);
+            }
+        }, delayTime);
+    });
+
+    // Fallback por si la carga falla o es muy lenta
+    setTimeout(function() {
+        const loaderEl = document.getElementById('loaderScreen');
+        if (loaderEl && loaderEl.style.display !== 'none') {
+            loaderEl.style.opacity = '0';
+            setTimeout(function() {
+                loaderEl.style.display = 'none';
+            }, 500);
+        }
+    }, 8000);
+</script>
+    
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     {% block extra_js %}{% endblock %}
-
 </body>
 </html>

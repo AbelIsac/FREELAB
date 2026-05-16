@@ -1,6 +1,8 @@
 import os
 from datetime import datetime
 from dotenv import load_dotenv
+import cloudinary
+import cloudinary.uploader
 from flask import Flask, render_template, redirect, request, url_for, flash, session
 from config.supabase import supabase
 from werkzeug.utils import secure_filename
@@ -8,6 +10,12 @@ from flask import Flask, render_template, redirect, request, url_for, flash, ses
 from functools import wraps
 
 load_dotenv(override=True)
+
+cloudinary.config(
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET")
+)
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-key-change-in-production')
@@ -166,26 +174,38 @@ def dashboard_estudiante():
         else:
             return redirect(url_for('home'))
     
-    # Resto del código existente...
     if not user_id or session['user']['id'] != user_id:
         flash('Acceso no autorizado', 'error')
         return redirect(url_for('home'))
     
     try:
-        productos_count = supabase.table('productos').select('id', count='exact').eq('vendedor_id', user_id).eq('estado', 'activo').execute()
-        total_productos = productos_count.count or 0
-        ventas_count = supabase.table('ventas').select('id', count='exact').eq('vendedor_id', user_id).execute()
-        total_ventas = ventas_count.count or 0
-        ventas = supabase.table('ventas').select('id').eq('vendedor_id', user_id).execute()
+        # ========== CONSULTAS OPTIMIZADAS ==========
+        # Una sola consulta para productos
+        productos = supabase.table('productos').select('id, estado').eq('vendedor_id', user_id).execute()
+        
+        # Una sola consulta para ventas
+        ventas = supabase.table('ventas').select('id, comprador_id, monto').eq('vendedor_id', user_id).execute()
+        
+        # Calcular estadísticas
+        total_productos = sum(1 for p in productos.data if p.get('estado') == 'activo')
+        total_ventas = len(ventas.data)
+        clientes_unicos = len(set(v['comprador_id'] for v in ventas.data)) if ventas.data else 0
+        
+        # Calcular calificación
         calificacion = '—'
         if ventas.data:
             ids = [v['id'] for v in ventas.data]
             vals = supabase.table('valoraciones').select('calificacion').in_('venta_id', ids).execute()
             if vals.data:
                 calificacion = round(sum(v['calificacion'] for v in vals.data) / len(vals.data), 1)
-        clientes = supabase.table('ventas').select('comprador_id').eq('vendedor_id', user_id).execute()
-        clientes_unicos = len(set(c['comprador_id'] for c in clientes.data)) if clientes.data else 0
-        stats = {'ventas': total_ventas, 'productos': total_productos, 'calificacion': calificacion, 'clientes': clientes_unicos}
+        
+        stats = {
+            'ventas': total_ventas,
+            'productos': total_productos,
+            'calificacion': calificacion,
+            'clientes': clientes_unicos
+        }
+        
         usuario_data = session['user']
         class UsuarioMock:
             def __init__(self, data):
@@ -245,13 +265,15 @@ def guardar_producto():
     }
     
     # Manejar la imagen
+# Manejar la imagen
     if 'imagen' in request.files:
         file = request.files['imagen']
+
         if file and file.filename and allowed_file(file.filename):
-            filename = secure_filename(f"{session['user']['id']}_{datetime.now().strftime('%Y%m%d%H%M%S')}_{file.filename}")
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(filepath)
-            data['imagen_url'] = f"/static/uploads/{filename}"
+
+            resultado = cloudinary.uploader.upload(file)
+
+            data['imagen_url'] = resultado['secure_url']
     
     # Manejar archivo
     if 'archivo' in request.files:
@@ -303,21 +325,28 @@ def estadisticas():
     
     user_id = session['user']['id']
     try:
-        # resto del código igual...
-        ventas_count = supabase.table('ventas').select('id', count='exact').eq('vendedor_id', user_id).execute()
-        total_ventas = ventas_count.count or 0
-        ingresos_data = supabase.table('ventas').select('monto').eq('vendedor_id', user_id).execute()
-        ingresos = sum(v['monto'] for v in ingresos_data.data) if ingresos_data.data else 0
-        prod_vendidos = supabase.table('ventas').select('producto_id').eq('vendedor_id', user_id).execute()
-        productos_unicos = len(set(p['producto_id'] for p in prod_vendidos.data)) if prod_vendidos.data else 0
-        ventas = supabase.table('ventas').select('id').eq('vendedor_id', user_id).execute()
+        # ========== CONSULTAS OPTIMIZADAS ==========
+        # Obtener todas las ventas de una sola vez
+        ventas = supabase.table('ventas').select('id, monto, producto_id').eq('vendedor_id', user_id).execute()
+        
+        total_ventas = len(ventas.data)
+        ingresos = sum(v['monto'] for v in ventas.data) if ventas.data else 0
+        productos_unicos = len(set(v['producto_id'] for v in ventas.data)) if ventas.data else 0
+        
+        # Calcular calificación promedio
         promedio = '—'
         if ventas.data:
             ids = [v['id'] for v in ventas.data]
             vals = supabase.table('valoraciones').select('calificacion').in_('venta_id', ids).execute()
             if vals.data:
                 promedio = round(sum(v['calificacion'] for v in vals.data) / len(vals.data), 1)
-        stats = {'total_ventas': total_ventas, 'ingresos': ingresos, 'productos_vendidos': productos_unicos, 'calificacion': promedio}
+        
+        stats = {
+            'total_ventas': total_ventas,
+            'ingresos': ingresos,
+            'productos_vendidos': productos_unicos,
+            'calificacion': promedio
+        }
         return render_template('estadisticas.html', stats=stats)
     except Exception as e:
         flash(f'Error: {str(e)}', 'error')
@@ -352,21 +381,32 @@ def dashboard_comprador():
         else:
             return redirect(url_for('home'))
     
-    # Resto del código existente...
     if not user_id or session['user']['id'] != user_id:
         flash('Acceso no autorizado', 'error')
         return redirect(url_for('home'))
     
     try:
-        compras = supabase.table('ventas').select('id', count='exact').eq('comprador_id', user_id).execute()
-        favs = supabase.table('favoritos').select('id', count='exact').eq('usuario_id', user_id).execute()
+        # ========== CONSULTAS OPTIMIZADAS ==========
+        # Obtener todas las ventas del comprador
         ventas = supabase.table('ventas').select('id').eq('comprador_id', user_id).execute()
+        
+        # Obtener favoritos
+        favs = supabase.table('favoritos').select('id').eq('usuario_id', user_id).execute()
+        
+        # Calcular reseñas escritas
         resenas = 0
         if ventas.data:
             ids = [v['id'] for v in ventas.data]
             res = supabase.table('valoraciones').select('id', count='exact').in_('venta_id', ids).execute()
             resenas = res.count or 0
-        stats = {'compras': compras.count or 0, 'favoritos': favs.count or 0, 'resenas': resenas, 'ofertas': 0}
+        
+        stats = {
+            'compras': len(ventas.data),
+            'favoritos': len(favs.data),
+            'resenas': resenas,
+            'ofertas': 0
+        }
+        
         usuario_data = session['user']
         class UsuarioMock:
             def __init__(self, data):

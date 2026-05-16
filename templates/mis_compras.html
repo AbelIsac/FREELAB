@@ -26,6 +26,18 @@
                     <p class="producto-monto">${{ "{:,.0f}".format(venta.monto) }}</p>
                 </div>
                 
+                <!-- ========== ARCHIVO ADJUNTO (DESPUÉS DE COMPRAR) ========== -->
+                {% if venta.producto.archivo_url %}
+                <div class="archivo-compra">
+                    <a href="{{ venta.producto.archivo_url }}" target="_blank" class="btn-descargar">
+                        <i class="fas fa-download"></i> Descargar material del producto
+                    </a>
+                    <small class="archivo-info">
+                        <i class="fas fa-lock"></i> Archivo disponible por tu compra
+                    </small>
+                </div>
+                {% endif %}
+                
                 <div class="resena-section">
                     {% if venta.valoraciones and venta.valoraciones|length %}
                         <div class="resena-actual">
@@ -61,7 +73,7 @@
             <i class="fas fa-shopping-bag" style="font-size: 4rem; color: #cbd5e1;"></i>
             <h3>No hay compras</h3>
             <p>Aún no has realizado ninguna compra</p>
-            <a href="{{ url_for('productos') }}" class="btn-publicar" style="display: inline-block;">Explorar productos →</a>
+            <a href="{{ url_for('explorar_productos') }}" class="btn-publicar" style="display: inline-block;">Explorar productos →</a>
         </div>
         {% endfor %}
     </div>

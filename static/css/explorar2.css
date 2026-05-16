@@ -383,6 +383,29 @@
     color: #ef4444;
 }
 
+.btn-ver-detalle-estudiante {
+    flex: 1;
+    background: linear-gradient(135deg, #64748b, #475569);
+    color: white;
+    border: none;
+    padding: 0.8rem 1rem;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+
+.btn-ver-detalle-estudiante:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(100, 116, 139, 0.4);
+}
+
 @media (max-width: 768px) {
     .filtros-group {
         flex-direction: column;

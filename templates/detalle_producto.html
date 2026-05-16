@@ -292,35 +292,52 @@
                 </ul>
             </div>
             
+            <!-- Archivo adjunto - SOLO para vendedor y admin -->
             {% if producto.archivo_url %}
-            <div class="archivo-adjunto">
-                <a href="{{ producto.archivo_url }}" target="_blank">
-                    <i class="fas fa-file-pdf"></i> Descargar material adjunto
-                </a>
-            </div>
+                {% if session_user and (session_user.rol == 'estudiante' and session_user.id == producto.vendedor_id) or session_user.rol == 'admin' %}
+                <div class="archivo-adjunto">
+                    <a href="{{ producto.archivo_url }}" target="_blank">
+                        <i class="fas fa-file-pdf"></i> Gestionar material adjunto
+                    </a>
+                    <small style="display: block; margin-top: 0.5rem; color: #64748b;">
+                        <i class="fas fa-lock"></i> Solo visible para ti (vendedor) y administradores
+                    </small>
+                </div>
+                {% endif %}
             {% endif %}
             
-            {% if session_user and session_user.rol != 'admin' %}
-            <div class="detalle-actions">
-                <button onclick="agregarAlCarrito({{ producto.id }}, '{{ producto.titulo|replace("'", "\\'") }}', {{ producto.precio }}, '{{ producto.imagen_url or '' }}')" class="btn-carrito-detalle">
-                    <i class="fas fa-cart-plus"></i> Agregar al carrito
-                </button>
-                <button onclick="agregarFavorito({{ producto.id }})" class="btn-favorito-detalle" id="fav-{{ producto.id }}">
-                    <i class="fas fa-heart"></i>
-                </button>
-            </div>
-            {% elif session_user and session_user.rol == 'admin' %}
-            <div class="detalle-actions">
-                <div class="admin-view-badge" style="width: 100%; text-align: center;">
-                    <i class="fas fa-shield-alt"></i> Modo supervisión - No puedes comprar
+            {% if session_user and session_user.rol == 'comprador' %}
+                <!-- Solo compradores pueden agregar al carrito y favoritos -->
+                <div class="detalle-actions">
+                    <button onclick="agregarAlCarrito({{ producto.id }}, '{{ producto.titulo|replace("'", "\\'") }}', {{ producto.precio }}, '{{ producto.imagen_url or '' }}')" class="btn-carrito-detalle">
+                        <i class="fas fa-cart-plus"></i> Agregar al carrito
+                    </button>
+                    <button onclick="agregarFavorito({{ producto.id }})" class="btn-favorito-detalle" id="fav-{{ producto.id }}">
+                        <i class="fas fa-heart"></i>
+                    </button>
                 </div>
-            </div>
+                
+            {% elif session_user and session_user.rol == 'estudiante' %}
+                <!-- Estudiantes solo pueden ver, NO comprar -->
+                <div class="detalle-actions">
+                    <div class="estudiante-view-badge" style="width: 100%; text-align: center; padding: 1rem; background: #f1f5f9; border-radius: 50px; color: #64748b;">
+                        <i class="fas fa-info-circle"></i> Modo inspiración - Puedes ver pero no comprar
+                    </div>
+                </div>
+                
+            {% elif session_user and session_user.rol == 'admin' %}
+                <div class="detalle-actions">
+                    <div class="admin-view-badge" style="width: 100%; text-align: center;">
+                        <i class="fas fa-shield-alt"></i> Modo supervisión - No puedes comprar
+                    </div>
+                </div>
+                
             {% else %}
-            <div class="detalle-actions">
-                <a href="{{ url_for('login') }}" class="btn-carrito-detalle">
-                    <i class="fas fa-lock"></i> Inicia sesión para comprar
-                </a>
-            </div>
+                <div class="detalle-actions">
+                    <a href="{{ url_for('login') }}" class="btn-carrito-detalle">
+                        <i class="fas fa-lock"></i> Inicia sesión para comprar
+                    </a>
+                </div>
             {% endif %}
         </div>
     </div>

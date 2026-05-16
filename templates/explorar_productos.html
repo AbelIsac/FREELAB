@@ -99,12 +99,10 @@
                                 </button>
                                 
                             {% elif session_user and session_user.rol == 'estudiante' %}
-                                <button onclick="agregarAlCarrito({{ prod.id }}, '{{ prod.titulo|replace("'", "\\'") }}', {{ prod.precio }}, '{{ prod.imagen_url or '' }}')" class="btn-comprar-moderno">
-                                    <i class="fas fa-cart-plus"></i> Agregar
-                                </button>
-                                <button onclick="agregarFavorito({{ prod.id }})" class="btn-favorito-moderno" id="fav-{{ prod.id }}">
-                                    <i class="fas fa-heart"></i>
-                                </button>
+                                <!-- Estudiantes solo pueden ver detalles, NO comprar -->
+                                <a href="/producto/{{ prod.id }}" class="btn-ver-detalle-estudiante">
+                                    <i class="fas fa-eye"></i> Ver detalles
+                                </a>
                                 
                             {% elif session_user and session_user.rol == 'admin' %}
                                 <div class="admin-view-badge">
