@@ -10,7 +10,7 @@
                 <i class="fas fa-search"></i> Marketplace freelance
             </span>
 
-            <h1>Hola, {{ session_user.get('name', 'comprador').split()[0] }} 👋</h1>
+            <h1>Hola, {{ session_user.get('name', 'comprador').split()[0] }} </h1>
             <p>Encuentra estudiantes Certus para diseño, desarrollo web, marketing, edición y soporte técnico.</p>
 
             <form class="buyer-search" method="GET" action="{{ url_for('comprador.inicio_comprador') }}">
