@@ -8,6 +8,7 @@ from routes.admin import admin_bp
 from routes.servicios import servicios_bp
 from routes.pagos import pagos_bp
 from routes.notificaciones import notificaciones_bp
+from routes.chat import chat_bp
 
 load_dotenv(override=True)
 
@@ -22,6 +23,7 @@ app.register_blueprint(admin_bp)
 app.register_blueprint(servicios_bp)
 app.register_blueprint(pagos_bp)
 app.register_blueprint(notificaciones_bp)
+app.register_blueprint(chat_bp)
 
 
 @app.context_processor
