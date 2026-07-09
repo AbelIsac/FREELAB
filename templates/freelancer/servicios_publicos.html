@@ -1,0 +1,291 @@
+{% extends "base.html" %}
+
+{% block title %}Servicios del freelancer - FreeLab{% endblock %}
+
+{% block content %}
+<section class="freelancer-services-page">
+    <div class="services-public-hero">
+    <div class="hero-bg-word-services">SERVICIOS</div>
+        <div>
+            <span>Servicios publicados</span>
+            <h1>{{ perfil.nombre if perfil and perfil.nombre else 'Freelancer Certus' }}</h1>
+            <p>Servicios activos que este estudiante ofrece dentro de FreeLab.</p>
+        </div>
+
+        <div class="services-public-actions">
+            <a href="{{ url_for('estudiante.perfil_publico_freelancer', estudiante_id=estudiante_id) }}">
+                <i class="fas fa-arrow-left"></i> Ver portafolio
+            </a>
+
+            {% if session_user and session_user.rol == 'estudiante' and session_user.id == estudiante_id %}
+            <a href="{{ url_for('estudiante.dashboard_estudiante') }}" class="light">
+                Mi dashboard
+            </a>
+            {% else %}
+            <a href="{{ url_for('servicios.explorar_productos') }}" class="light">
+                Explorar más
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if servicios %}
+    <div class="freelancer-services-grid">
+        {% for s in servicios %}
+        <article class="freelancer-service-card">
+            <div class="service-public-img">
+                {% if s.imagen_url %}
+                    <img src="{{ s.imagen_url }}" alt="{{ s.titulo }}">
+                {% else %}
+                    <div class="empty-service-img">
+                        <i class="fas fa-image"></i>
+                    </div>
+                {% endif %}
+
+                <span>
+                    {% if s.categoria_id == 1 %}Diseño
+                    {% elif s.categoria_id == 2 %}Web
+                    {% elif s.categoria_id == 3 %}Marketing
+                    {% elif s.categoria_id == 4 %}Video
+                    {% else %}Servicio{% endif %}
+                </span>
+            </div>
+
+            <div class="service-public-body">
+                <h3>{{ s.titulo }}</h3>
+                <p>
+                    {{ s.descripcion[:110] if s.descripcion else 'Servicio disponible para contratación.' }}
+                    {% if s.descripcion and s.descripcion|length > 110 %}...{% endif %}
+                </p>
+
+                <div class="service-public-bottom">
+                    <strong>S/ {{ "{:,.2f}".format(s.precio) }}</strong>
+                    <a href="{{ url_for('servicios.detalle_producto', producto_id=s.id) }}">
+                        Ver servicio
+                    </a>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="services-empty-public">
+        <i class="fas fa-briefcase"></i>
+        <h2>No hay servicios activos</h2>
+        <p>Este freelancer todavía no tiene servicios publicados.</p>
+    </div>
+    {% endif %}
+</section>
+
+<style>
+.freelancer-services-page {
+    min-height: 100vh;
+    padding: 120px 6vw 80px;
+    background: var(--fl-page-bg);
+}
+
+.services-public-hero {
+    min-height: 360px;
+    border-radius: 38px;
+    padding: 2.5rem;
+    color: white;
+    background:
+        radial-gradient(circle at 85% 12%, rgba(134,239,172,.28), transparent 30%),
+        linear-gradient(135deg, #0b0f0d, #052e22);
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 2rem;
+    box-shadow: 0 32px 90px rgba(15,23,42,.18);
+
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-bg-word-services {
+    position: absolute;
+
+    right: 3vw;
+    top: 2rem;
+
+    font-size: 9vw;
+
+    font-weight: 900;
+    letter-spacing: -.08em;
+
+    color: rgba(255,255,255,.045);
+
+    pointer-events: none;
+    z-index: 0;
+}
+
+.services-public-hero > div:not(.hero-bg-word-services),
+.services-public-actions {
+    position: relative;
+    z-index: 2;
+}
+
+.services-public-hero span {
+    display: inline-flex;
+    background: rgba(255,255,255,.12);
+    padding: .42rem .8rem;
+    border-radius: 999px;
+    font-size: .78rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+}
+
+.services-public-hero h1 {
+    font-size: clamp(3rem, 7vw, 6rem);
+    line-height: .86;
+    letter-spacing: -.08em;
+    margin-bottom: 1rem;
+}
+
+.services-public-hero p {
+    color: rgba(255,255,255,.68);
+}
+
+.services-public-actions {
+    display: flex;
+    gap: .7rem;
+    flex-wrap: wrap;
+}
+
+.services-public-actions a {
+    display: inline-flex;
+    align-items: center;
+    gap: .55rem;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.14);
+    color: white;
+    text-decoration: none;
+    padding: .85rem 1rem;
+    border-radius: 999px;
+    font-weight: 900;
+}
+
+.services-public-actions a.light {
+    background: #dcfce7;
+    color: var(--fl-brand);
+}
+
+.freelancer-services-grid {
+    margin-top: 1.2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 1rem;
+}
+
+.freelancer-service-card {
+    background: var(--fl-surface);
+    border-radius: 28px;
+    overflow: hidden;
+    border: 1px solid var(--fl-border);
+    box-shadow: 0 18px 45px rgba(15,23,42,.06);
+    transition: .25s ease;
+}
+
+.freelancer-service-card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 28px 70px rgba(15,23,42,.1);
+}
+
+.service-public-img {
+    height: 220px;
+    position: relative;
+    overflow: hidden;
+}
+
+.service-public-img img,
+.empty-service-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.empty-service-img {
+    display: grid;
+    place-items: center;
+    background: var(--fl-soft-bg);
+    color: #cbd5e1;
+    font-size: 2rem;
+}
+
+.service-public-img span {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    background: rgba(255,255,255,.92);
+    color: var(--fl-brand);
+    padding: .35rem .75rem;
+    border-radius: 999px;
+    font-size: .72rem;
+    font-weight: 900;
+}
+
+.service-public-body {
+    padding: 1rem;
+}
+
+.service-public-body h3 {
+    color: var(--fl-heading);
+    margin-bottom: .45rem;
+}
+
+.service-public-body p {
+    color: var(--fl-text-muted);
+    line-height: 1.5;
+    min-height: 54px;
+}
+
+.service-public-bottom {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.service-public-bottom strong {
+    color: var(--fl-brand);
+    font-size: 1.25rem;
+}
+
+.service-public-bottom a {
+    background: var(--fl-brand);
+    color: white;
+    text-decoration: none;
+    border-radius: 999px;
+    padding: .7rem .95rem;
+    font-weight: 900;
+    font-size: .82rem;
+}
+
+.services-empty-public {
+    background: var(--fl-surface);
+    border-radius: 30px;
+    padding: 4rem 2rem;
+    text-align: center;
+    margin-top: 1.2rem;
+}
+
+.services-empty-public i {
+    width: 84px;
+    height: 84px;
+    margin: 0 auto 1rem;
+    border-radius: 28px;
+    background: #dcfce7;
+    color: var(--fl-brand);
+    display: grid;
+    place-items: center;
+    font-size: 2rem;
+}
+
+@media (max-width: 900px) {
+    .services-public-hero {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+</style>
+{% endblock %}

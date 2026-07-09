@@ -1,0 +1,408 @@
+{% extends "base.html" %}
+
+{% block title %}{{ producto.titulo }} - FreeLab{% endblock %}
+
+{% block content %}
+<section class="service-detail-page">
+    <a href="{{ url_for('servicios.explorar_productos') }}" class="back-link">
+        <i class="fas fa-arrow-left"></i> Volver a servicios
+    </a>
+
+    <div class="service-detail-grid">
+        <div class="service-media">
+            {% if producto.imagen_url %}
+                <img src="{{ producto.imagen_url }}" alt="{{ producto.titulo }}">
+            {% else %}
+                <div class="service-media-empty">
+                    <i class="fas fa-image"></i>
+                    <span>Sin imagen</span>
+                </div>
+            {% endif %}
+        </div>
+
+        <aside class="service-panel">
+            <span class="service-category">
+                {% if producto.categoria_id == 1 %}Diseño gráfico
+                {% elif producto.categoria_id == 2 %}Desarrollo web
+                {% elif producto.categoria_id == 3 %}Marketing digital
+                {% elif producto.categoria_id == 4 %}Edición multimedia
+                {% else %}Servicio freelance{% endif %}
+            </span>
+
+            <h1>{{ producto.titulo }}</h1>
+
+            <div class="seller-box">
+                <div class="seller-avatar">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <div>
+                    <strong>{{ vendedor_nombre|default('Estudiante Certus') }}</strong>
+                    <small>Freelancer verificado · FreeLab</small>
+                </div>
+            </div>
+            <a href="{{ url_for('estudiante.perfil_publico_freelancer',
+                    estudiante_id=producto.vendedor_id) }}"
+                     class="btn-view-profile">
+
+                <i class="fas fa-user"></i>
+                Ver perfil freelancer
+
+            </a>
+
+            <div class="price-box">
+                <small>Precio base</small>
+                <strong>S/ {{ "{:,.2f}".format(producto.precio) }}</strong>
+            </div>
+
+            <div class="safe-box">
+                <h3><i class="fas fa-shield-heart"></i> Flujo 50/50</h3>
+                <p>Coordina un adelanto por Yape/Plin, recibe avances y completa el pago final al validar la entrega.</p>
+            </div>
+
+            {% if session_user and session_user.rol == 'comprador' %}
+                <form method="POST" action="{{ url_for('comprador.solicitar_servicio', producto_id=producto.id) }}">
+                    <button type="submit" class="btn-request-service">
+                        Solicitar servicio
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </form>
+            {% elif session_user and session_user.rol == 'estudiante' %}
+                <div class="info-mode">
+                    <i class="fas fa-eye"></i>
+                    Estás viendo este servicio como inspiración. Tu panel está separado.
+                </div>
+            {% elif session_user and session_user.rol == 'admin' %}
+                <div class="info-mode">
+                    <i class="fas fa-shield-alt"></i>
+                    Modo administrador: vista de supervisión.
+                </div>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}" class="btn-request-service">
+                    Inicia sesión para solicitar
+                    <i class="fas fa-lock"></i>
+                </a>
+            {% endif %}
+        </aside>
+    </div>
+
+    <div class="service-detail-content">
+        <section class="detail-card wide">
+            <span>Descripción</span>
+            <h2>Sobre este servicio</h2>
+            <p>{{ producto.descripcion or 'Este servicio todavía no tiene una descripción detallada.' }}</p>
+        </section>
+
+        <section class="detail-card">
+            <span>Incluye</span>
+            <h2>Qué recibirás</h2>
+            <ul>
+                <li><i class="fas fa-check"></i> Coordinación inicial con el estudiante</li>
+                <li><i class="fas fa-check"></i> Avances según el acuerdo</li>
+                <li><i class="fas fa-check"></i> Entrega final del servicio</li>
+                <li><i class="fas fa-check"></i> Posibilidad de dejar reseña</li>
+            </ul>
+        </section>
+
+        <section class="detail-card">
+            <span>Recomendación</span>
+            <h2>Antes de solicitar</h2>
+            <ul>
+                <li><i class="fas fa-circle-info"></i> Define claramente lo que necesitas</li>
+                <li><i class="fas fa-circle-info"></i> Acuerda plazo y entregables</li>
+                <li><i class="fas fa-circle-info"></i> Guarda evidencia del pago inicial</li>
+            </ul>
+        </section>
+    </div>
+</section>
+
+<script>
+function solicitarServicio() {
+    Swal.fire({
+        title: 'Solicitud de servicio',
+        text: 'En el siguiente sprint conectaremos esta acción con Mis contrataciones y el flujo 50/50.',
+        icon: 'info',
+        confirmButtonColor: '#065f46'
+    });
+}
+</script>
+
+<style>
+.btn-request-service {
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.service-detail-page {
+    min-height: 100vh;
+    padding: 120px 6vw 80px;
+    background: var(--fl-page-bg);
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: .55rem;
+    color: var(--fl-brand);
+    text-decoration: none;
+    font-weight: 900;
+    margin-bottom: 1rem;
+}
+
+.service-detail-grid {
+    display: grid;
+    grid-template-columns: 1.1fr .9fr;
+    gap: 1.2rem;
+    align-items: stretch;
+}
+
+.service-media {
+    background: var(--fl-surface);
+    border: 1px solid var(--fl-border);
+    border-radius: 36px;
+    overflow: hidden;
+    min-height: 560px;
+    box-shadow: 0 25px 70px rgba(15,23,42,.08);
+}
+
+.service-media img,
+.service-media-empty {
+    width: 100%;
+    height: 100%;
+    min-height: 560px;
+    object-fit: cover;
+}
+
+.service-media-empty {
+    display: grid;
+    place-items: center;
+    background: var(--fl-soft-bg);
+    color: var(--fl-text-faint);
+    font-size: 2.5rem;
+}
+
+.service-media-empty span {
+    display: block;
+    font-size: .95rem;
+    margin-top: .5rem;
+}
+
+.service-panel {
+    background:
+        radial-gradient(circle at 90% 10%, rgba(134,239,172,.25), transparent 28%),
+        linear-gradient(135deg, #0b0f0d, #052e22);
+    color: white;
+    border-radius: 36px;
+    padding: 2rem;
+    box-shadow: 0 30px 90px rgba(15,23,42,.18);
+}
+
+.service-category {
+    display: inline-flex;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.14);
+    padding: .4rem .8rem;
+    border-radius: 999px;
+    font-size: .78rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+}
+
+.service-panel h1 {
+    font-size: clamp(2.4rem, 4vw, 4.5rem);
+    line-height: .92;
+    letter-spacing: -.06em;
+    margin-bottom: 1.2rem;
+}
+
+.seller-box {
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 22px;
+    padding: .9rem;
+    margin-bottom: 1rem;
+}
+
+.seller-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 17px;
+    display: grid;
+    place-items: center;
+    background: #dcfce7;
+    color: var(--fl-brand);
+}
+
+.seller-box strong {
+    display: block;
+}
+
+.seller-box small {
+    color: rgba(255,255,255,.62);
+}
+
+.price-box {
+    background: var(--fl-surface);
+    color: var(--fl-heading);
+    border-radius: 26px;
+    padding: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+.price-box small {
+    display: block;
+    color: var(--fl-text-muted);
+    font-weight: 800;
+}
+
+.price-box strong {
+    color: var(--fl-brand);
+    font-size: 2rem;
+}
+
+.safe-box {
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 24px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.safe-box h3 {
+    margin-bottom: .5rem;
+}
+
+.safe-box p {
+    color: rgba(255,255,255,.68);
+    line-height: 1.6;
+}
+
+.btn-request-service {
+    width: 100%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: .7rem;
+    background: #dcfce7;
+    color: var(--fl-brand);
+    text-decoration: none;
+    padding: 1rem;
+    border-radius: 999px;
+    font-weight: 900;
+    transition: .25s ease;
+}
+
+.btn-request-service:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 40px rgba(134,239,172,.18);
+}
+
+.info-mode {
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: 20px;
+    padding: 1rem;
+    color: rgba(255,255,255,.75);
+}
+
+.service-detail-content {
+    margin-top: 1.2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.detail-card {
+    background: var(--fl-surface);
+    border: 1px solid var(--fl-border);
+    border-radius: 28px;
+    padding: 1.5rem;
+    box-shadow: 0 18px 45px rgba(15,23,42,.06);
+}
+
+.detail-card.wide {
+    grid-column: span 2;
+}
+
+.detail-card span {
+    color: var(--fl-brand-accent);
+    font-weight: 900;
+    font-size: .78rem;
+}
+
+.detail-card h2 {
+    color: var(--fl-heading);
+    font-size: 1.6rem;
+    margin: .5rem 0;
+}
+
+.detail-card p {
+    color: var(--fl-text-muted);
+    line-height: 1.8;
+}
+
+.detail-card ul {
+    list-style: none;
+    display: grid;
+    gap: .65rem;
+}
+
+.detail-card li {
+    color: var(--fl-text-muted);
+}
+
+.detail-card li i {
+    color: var(--fl-brand);
+    margin-right: .45rem;
+}
+
+.btn-view-profile{
+    width:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:.6rem;
+
+    margin-bottom:1rem;
+
+    padding:.95rem;
+
+    border-radius:20px;
+
+    text-decoration:none;
+
+    background:rgba(255,255,255,.10);
+    border:1px solid rgba(255,255,255,.12);
+
+    color:white;
+
+    font-weight:800;
+
+    transition:.3s;
+}
+
+.btn-view-profile:hover{
+    background:rgba(255,255,255,.18);
+    transform:translateY(-2px);
+}
+@media (max-width: 900px) {
+    .service-detail-grid,
+    .service-detail-content {
+        grid-template-columns: 1fr;
+    }
+
+    .detail-card.wide {
+        grid-column: span 1;
+    }
+
+    .service-media,
+    .service-media img,
+    .service-media-empty {
+        min-height: 360px;
+    }
+}
+</style>
+{% endblock %}

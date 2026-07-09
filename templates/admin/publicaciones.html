@@ -46,12 +46,12 @@
             
             <div class="actions-modern">
                 {% if prod.estado == 'pendiente' %}
-                <form method="POST" action="{{ url_for('admin_aprobar_producto', producto_id=prod.id) }}" style="display:inline;">
+                <form method="POST" action="{{ url_for('admin.admin_aprobar_producto', producto_id=prod.id) }}" style="display:inline;">
                     <button type="submit" class="btn-aprobar">
                         <i class="fas fa-check-circle"></i> Aprobar
                     </button>
                 </form>
-                <form method="POST" action="{{ url_for('admin_rechazar_producto', producto_id=prod.id) }}" style="display:inline;">
+                <form method="POST" action="{{ url_for('admin.admin_rechazar_producto', producto_id=prod.id) }}" style="display:inline;">
                     <button type="submit" class="btn-rechazar">
                         <i class="fas fa-times-circle"></i> Rechazar
                     </button>
@@ -86,7 +86,7 @@
 }
 
 .admin-header p {
-    color: #64748b;
+    color: var(--fl-text-muted);
 }
 
 .productos-grid-modern {
@@ -96,7 +96,7 @@
 }
 
 .producto-card-modern {
-    background: white;
+    background: var(--fl-surface);
     border-radius: 20px;
     overflow: hidden;
     box-shadow: 0 5px 20px rgba(0,0,0,0.08);
@@ -120,7 +120,7 @@
 .producto-imagen-card {
     height: 180px;
     overflow: hidden;
-    background: #f8fafc;
+    background: var(--fl-soft-bg);
 }
 
 .producto-imagen-card img {
@@ -142,7 +142,7 @@
 
 .producto-desc {
     padding: 0 1rem;
-    color: #64748b;
+    color: var(--fl-text-muted);
     font-size: 0.85rem;
     line-height: 1.5;
 }
@@ -159,7 +159,7 @@
     align-items: center;
     gap: 0.5rem;
     font-size: 0.8rem;
-    color: #475569;
+    color: var(--fl-text-body);
 }
 
 .info-item i {
@@ -239,7 +239,7 @@
 }
 
 .info-text {
-    color: #64748b;
+    color: var(--fl-text-muted);
     font-size: 0.85rem;
     display: inline-flex;
     align-items: center;
@@ -249,7 +249,7 @@
 .no-data {
     text-align: center;
     padding: 3rem;
-    color: #64748b;
+    color: var(--fl-text-muted);
     font-size: 1rem;
     grid-column: 1 / -1;
 }

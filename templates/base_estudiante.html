@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}FreeLab Estudiante{% endblock %}</title>
+
+    <script>
+        // Aplica el tema guardado ANTES de pintar la página (evita parpadeo)
+        (function () {
+            const saved = localStorage.getItem('fl-theme');
+            const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="student-layout">
+
+    <button class="fl-theme-toggle fl-theme-toggle-float" type="button" id="themeToggle" aria-label="Cambiar tema claro/oscuro">
+        <i class="fas fa-sun"></i>
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <main class="student-page">
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="student-footer">
+
+    <div class="footer-content">
+
+        <div class="footer-brand">
+            <h3>FreeLab</h3>
+            <p>
+                Plataforma freelance para estudiantes Certus.
+            </p>
+        </div>
+
+        <div class="footer-links">
+            <a href="{{ url_for('servicios.publicar_producto') }}">
+                Publicar Servicio
+            </a>
+
+            <a href="{{ url_for('estudiante.dashboard_estudiante') }}">
+                Dashboard
+            </a>
+
+            <a href="#">
+                Centro de Ayuda
+            </a>
+
+            <a href="#">
+                Términos y Condiciones
+            </a>
+        </div>
+
+    </div>
+
+    <div class="footer-copy">
+        © 2026 FreeLab · Proyecto de Tesis
+    </div>
+
+</footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Activa las animaciones de entrada (.fl-reveal) cuando el
+        // elemento entra en pantalla al hacer scroll.
+        (function () {
+            const targets = document.querySelectorAll('.fl-reveal');
+            if (!targets.length) return;
+
+            if (!('IntersectionObserver' in window)) {
+                targets.forEach(el => el.classList.add('fl-in'));
+                return;
+            }
+
+            const io = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('fl-in');
+                        io.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+            targets.forEach(el => io.observe(el));
+        })();
+    </script>
+    <script>
+        // Botón de modo claro/oscuro, con memoria (localStorage)
+        (function () {
+            const btn = document.getElementById('themeToggle');
+            if (!btn) return;
+
+            btn.addEventListener('click', () => {
+                const current = document.documentElement.getAttribute('data-theme');
+                const next = current === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', next);
+                localStorage.setItem('fl-theme', next);
+            });
+        })();
+    </script>
+    {% block extra_js %}{% endblock %}
+
+    <style>
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    background: var(--fl-page-bg);
+}
+
+.student-layout {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.student-page {
+    flex: 1;
+}
+
+.student-footer {
+    margin-top: 0;
+    padding: 28px 32px;
+    background: var(--fl-soft-bg);
+    border-top: 1px solid var(--fl-border);
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+}
+
+.footer-brand h3 {
+    color: #0f4c3a;
+    font-size: 1.1rem;
+    margin-bottom: 6px;
+}
+
+.footer-brand p {
+    color: var(--fl-text-muted);
+    font-size: .9rem;
+}
+
+.footer-links {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+}
+
+.footer-links a {
+    color: var(--fl-text-muted);
+    text-decoration: none;
+    font-size: .9rem;
+    font-weight: 600;
+}
+
+.footer-links a:hover {
+    color: #0f4c3a;
+}
+
+.footer-copy {
+    text-align: center;
+    margin-top: 18px;
+    color: var(--fl-text-faint);
+    font-size: .82rem;
+}
+
+@media(max-width:768px) {
+    .footer-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .footer-links {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+</style>
+</body>
+</html>

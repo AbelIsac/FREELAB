@@ -9,7 +9,7 @@
 
     <div class="form-card">
         <h3><i class="fas fa-plus-circle"></i> Nueva categoría</h3>
-        <form method="POST" action="{{ url_for('admin_categoria_crear') }}" class="form-modern">
+        <form method="POST" action="{{ url_for('admin.admin_categoria_crear') }}" class="form-modern">
             <div class="form-group-row">
                 <input type="text" name="nombre" placeholder="Nombre de la categoría" required>
                 <input type="text" name="descripcion" placeholder="Descripción (opcional)">
@@ -35,7 +35,7 @@
                 <tr>
                     <td data-label="ID">{{ cat.id }}</td>
                     <td data-label="Nombre">
-                        <form method="POST" action="{{ url_for('admin_categoria_editar', categoria_id=cat.id) }}" class="edit-form">
+                        <form method="POST" action="{{ url_for('admin.admin_categoria_editar', categoria_id=cat.id) }}" class="edit-form">
                             <input type="text" name="nombre" value="{{ cat.nombre }}" class="edit-input">
                     </td>
                     <td data-label="Descripción">
@@ -76,11 +76,11 @@
 }
 
 .admin-header p {
-    color: #64748b;
+    color: var(--fl-text-muted);
 }
 
 .form-card {
-    background: white;
+    background: var(--fl-surface);
     border-radius: 20px;
     padding: 1.5rem;
     margin-bottom: 2rem;
@@ -103,7 +103,7 @@
 .form-group-row input {
     flex: 1;
     padding: 0.8rem 1rem;
-    border: 2px solid #e2e8f0;
+    border: 2px solid var(--fl-border);
     border-radius: 12px;
     font-size: 0.9rem;
     transition: all 0.3s ease;
@@ -135,7 +135,7 @@
 }
 
 .table-container {
-    background: white;
+    background: var(--fl-surface);
     border-radius: 20px;
     overflow-x: auto;
     box-shadow: 0 5px 20px rgba(0,0,0,0.05);
@@ -149,12 +149,12 @@
 
 .table-modern th {
     padding: 1rem;
-    background: #f8fafc;
+    background: var(--fl-soft-bg);
     color: #1e293b;
     font-weight: 600;
     font-size: 0.85rem;
     text-align: left;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--fl-border);
 }
 
 .table-modern td {
@@ -172,7 +172,7 @@
 
 .edit-input {
     padding: 0.5rem 0.8rem;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--fl-border);
     border-radius: 8px;
     font-size: 0.85rem;
     width: 150px;
@@ -185,7 +185,7 @@
 
 .btn-edit {
     background: #f1f5f9;
-    color: #475569;
+    color: var(--fl-text-body);
     border: none;
     padding: 0.4rem 0.8rem;
     border-radius: 8px;
@@ -198,7 +198,7 @@
 }
 
 .btn-edit:hover {
-    background: #e2e8f0;
+    background: var(--fl-border);
     transform: translateY(-1px);
 }
 
@@ -239,7 +239,7 @@
     .table-modern tr {
         display: block;
         margin-bottom: 1rem;
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--fl-border);
         border-radius: 12px;
         padding: 0.5rem;
     }

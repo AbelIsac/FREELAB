@@ -1,0 +1,311 @@
+{% extends "base.html" %}
+{% block title %}Comprobantes - Admin FreeLab{% endblock %}
+
+{% block content %}
+
+<section class="admin-proof-page">
+
+```
+<div class="proof-hero">
+    <div>
+        <span>
+            <i class="fas fa-file-invoice"></i>
+            Auditoría de pagos
+        </span>
+
+        <h1>Comprobantes</h1>
+
+        <p>
+            Revisa vouchers de adelanto y pago final enviados por los compradores.
+        </p>
+    </div>
+
+    <a href="{{ url_for('admin.admin_dashboard') }}">
+        Volver al panel
+    </a>
+</div>
+
+<div class="proof-stats">
+
+    <div class="proof-stat">
+        <small>Total comprobantes</small>
+        <strong>{{ comprobantes|length }}</strong>
+    </div>
+
+    <div class="proof-stat">
+        <small>Pagos registrados</small>
+        <strong>{{ comprobantes|length }}</strong>
+    </div>
+
+</div>
+
+{% if comprobantes %}
+
+<div class="proof-grid">
+
+    {% for c in comprobantes %}
+    <article class="proof-card">
+
+        <div class="proof-image">
+            <a href="{{ c.imagen_url }}" target="_blank">
+                <img src="{{ c.imagen_url }}" alt="Comprobante">
+            </a>
+        </div>
+
+        <div class="proof-body">
+
+            <div class="proof-type">
+                {{ c.tipo_pago }}
+            </div>
+
+            <h3>
+                Contratación #{{ c.venta.id if c.venta else 'N/A' }}
+            </h3>
+
+            <div class="proof-info">
+
+                <div>
+                    <small>Servicio</small>
+                    <strong>
+                        {{ c.venta.producto.titulo if c.venta and c.venta.producto else 'N/A' }}
+                    </strong>
+                </div>
+
+                <div>
+                    <small>Comprador</small>
+                    <strong>
+                        {{ c.venta.comprador.nombre if c.venta and c.venta.comprador else 'N/A' }}
+                    </strong>
+                </div>
+
+                <div>
+                    <small>Freelancer</small>
+                    <strong>
+                        {{ c.venta.vendedor.nombre if c.venta and c.venta.vendedor else 'N/A' }}
+                    </strong>
+                </div>
+
+                <div>
+                    <small>Monto</small>
+                    <strong>
+                        S/ {{ "%.2f"|format(c.venta.monto or 0) if c.venta else '0.00' }}
+                    </strong>
+                </div>
+
+            </div>
+
+            <div class="proof-footer">
+
+                <span class="proof-date">
+                    {{ c.fecha[:10] if c.fecha else 'Sin fecha' }}
+                </span>
+
+                <a href="{{ c.imagen_url }}" target="_blank" class="btn-proof-open">
+                    Ver imagen
+                </a>
+
+            </div>
+
+        </div>
+
+    </article>
+    {% endfor %}
+
+</div>
+
+{% else %}
+
+<div class="proof-empty">
+
+    <i class="fas fa-file-invoice"></i>
+
+    <h2>No existen comprobantes</h2>
+
+    <p>
+        Los vouchers aparecerán aquí cuando los compradores realicen pagos.
+    </p>
+
+</div>
+
+{% endif %}
+```
+
+</section>
+
+<style>
+
+.admin-proof-page{
+    padding:120px 6vw 60px;
+    background: var(--fl-page-bg);
+    min-height:100vh;
+}
+
+.proof-hero{
+    background:
+        radial-gradient(circle at 85% 10%, rgba(134,239,172,.25), transparent 30%),
+        linear-gradient(135deg,#0b0f0d,#052e22);
+    color:white;
+    border-radius:38px;
+    padding:2.5rem;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:1rem;
+    margin-bottom:1rem;
+}
+
+.proof-hero span{
+    display:inline-flex;
+    gap:.5rem;
+    align-items:center;
+    background:rgba(255,255,255,.12);
+    padding:.45rem .8rem;
+    border-radius:999px;
+    font-size:.8rem;
+    font-weight:900;
+}
+
+.proof-hero h1{
+    font-size:clamp(3rem,7vw,6rem);
+    line-height:.85;
+    letter-spacing:-.08em;
+    margin:1rem 0;
+}
+
+.proof-hero p{
+    color:rgba(255,255,255,.7);
+}
+
+.proof-hero a{
+    background: var(--fl-surface);
+    color: var(--fl-heading);
+    text-decoration:none;
+    padding:.9rem 1.1rem;
+    border-radius:999px;
+    font-weight:900;
+}
+
+.proof-stats{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:1rem;
+    margin-bottom:1rem;
+}
+
+.proof-stat{
+    background: var(--fl-surface);
+    border-radius:24px;
+    border:1px solid var(--fl-border);
+    padding:1rem;
+}
+
+.proof-stat small{
+    display:block;
+    color: var(--fl-text-muted);
+    font-weight:800;
+}
+
+.proof-stat strong{
+    color: var(--fl-heading);
+    font-size:2rem;
+}
+
+.proof-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+    gap:1rem;
+}
+
+.proof-card{
+    background: var(--fl-surface);
+    border-radius:28px;
+    overflow:hidden;
+    border:1px solid var(--fl-border);
+    box-shadow:0 20px 60px rgba(15,23,42,.06);
+}
+
+.proof-image img{
+    width:100%;
+    height:220px;
+    object-fit:cover;
+}
+
+.proof-body{
+    padding:1rem;
+}
+
+.proof-type{
+    width:fit-content;
+    background:#dcfce7;
+    color: var(--fl-brand-accent);
+    padding:.35rem .7rem;
+    border-radius:999px;
+    font-size:.72rem;
+    font-weight:900;
+    margin-bottom:.7rem;
+}
+
+.proof-body h3{
+    color: var(--fl-heading);
+    margin-bottom:1rem;
+}
+
+.proof-info{
+    display:grid;
+    gap:.8rem;
+}
+
+.proof-info small{
+    display:block;
+    color: var(--fl-text-faint);
+    font-weight:800;
+}
+
+.proof-info strong{
+    color: var(--fl-heading);
+}
+
+.proof-footer{
+    margin-top:1rem;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.proof-date{
+    color: var(--fl-text-faint);
+    font-size:.8rem;
+    font-weight:800;
+}
+
+.btn-proof-open{
+    background: var(--fl-brand);
+    color:white;
+    text-decoration:none;
+    padding:.6rem .9rem;
+    border-radius:999px;
+    font-weight:900;
+}
+
+.proof-empty{
+    background: var(--fl-surface);
+    border-radius:30px;
+    text-align:center;
+    padding:4rem 2rem;
+}
+
+.proof-empty i{
+    width:76px;
+    height:76px;
+    display:grid;
+    place-items:center;
+    margin:0 auto 1rem;
+    border-radius:24px;
+    background:#dcfce7;
+    color: var(--fl-brand);
+    font-size:2rem;
+}
+
+</style>
+
+{% endblock %}

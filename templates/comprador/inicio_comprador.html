@@ -1,0 +1,502 @@
+{% extends "base.html" %}
+
+{% block title %}Explorar servicios - FreeLab{% endblock %}
+
+{% block content %}
+<section class="buyer-home">
+    <div class="buyer-hero">
+        <div>
+            <span class="buyer-pill">
+                <i class="fas fa-search"></i> Marketplace freelance
+            </span>
+
+            <h1>Hola, {{ session_user.get('name', 'comprador').split()[0] }} 👋</h1>
+            <p>Encuentra estudiantes Certus para diseño, desarrollo web, marketing, edición y soporte técnico.</p>
+
+            <form class="buyer-search" method="GET" action="{{ url_for('comprador.inicio_comprador') }}">
+                <i class="fas fa-magnifying-glass"></i>
+                <input type="text" name="q" value="{{ q or '' }}" placeholder="Buscar logo, landing page, edición de video...">
+                <button type="submit">Buscar</button>
+            </form>
+        </div>
+
+        <div class="buyer-hero-card">
+            <span>Flujo seguro MVP</span>
+            <h3>Pago 50/50 por Yape o Plin</h3>
+            <p>Coordina el adelanto, revisa avances y libera el pago final al recibir tu entrega.</p>
+        </div>
+    </div>
+
+    <div class="category-strip fl-stagger">
+        <a href="{{ url_for('comprador.inicio_comprador') }}" class="cat-chip active fl-reveal">Todos</a>
+        <a href="{{ url_for('comprador.inicio_comprador', categoria=1) }}" class="cat-chip fl-reveal">Diseño gráfico</a>
+        <a href="{{ url_for('comprador.inicio_comprador', categoria=2) }}" class="cat-chip fl-reveal">Desarrollo web</a>
+        <a href="{{ url_for('comprador.inicio_comprador', categoria=3) }}" class="cat-chip fl-reveal">Marketing</a>
+        <a href="{{ url_for('comprador.inicio_comprador', categoria=4) }}" class="cat-chip fl-reveal">Video</a>
+        <a href="{{ url_for('comprador.inicio_comprador', categoria=5) }}" class="cat-chip fl-reveal">Soporte</a>
+    </div>
+
+    <div class="buyer-section-head">
+        <div>
+            <span>Servicios disponibles</span>
+            <h2>Talento estudiantil listo para trabajar</h2>
+        </div>
+
+        <a href="{{ url_for('comprador.mis_compras') }}" class="buyer-link">
+            Mis contrataciones <i class="fas fa-arrow-right"></i>
+        </a>
+    </div>
+
+    {% if servicios %}
+    <div class="buyer-services-grid fl-stagger">
+        {% for servicio in servicios %}
+        <article class="buyer-service-card fl-reveal">
+            <div class="service-cover">
+                {% if servicio.imagen_url %}
+                    <img src="{{ servicio.imagen_url }}" alt="{{ servicio.titulo }}">
+                {% else %}
+                    <div class="service-placeholder">
+                        <i class="fas fa-image"></i>
+                    </div>
+                {% endif %}
+
+                <span class="service-badge">
+                    {% if servicio.categoria_id == 1 %}Diseño{% elif servicio.categoria_id == 2 %}Web{% elif servicio.categoria_id == 3 %}Marketing{% elif servicio.categoria_id == 4 %}Video{% else %}Servicio{% endif %}
+                </span>
+            </div>
+
+            <div class="service-content">
+                <h3>{{ servicio.titulo }}</h3>
+                <p>
+                    {{ servicio.descripcion[:95] if servicio.descripcion else 'Servicio freelance disponible para contratación.' }}
+                    {% if servicio.descripcion and servicio.descripcion|length > 95 %}...{% endif %}
+                </p>
+
+                <div class="seller-mini">
+                    <div class="seller-avatar">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <div>
+                        <strong>Estudiante Certus</strong>
+                        <small>Freelancer verificado</small>
+                    </div>
+                </div>
+
+                <div class="service-bottom">
+                    <div>
+                        <small>Desde</small>
+                        <strong>S/ {{ "{:,.2f}".format(servicio.precio) }}</strong>
+                    </div>
+
+                    <a href="{{ url_for('servicios.detalle_producto', producto_id=servicio.id) }}" class="btn-view-service">
+                        Ver servicio
+                    </a>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-buyer">
+        <i class="fas fa-briefcase"></i>
+        <h3>No hay servicios disponibles todavía</h3>
+        <p>Cuando los estudiantes publiquen servicios aprobados, aparecerán aquí.</p>
+    </div>
+    {% endif %}
+</section>
+
+<style>
+.buyer-home {
+    padding: 120px 6vw 80px;
+    background: var(--fl-page-bg);
+    min-height: 100vh;
+}
+
+.buyer-hero {
+    display: grid;
+    grid-template-columns: 1.15fr .85fr;
+    gap: 1.5rem;
+    align-items: stretch;
+    margin-bottom: 1.5rem;
+}
+
+.buyer-hero > div:first-child {
+    background:
+        radial-gradient(circle at 85% 15%, rgba(134,239,172,.26), transparent 28%),
+        linear-gradient(135deg, #0b0f0d, #052e22);
+    color: white;
+    border-radius: 36px;
+    padding: 3rem;
+    box-shadow: 0 30px 90px rgba(15,23,42,.18);
+}
+
+.buyer-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.14);
+    padding: .4rem .75rem;
+    border-radius: 999px;
+    font-size: .78rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+}
+
+.buyer-hero h1 {
+    font-size: clamp(2.6rem, 5vw, 5.4rem);
+    line-height: .9;
+    letter-spacing: -.07em;
+    margin-bottom: 1rem;
+}
+
+.buyer-hero p {
+    color: rgba(255,255,255,.68);
+    max-width: 700px;
+    line-height: 1.7;
+    margin-bottom: 1.8rem;
+}
+
+.buyer-search {
+    background: var(--fl-surface);
+    border-radius: 999px;
+    padding: .45rem;
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+    max-width: 720px;
+}
+
+.buyer-search i {
+    color: var(--fl-brand);
+    margin-left: 1rem;
+}
+
+.buyer-search input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-family: inherit;
+    font-size: .95rem;
+}
+
+.buyer-search button {
+    border: none;
+    background: var(--fl-brand);
+    color: white;
+    border-radius: 999px;
+    padding: .85rem 1.25rem;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.buyer-hero-card {
+    background: var(--fl-surface);
+    border: 1px solid var(--fl-border);
+    border-radius: 36px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 320px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(15,23,42,.08);
+}
+
+.buyer-hero-card::before {
+    content: "";
+    position: absolute;
+    width: 240px;
+    height: 240px;
+    background: #dcfce7;
+    border-radius: 50%;
+    top: -80px;
+    right: -70px;
+}
+
+.buyer-hero-card span {
+    width: fit-content;
+    background: #dcfce7;
+    color: var(--fl-brand-accent);
+    padding: .4rem .8rem;
+    border-radius: 999px;
+    font-size: .78rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+.buyer-hero-card h3 {
+    color: var(--fl-heading);
+    font-size: 2rem;
+    line-height: 1;
+    letter-spacing: -.04em;
+    margin-bottom: .8rem;
+    position: relative;
+}
+
+.buyer-hero-card p {
+    color: var(--fl-text-muted);
+    line-height: 1.7;
+    position: relative;
+}
+
+.category-strip {
+    display: flex;
+    gap: .6rem;
+    flex-wrap: wrap;
+    margin: 1.5rem 0 2rem;
+}
+
+.cat-chip {
+    background: var(--fl-surface);
+    color: var(--fl-text-body);
+    text-decoration: none;
+    border: 1px solid var(--fl-border);
+    border-radius: 999px;
+    padding: .65rem 1.1rem;
+    font-size: .87rem;
+    font-weight: 700;
+    letter-spacing: -.01em;
+    transition: all .25s cubic-bezier(.4,0,.2,1);
+    display: inline-flex;
+    align-items: center;
+}
+
+.cat-chip:hover {
+    border-color: var(--fl-brand);
+    color: var(--fl-brand);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(6,95,70,.1);
+}
+
+.cat-chip.active {
+    background: var(--fl-brand);
+    color: white;
+    border-color: var(--fl-brand);
+    box-shadow: 0 10px 24px rgba(6,95,70,.25);
+}
+
+.cat-chip.active:hover {
+    transform: translateY(-2px);
+}
+
+.buyer-section-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: end;
+    margin-bottom: 1.2rem;
+}
+
+.buyer-section-head span {
+    color: var(--fl-brand-accent);
+    font-weight: 900;
+    font-size: .8rem;
+}
+
+.buyer-section-head h2 {
+    color: var(--fl-heading);
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    line-height: 1;
+    letter-spacing: -.06em;
+}
+
+.buyer-link {
+    color: var(--fl-brand);
+    text-decoration: none;
+    font-weight: 900;
+}
+
+.buyer-services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 1rem;
+}
+
+.buyer-service-card {
+    background: var(--fl-surface);
+    border: 1px solid var(--fl-border);
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 18px 45px rgba(15,23,42,.06);
+    transition: .25s ease;
+}
+
+.buyer-service-card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 28px 70px rgba(15,23,42,.1);
+}
+
+.service-cover {
+    height: 210px;
+    position: relative;
+    overflow: hidden;
+    background: var(--fl-soft-bg);
+}
+
+.service-cover img,
+.service-placeholder {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.service-cover img {
+    transition: .35s ease;
+}
+
+.buyer-service-card:hover .service-cover img {
+    transform: scale(1.06);
+}
+
+.service-placeholder {
+    display: grid;
+    place-items: center;
+    color: #cbd5e1;
+    font-size: 2.4rem;
+}
+
+.service-badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    background: rgba(255,255,255,.92);
+    color: var(--fl-brand);
+    padding: .35rem .75rem;
+    border-radius: 999px;
+    font-size: .72rem;
+    font-weight: 900;
+}
+
+.service-content {
+    padding: 1.2rem;
+}
+
+.service-content h3 {
+    color: var(--fl-heading);
+    margin-bottom: .5rem;
+}
+
+.service-content p {
+    color: var(--fl-text-muted);
+    font-size: .9rem;
+    line-height: 1.5;
+    min-height: 54px;
+}
+
+.seller-mini {
+    margin: 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    background: var(--fl-soft-bg);
+    padding: .75rem;
+    border-radius: 18px;
+}
+
+.seller-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    background: #dcfce7;
+    color: var(--fl-brand);
+}
+
+.seller-mini strong {
+    display: block;
+    color: var(--fl-heading);
+    font-size: .85rem;
+}
+
+.seller-mini small {
+    color: var(--fl-text-faint);
+    font-size: .75rem;
+}
+
+.service-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: .75rem;
+}
+
+.service-bottom small {
+    display: block;
+    color: var(--fl-text-faint);
+    font-size: .75rem;
+}
+
+.service-bottom strong {
+    color: var(--fl-brand);
+    font-size: 1.25rem;
+}
+
+.btn-view-service {
+    background: var(--fl-brand);
+    color: white;
+    text-decoration: none;
+    border-radius: 999px;
+    padding: .75rem 1rem;
+    font-size: .85rem;
+    font-weight: 900;
+    transition: .2s ease;
+}
+
+.btn-view-service:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px rgba(6,95,70,.22);
+}
+
+.empty-buyer {
+    background: var(--fl-surface);
+    border: 1px solid var(--fl-border);
+    border-radius: 30px;
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--fl-text-muted);
+}
+
+.empty-buyer i {
+    width: 80px;
+    height: 80px;
+    background: #dcfce7;
+    color: var(--fl-brand);
+    display: grid;
+    place-items: center;
+    border-radius: 26px;
+    margin: 0 auto 1rem;
+    font-size: 2rem;
+}
+
+.empty-buyer h3 {
+    color: var(--fl-heading);
+    margin-bottom: .5rem;
+}
+
+@media (max-width: 900px) {
+    .buyer-hero {
+        grid-template-columns: 1fr;
+    }
+
+    .buyer-section-head {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .buyer-search {
+        border-radius: 24px;
+        flex-direction: column;
+        align-items: stretch;
+        padding: 1rem;
+    }
+
+    .buyer-search i {
+        display: none;
+    }
+}
+</style>
+{% endblock %}

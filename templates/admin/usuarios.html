@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+{% block title %}Usuarios - Admin FreeLab{% endblock %}
+
+{% block content %}
+<section class="admin-users-page">
+
+    <div class="users-hero">
+        <div>
+            <span><i class="fas fa-users"></i> Gestión administrativa</span>
+            <h1>Usuarios</h1>
+            <p>Supervisa estudiantes, compradores y administradores registrados en FreeLab.</p>
+        </div>
+
+        <a href="{{ url_for('admin.admin_dashboard') }}">Volver al panel</a>
+    </div>
+
+    <div class="users-table">
+        <div class="user-row head">
+            <span>Usuario</span>
+            <span>Rol</span>
+            <span>Carrera</span>
+            <span>Ubicación</span>
+            <span>Estado</span>
+        </div>
+
+        {% for u in usuarios %}
+        <div class="user-row">
+            <div class="user-cell">
+                <div class="avatar">
+                    {{ (u.nombre[:1] if u.nombre else 'U')|upper }}
+                </div>
+                <div>
+                    <strong>{{ u.nombre or 'Usuario sin nombre' }}</strong>
+                    <small>{{ u.id }}</small>
+                </div>
+            </div>
+
+            <span class="role-chip {{ u.rol }}">
+                {{ u.rol or 'sin rol' }}
+            </span>
+
+            <span>{{ u.carrera or 'No registrada' }}</span>
+
+            <span>{{ u.ubicacion or 'No registrada' }}</span>
+
+            <span class="status-chip">
+                {% if u.perfil_completado %}
+                    Perfil completo
+                {% else %}
+                    Perfil pendiente
+                {% endif %}
+            </span>
+        </div>
+        {% endfor %}
+    </div>
+
+</section>
+
+<style>
+.admin-users-page{
+    padding:120px 6vw 60px;
+    background: var(--fl-page-bg);
+    min-height:100vh;
+}
+
+.users-hero{
+    background:
+        radial-gradient(circle at 85% 10%, rgba(134,239,172,.25), transparent 30%),
+        linear-gradient(135deg,#0b0f0d,#052e22);
+    color:white;
+    border-radius:38px;
+    padding:2.5rem;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:1rem;
+    margin-bottom:1.5rem;
+}
+
+.users-hero span{
+    display:inline-flex;
+    gap:.5rem;
+    align-items:center;
+    background:rgba(255,255,255,.12);
+    padding:.45rem .8rem;
+    border-radius:999px;
+    font-weight:900;
+    font-size:.8rem;
+}
+
+.users-hero h1{
+    font-size:clamp(3rem,7vw,6rem);
+    line-height:.85;
+    letter-spacing:-.08em;
+    margin:1rem 0;
+}
+
+.users-hero p{
+    color:rgba(255,255,255,.7);
+}
+
+.users-hero a{
+    background: var(--fl-surface);
+    color: var(--fl-heading);
+    text-decoration:none;
+    padding:.9rem 1.1rem;
+    border-radius:999px;
+    font-weight:900;
+}
+
+.users-table{
+    background: var(--fl-surface);
+    border:1px solid var(--fl-border);
+    border-radius:30px;
+    overflow:hidden;
+    box-shadow:0 20px 60px rgba(15,23,42,.06);
+}
+
+.user-row{
+    display:grid;
+    grid-template-columns:1.7fr .7fr 1fr 1fr .8fr;
+    gap:1rem;
+    align-items:center;
+    padding:1rem;
+    border-bottom:1px solid #eef2f0;
+}
+
+.user-row.head{
+    background: var(--fl-soft-bg);
+    color: var(--fl-text-muted);
+    font-size:.78rem;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    font-weight:900;
+}
+
+.user-cell{
+    display:flex;
+    align-items:center;
+    gap:.8rem;
+}
+
+.avatar{
+    width:44px;
+    height:44px;
+    border-radius:16px;
+    background:#dcfce7;
+    color: var(--fl-brand);
+    display:grid;
+    place-items:center;
+    font-weight:900;
+}
+
+.user-cell strong{
+    display:block;
+    color: var(--fl-heading);
+}
+
+.user-cell small{
+    color: var(--fl-text-faint);
+    font-size:.72rem;
+}
+
+.role-chip,
+.status-chip{
+    width:fit-content;
+    padding:.38rem .7rem;
+    border-radius:999px;
+    font-size:.75rem;
+    font-weight:900;
+    background:#f1f5f9;
+    color: var(--fl-text-body);
+}
+
+.role-chip.admin{
+    background:#fee2e2;
+    color:#dc2626;
+}
+
+.role-chip.estudiante{
+    background:#dcfce7;
+    color: var(--fl-brand-accent);
+}
+
+.role-chip.comprador{
+    background:#ffedd5;
+    color:#ea580c;
+}
+
+.status-chip{
+    background:#dbeafe;
+    color:#2563eb;
+}
+
+@media(max-width:950px){
+    .user-row{
+        grid-template-columns:1fr;
+    }
+
+    .user-row.head{
+        display:none;
+    }
+
+    .users-hero{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+}
+</style>
+{% endblock %}

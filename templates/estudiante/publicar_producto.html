@@ -1,0 +1,668 @@
+{% extends "base_estudiante.html" %}
+
+{% block title %}Publicar Servicio - FreeLab{% endblock %}
+
+{% block content %}
+<div class="publish-shell">
+    <aside class="publish-sidebar">
+        <div class="brand-box">
+            <i class="fas fa-layer-group"></i>
+            <span>FreeLab</span>
+        </div>
+
+        <a href="{{ url_for('estudiante.dashboard_estudiante') }}" class="side-link">
+            <i class="fas fa-arrow-left"></i> Volver al dashboard
+        </a>
+
+        <div class="publish-tip">
+            <span>Tip</span>
+            <h3>Publica servicios claros</h3>
+            <p>Mientras más específico seas, más confianza generarás en mypes y emprendedores.</p>
+        </div>
+
+        <div class="steps-box">
+            <div class="step active">
+                <b>1</b>
+                <div>
+                    <strong>Servicio</strong>
+                    <small>Qué ofreces</small>
+                </div>
+            </div>
+            <div class="step">
+                <b>2</b>
+                <div>
+                    <strong>Precio</strong>
+                    <small>Cuánto cobrarás</small>
+                </div>
+            </div>
+            <div class="step">
+                <b>3</b>
+                <div>
+                    <strong>Portafolio</strong>
+                    <small>Imagen de referencia</small>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="publish-main">
+        <div class="publish-header">
+            <div>
+                <span class="eyebrow">Nuevo servicio freelance</span>
+                <h1>Publica una oferta profesional</h1>
+                <p>Convierte tus habilidades en servicios para mypes, emprendedores y personas naturales.</p>
+            </div>
+        </div>
+
+        <form method="POST" action="{{ url_for('servicios.guardar_producto') }}" enctype="multipart/form-data" class="publish-grid">
+            <section class="form-panel">
+                <div class="panel-title">
+                    <i class="fas fa-briefcase"></i>
+                    <div>
+                        <h2>Información del servicio</h2>
+                        <p>Define lo que el comprador verá primero.</p>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Título del servicio *</label>
+                    <input type="text" name="titulo" placeholder="Ej: Diseño de logo para emprendimientos" required>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Categoría</label>
+                        <select name="categoria">
+                            <option value="1">Diseño gráfico</option>
+                            <option value="2">Desarrollo web</option>
+                            <option value="3">Marketing digital</option>
+                            <option value="4">Edición de video</option>
+                            <option value="5">Soporte técnico</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Precio base (S/) *</label>
+                        <input type="number" name="precio" step="0.01" placeholder="Ej: 80" required>
+                        <small class="price-preview">S/ 0.00</small>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Descripción del servicio</label>
+                    <textarea name="descripcion" rows="5" placeholder="Explica qué incluye tu servicio, para quién está pensado y qué resultado entregas."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Imagen principal</label>
+                    <label class="upload-card">
+                        <input type="file" name="imagen" accept="image/*" onchange="previewImage(event)">
+                        <div class="upload-empty" id="uploadEmpty">
+                            <i class="fas fa-cloud-arrow-up"></i>
+                            <strong>Sube una imagen de referencia</strong>
+                            <span>JPG, PNG o WebP recomendado</span>
+                        </div>
+                        <img id="preview" class="preview-img" style="display:none;">
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label>Archivo adjunto opcional</label>
+                    <input type="file" name="archivo" accept=".pdf,.doc,.docx">
+                    <small>Úsalo solo si deseas adjuntar una propuesta, brochure o archivo complementario.</small>
+                </div>
+            </section>
+
+            <aside class="preview-panel">
+                <div class="preview-card">
+                    <div class="preview-cover" id="previewCover">
+                        <i class="fas fa-image"></i>
+                    </div>
+
+                    <div class="preview-body">
+                        <span class="preview-category">Servicio freelance</span>
+                        <h3 id="previewTitle">Tu servicio aparecerá aquí</h3>
+                        <p id="previewDescription">Agrega una descripción clara para que el comprador entienda tu propuesta.</p>
+
+                        <div class="preview-price">
+                            <small>Precio desde</small>
+                            <strong id="previewPrice">S/ 0.00</strong>
+                        </div>
+
+                        <div class="trust-box">
+                            <i class="fas fa-shield-heart"></i>
+                            <span>La publicación será revisada por administración antes de mostrarse.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit-premium">
+                    <i class="fas fa-paper-plane"></i>
+                    Enviar servicio a revisión
+                </button>
+
+                <a href="{{ url_for('estudiante.dashboard_estudiante') }}" class="btn-cancel-premium">
+                    Cancelar
+                </a>
+            </aside>
+        </form>
+    </main>
+</div>
+
+<script>
+const precioInput = document.querySelector('input[name="precio"]');
+const tituloInput = document.querySelector('input[name="titulo"]');
+const descripcionInput = document.querySelector('textarea[name="descripcion"]');
+
+const previewPrice = document.getElementById('previewPrice');
+const previewTitle = document.getElementById('previewTitle');
+const previewDescription = document.getElementById('previewDescription');
+const pricePreviewSmall = document.querySelector('.price-preview');
+
+if (precioInput) {
+    precioInput.addEventListener('input', () => {
+        const value = parseFloat(precioInput.value || 0).toFixed(2);
+        previewPrice.textContent = `S/ ${value}`;
+        pricePreviewSmall.textContent = `S/ ${value}`;
+    });
+}
+
+if (tituloInput) {
+    tituloInput.addEventListener('input', () => {
+        previewTitle.textContent = tituloInput.value || 'Tu servicio aparecerá aquí';
+    });
+}
+
+if (descripcionInput) {
+    descripcionInput.addEventListener('input', () => {
+        previewDescription.textContent = descripcionInput.value || 'Agrega una descripción clara para que el comprador entienda tu propuesta.';
+    });
+}
+
+function previewImage(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function() {
+        const preview = document.getElementById('preview');
+        const uploadEmpty = document.getElementById('uploadEmpty');
+        const previewCover = document.getElementById('previewCover');
+
+        preview.src = reader.result;
+        preview.style.display = 'block';
+        uploadEmpty.style.display = 'none';
+
+        previewCover.innerHTML = `<img src="${reader.result}" alt="Preview">`;
+        previewCover.classList.add("has-image");
+    }
+    reader.readAsDataURL(file);
+}
+</script>
+
+<style>
+.publish-shell {
+    min-height: 100vh;
+    background: var(--fl-page-bg);
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 1.5rem;
+    padding: 2rem;
+    font-family: var(--font-ui);
+}
+
+.publish-sidebar {
+    background: rgba(255,255,255,.9);
+    border: 1px solid rgba(15,76,58,.08);
+    border-radius: 30px;
+    padding: 1.5rem;
+    box-shadow: 0 20px 60px rgba(15,23,42,.08);
+    min-height: calc(100vh - 4rem);
+}
+
+.brand-box {
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--fl-brand);
+    margin-bottom: 2rem;
+}
+
+.brand-box i {
+    background: #dcfce7;
+    padding: .7rem;
+    border-radius: 14px;
+}
+
+.side-link {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+    text-decoration: none;
+    color: var(--fl-text-muted);
+    background: var(--fl-soft-bg);
+    padding: .9rem 1rem;
+    border-radius: 16px;
+    font-weight: 700;
+    transition: .25s ease;
+}
+
+.side-link:hover {
+    background: #e8f8ef;
+    color: var(--fl-brand);
+}
+
+.publish-tip {
+    margin: 2rem 0;
+    background: linear-gradient(145deg, #065f46, #052e22);
+    color: white;
+    padding: 1.4rem;
+    border-radius: 24px;
+}
+
+.publish-tip span {
+    background: rgba(255,255,255,.16);
+    padding: .3rem .7rem;
+    border-radius: 999px;
+    font-size: .7rem;
+    font-weight: 800;
+}
+
+.publish-tip h3 {
+    margin: 1rem 0 .5rem;
+}
+
+.publish-tip p {
+    color: rgba(255,255,255,.72);
+    line-height: 1.6;
+    font-size: .9rem;
+}
+
+.steps-box {
+    display: grid;
+    gap: .8rem;
+}
+
+.step {
+    display: flex;
+    align-items: center;
+    gap: .9rem;
+    padding: .85rem;
+    border-radius: 16px;
+    background: var(--fl-soft-bg);
+}
+
+.step.active {
+    background: #e8f8ef;
+}
+
+.step b {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--fl-brand);
+    color: white;
+    display: grid;
+    place-items: center;
+}
+
+.step strong {
+    display: block;
+    color: var(--fl-heading);
+}
+
+.step small {
+    color: var(--fl-text-faint);
+}
+
+.publish-main {
+    background: rgba(255,255,255,.7);
+    border-radius: 32px;
+    padding: 2rem;
+    border: 1px solid rgba(15,76,58,.08);
+    box-shadow: 0 20px 70px rgba(15,23,42,.06);
+}
+
+.publish-header {
+    margin-bottom: 1.5rem;
+}
+
+.eyebrow {
+    display: inline-flex;
+    background: #edfdf5;
+    color: var(--fl-brand-accent);
+    padding: .35rem .75rem;
+    border-radius: 999px;
+    font-size: .75rem;
+    font-weight: 800;
+    margin-bottom: .8rem;
+}
+
+.publish-header h1 {
+    color: var(--fl-heading);
+    font-size: 2.5rem;
+    margin-bottom: .3rem;
+}
+
+.publish-header p {
+    color: var(--fl-text-muted);
+}
+
+.publish-grid {
+    display: grid;
+    grid-template-columns: 1.2fr .8fr;
+    gap: 1.2rem;
+}
+
+.form-panel,
+.preview-panel {
+    background: var(--fl-surface);
+    border-radius: 26px;
+    padding: 1.4rem;
+    border: 1px solid #edf2ef;
+}
+
+.panel-title {
+    display: flex;
+    gap: .9rem;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.panel-title i {
+    width: 46px;
+    height: 46px;
+    border-radius: 16px;
+    display: grid;
+    place-items: center;
+    background: #dcfce7;
+    color: var(--fl-brand);
+    font-size: 1.2rem;
+}
+
+.panel-title h2 {
+    color: var(--fl-heading);
+    font-size: 1.2rem;
+}
+
+.panel-title p {
+    color: var(--fl-text-faint);
+    font-size: .85rem;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    color: #334155;
+    font-weight: 800;
+    font-size: .88rem;
+    margin-bottom: .45rem;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    border: 1px solid var(--fl-border);
+    background-color: var(--fl-soft-bg);
+    border-radius: 16px;
+    padding: .95rem 1rem;
+    font-family: inherit;
+    outline: none;
+    transition: .25s ease;
+}
+
+.form-group select {
+    padding-right: 2.75rem;
+}
+
+.form-group textarea {
+    resize: vertical;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    border-color: var(--fl-brand);
+    background-color: var(--fl-surface);
+    box-shadow: 0 0 0 4px rgba(6,95,70,.08);
+}
+
+.form-group small,
+.price-preview {
+    display: block;
+    color: var(--fl-text-muted);
+    margin-top: .35rem;
+    font-size: .8rem;
+}
+
+.upload-card {
+    min-height: 210px;
+    border: 1.8px dashed #cbd5e1;
+    border-radius: 22px;
+    background: var(--fl-soft-bg);
+    display: grid !important;
+    place-items: center;
+    cursor: pointer;
+    overflow: hidden;
+    transition: .25s ease;
+}
+
+.upload-card:hover {
+    border-color: var(--fl-brand);
+    background: #f0fdf4;
+}
+
+.upload-card input {
+    display: none;
+}
+
+.upload-empty {
+    text-align: center;
+    color: var(--fl-text-muted);
+}
+
+.upload-empty i {
+    font-size: 2.4rem;
+    color: var(--fl-brand);
+    margin-bottom: .7rem;
+}
+
+.upload-empty strong,
+.upload-empty span {
+    display: block;
+}
+
+.preview-img {
+    width: 100%;
+    height: 210px;
+    object-fit: cover;
+}
+
+.preview-panel {
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+}
+
+.preview-card {
+    overflow: hidden;
+    border-radius: 24px;
+    border: 1px solid #edf2ef;
+    background: var(--fl-surface);
+    margin-bottom: 1rem;
+}
+
+.preview-cover {
+    height: 210px;
+    background: linear-gradient(145deg, #e8f8ef, #f8fafc);
+    display: grid;
+    place-items: center;
+    color: var(--fl-text-faint);
+    font-size: 2rem;
+}
+
+.preview-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.preview-body {
+    padding: 1.2rem;
+}
+
+.preview-category {
+    display: inline-flex;
+    background: #edfdf5;
+    color: var(--fl-brand-accent);
+    padding: .3rem .65rem;
+    border-radius: 999px;
+    font-size: .72rem;
+    font-weight: 800;
+    margin-bottom: .8rem;
+}
+
+.preview-body h3 {
+    color: var(--fl-heading);
+    margin-bottom: .5rem;
+}
+
+.preview-body p {
+    color: var(--fl-text-muted);
+    line-height: 1.5;
+    font-size: .9rem;
+}
+
+.preview-price {
+    margin: 1rem 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.preview-price small {
+    color: var(--fl-text-faint);
+}
+
+.preview-price strong {
+    color: var(--fl-brand);
+    font-size: 1.4rem;
+}
+
+.trust-box {
+    display: flex;
+    gap: .7rem;
+    align-items: start;
+    padding: .85rem;
+    background: var(--fl-soft-bg);
+    border-radius: 16px;
+    color: var(--fl-text-body);
+    font-size: .82rem;
+}
+
+.trust-box i {
+    color: var(--fl-brand);
+    margin-top: .15rem;
+}
+
+.btn-submit-premium {
+    width: 100%;
+    border: none;
+    background: var(--fl-brand);
+    color: white;
+    padding: 1rem 1.2rem;
+    border-radius: 999px;
+    font-weight: 900;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: .7rem;
+    box-shadow: 0 14px 30px rgba(6,95,70,.25);
+    transition: .25s ease;
+}
+
+.btn-submit-premium:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 38px rgba(6,95,70,.32);
+}
+
+.btn-cancel-premium {
+    display: block;
+    text-align: center;
+    margin-top: .9rem;
+    text-decoration: none;
+    color: var(--fl-text-muted);
+    font-weight: 800;
+}
+
+.preview-cover {
+    position: relative;
+    overflow: hidden;
+}
+
+.preview-cover::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0.05),
+        rgba(0,0,0,0.55)
+    );
+    opacity: 0;
+    transition: .25s ease;
+}
+
+.preview-cover.has-image::after {
+    opacity: 1;
+}
+@media (max-width: 1050px) {
+    .publish-shell {
+        grid-template-columns: 1fr;
+    }
+
+    .publish-sidebar {
+        min-height: auto;
+    }
+
+    .publish-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .preview-panel {
+        position: static;
+    }
+}
+
+@media (max-width: 650px) {
+    .publish-shell {
+        padding: 1rem;
+    }
+
+    .publish-main {
+        padding: 1.2rem;
+    }
+
+    .publish-header h1 {
+        font-size: 2rem;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

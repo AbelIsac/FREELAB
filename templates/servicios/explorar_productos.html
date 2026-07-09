@@ -1,0 +1,572 @@
+{% extends "base.html" %}
+
+{% block title %}Explorar servicios - FreeLab{% endblock %}
+
+{% block content %}
+<section class="public-explore">
+    <div class="explore-hero">
+        <span class="explore-pill">
+            <i class="fas fa-layer-group"></i> FreeLab Marketplace
+        </span>
+
+        <h1>Explora servicios freelance de estudiantes Certus.</h1>
+        <p>Diseño, desarrollo web, marketing, edición multimedia y soporte técnico para mypes y emprendedores.</p>
+
+        <form method="GET" action="{{ url_for('servicios.explorar_productos') }}" class="explore-search">
+            <i class="fas fa-search"></i>
+            <input type="text" name="q" value="{{ q or '' }}" placeholder="Buscar logo, página web, video, marketing...">
+            <button type="submit">Buscar</button>
+        </form>
+    </div>
+
+    {% set cat_actual = request.args.get('categoria') %}
+    <div class="explore-cats fl-stagger">
+        <a href="{{ url_for('servicios.explorar_productos') }}" class="{{ 'active' if not cat_actual }} fl-reveal">Todos</a>
+        <a href="{{ url_for('servicios.explorar_productos', categoria=1) }}" class="{{ 'active' if cat_actual == '1' }} fl-reveal">Diseño gráfico</a>
+        <a href="{{ url_for('servicios.explorar_productos', categoria=2) }}" class="{{ 'active' if cat_actual == '2' }} fl-reveal">Desarrollo web</a>
+        <a href="{{ url_for('servicios.explorar_productos', categoria=3) }}" class="{{ 'active' if cat_actual == '3' }} fl-reveal">Marketing</a>
+        <a href="{{ url_for('servicios.explorar_productos', categoria=4) }}" class="{{ 'active' if cat_actual == '4' }} fl-reveal">Video</a>
+        <a href="{{ url_for('servicios.explorar_productos', categoria=5) }}" class="{{ 'active' if cat_actual == '5' }} fl-reveal">Soporte</a>
+    </div>
+
+    <div class="view-switcher">
+        <button type="button" class="view-btn active" onclick="setView('grid')" id="gridBtn">
+            <i class="fas fa-grip"></i> Tarjetas
+        </button>
+
+        <button type="button" class="view-btn" onclick="setView('list')" id="listBtn">
+            <i class="fas fa-list"></i> Lista
+        </button>
+    </div>
+
+    {% if servicios %}
+    <div class="explore-grid fl-stagger" id="servicesView">
+        {% for servicio in servicios %}
+        <article class="explore-card fl-reveal">
+            <div class="explore-img">
+                {% if servicio.imagen_url %}
+                    <img src="{{ servicio.imagen_url }}" alt="{{ servicio.titulo }}">
+                {% else %}
+                    <div class="explore-placeholder">
+                        <i class="fas fa-image"></i>
+                    </div>
+                {% endif %}
+
+                <span>
+                    {% if servicio.categoria_id == 1 %}Diseño
+                    {% elif servicio.categoria_id == 2 %}Web
+                    {% elif servicio.categoria_id == 3 %}Marketing
+                    {% elif servicio.categoria_id == 4 %}Video
+                    {% else %}Servicio{% endif %}
+                </span>
+            </div>
+
+            <div class="explore-body">
+                <h3>{{ servicio.titulo }}</h3>
+                <p>
+                    {{ servicio.descripcion[:100] if servicio.descripcion else 'Servicio freelance disponible.' }}
+                    {% if servicio.descripcion and servicio.descripcion|length > 100 %}...{% endif %}
+                </p>
+
+                <div class="explore-user">
+                    <i class="fas fa-user-graduate"></i>
+                    <div>
+                        <strong>Estudiante Certus</strong>
+                        <small>Freelancer verificado</small>
+                    </div>
+                </div>
+
+                <div class="explore-bottom">
+                    <strong>S/ {{ "{:,.2f}".format(servicio.precio) }}</strong>
+
+                    {% if session_user and session_user.rol == 'comprador' %}
+                        <a href="{{ url_for('servicios.detalle_producto', producto_id=servicio.id) }}" class="btn-explore-card">
+                            Ver servicio
+                        </a>
+                    {% elif session_user and session_user.rol == 'estudiante' %}
+                        <a href="{{ url_for('estudiante.dashboard_estudiante') }}" class="btn-explore-card muted">
+                            Mi panel
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('auth.login') }}" class="btn-explore-card">
+                            Iniciar sesión
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="explore-empty">
+        <i class="fas fa-briefcase"></i>
+        <h2>No hay servicios disponibles todavía</h2>
+        <p>Cuando el administrador apruebe servicios, aparecerán aquí.</p>
+    </div>
+    {% endif %}
+</section>
+
+<style>
+.public-explore {
+    min-height: 100vh;
+    padding: 120px 6vw 80px;
+    background: var(--fl-page-bg);
+}
+
+.explore-hero {
+    background:
+        radial-gradient(circle at 85% 15%, rgba(134,239,172,.25), transparent 28%),
+        linear-gradient(135deg, #0b0f0d, #052e22);
+    color: white;
+    border-radius: 36px;
+    padding: 3rem;
+    box-shadow: 0 30px 90px rgba(15,23,42,.18);
+}
+
+.explore-pill {
+    display: inline-flex;
+    gap: .5rem;
+    align-items: center;
+    background: rgba(255,255,255,.12);
+    padding: .4rem .75rem;
+    border-radius: 999px;
+    font-size: .78rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+}
+
+.explore-hero h1 {
+    font-size: clamp(2.8rem, 5vw, 5.5rem);
+    line-height: .9;
+    letter-spacing: -.07em;
+    max-width: 900px;
+    margin-bottom: 1rem;
+}
+
+.explore-hero p {
+    color: rgba(255,255,255,.68);
+    max-width: 720px;
+    line-height: 1.7;
+    margin-bottom: 1.8rem;
+}
+
+.explore-search {
+    max-width: 760px;
+    background: var(--fl-surface);
+    border-radius: 999px;
+    padding: .45rem;
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+}
+
+.explore-search i {
+    color: var(--fl-brand);
+    margin-left: 1rem;
+}
+
+.explore-search input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-family: inherit;
+}
+
+.explore-search button {
+    border: none;
+    background: var(--fl-brand);
+    color: white;
+    padding: .85rem 1.25rem;
+    border-radius: 999px;
+    font-weight: 900;
+}
+
+.explore-cats {
+    display: flex;
+    gap: .6rem;
+    flex-wrap: wrap;
+    margin: 1.5rem 0;
+}
+
+.explore-cats a {
+    background: var(--fl-surface);
+    color: var(--fl-text-body);
+    text-decoration: none;
+    border: 1px solid var(--fl-border);
+    border-radius: 999px;
+    padding: .65rem 1.1rem;
+    font-size: .87rem;
+    font-weight: 700;
+    letter-spacing: -.01em;
+    transition: all .25s cubic-bezier(.4,0,.2,1);
+    display: inline-flex;
+    align-items: center;
+}
+
+.explore-cats a:hover {
+    border-color: var(--fl-brand);
+    color: var(--fl-brand);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(6,95,70,.1);
+}
+
+.explore-cats a.active {
+    background: var(--fl-brand);
+    color: white;
+    border-color: var(--fl-brand);
+    box-shadow: 0 10px 24px rgba(6,95,70,.25);
+}
+
+.explore-cats a.active:hover {
+    transform: translateY(-2px);
+}
+
+.explore-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 1rem;
+}
+
+.explore-card {
+    background: var(--fl-surface);
+    border: 1px solid var(--fl-border);
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 18px 45px rgba(15,23,42,.06);
+    transition: .25s ease;
+}
+
+.explore-card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 28px 70px rgba(15,23,42,.1);
+}
+
+.explore-img {
+    height: 215px;
+    position: relative;
+    overflow: hidden;
+}
+
+.explore-img img,
+.explore-placeholder {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.explore-img img {
+    transition: .35s ease;
+}
+
+.explore-card:hover .explore-img img {
+    transform: scale(1.06);
+}
+
+.explore-placeholder {
+    display: grid;
+    place-items: center;
+    background: var(--fl-soft-bg);
+    color: #cbd5e1;
+    font-size: 2.2rem;
+}
+
+.explore-img span {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    background: rgba(255,255,255,.92);
+    color: var(--fl-brand);
+    padding: .35rem .75rem;
+    border-radius: 999px;
+    font-size: .72rem;
+    font-weight: 900;
+}
+
+.explore-body {
+    padding: 1.2rem;
+}
+
+.explore-body h3 {
+    color: var(--fl-heading);
+    margin-bottom: .5rem;
+}
+
+.explore-body p {
+    color: var(--fl-text-muted);
+    line-height: 1.5;
+    font-size: .9rem;
+    min-height: 54px;
+}
+
+.explore-user {
+    margin: 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    background: var(--fl-soft-bg);
+    padding: .75rem;
+    border-radius: 18px;
+}
+
+.explore-user i {
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    background: #dcfce7;
+    color: var(--fl-brand);
+    border-radius: 14px;
+}
+
+.explore-user strong {
+    display: block;
+    color: var(--fl-heading);
+    font-size: .85rem;
+}
+
+.explore-user small {
+    color: var(--fl-text-faint);
+}
+
+.explore-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: .75rem;
+}
+
+.explore-bottom strong {
+    color: var(--fl-brand);
+    font-size: 1.25rem;
+}
+
+.btn-explore-card {
+    background: var(--fl-brand);
+    color: white;
+    text-decoration: none;
+    border-radius: 999px;
+    padding: .75rem 1rem;
+    font-size: .85rem;
+    font-weight: 900;
+}
+
+.btn-explore-card.muted {
+    background: #e8f8ef;
+    color: var(--fl-brand);
+}
+
+.explore-empty {
+    background: var(--fl-surface);
+    border-radius: 34px;
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.explore-empty i {
+    width: 86px;
+    height: 86px;
+    margin: 0 auto 1rem;
+    border-radius: 28px;
+    background: #dcfce7;
+    color: var(--fl-brand);
+    display: grid;
+    place-items: center;
+    font-size: 2rem;
+}
+
+.view-switcher {
+    display: flex;
+    justify-content: flex-end;
+    gap: .6rem;
+    margin-bottom: 1rem;
+}
+
+.view-btn {
+    border: 1px solid var(--fl-border);
+    background: var(--fl-surface);
+    color: var(--fl-text-body);
+    padding: .7rem 1rem;
+    border-radius: 999px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.view-btn.active,
+.view-btn:hover {
+    background: var(--fl-brand);
+    color: white;
+}
+
+.explore-grid.list-view {
+    grid-template-columns: 1fr;
+    gap: .55rem;
+}
+
+.explore-grid.list-view .explore-card {
+    display: grid;
+    grid-template-columns: 72px 1.4fr .9fr .8fr auto;
+    align-items: center;
+    gap: 1rem;
+    border-radius: 18px;
+    padding: .75rem .9rem;
+    box-shadow: none;
+}
+
+.explore-grid.list-view .explore-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 34px rgba(15,23,42,.08);
+}
+
+.explore-grid.list-view .explore-img {
+    width: 72px;
+    height: 72px;
+    border-radius: 16px;
+}
+
+.explore-grid.list-view .explore-img img,
+.explore-grid.list-view .explore-placeholder {
+    border-radius: 16px;
+}
+
+.explore-grid.list-view .explore-img span {
+    display: none;
+}
+
+.explore-grid.list-view .explore-body {
+    display: contents;
+}
+
+.explore-grid.list-view .explore-body h3 {
+    margin: 0;
+    font-size: .95rem;
+    line-height: 1.25;
+}
+
+.explore-grid.list-view .explore-body p {
+    min-height: auto;
+    margin: 0;
+    font-size: .82rem;
+    line-height: 1.4;
+    max-width: 420px;
+}
+
+.explore-grid.list-view .explore-user {
+    margin: 0;
+    padding: .55rem .7rem;
+    border-radius: 999px;
+    background: var(--fl-soft-bg);
+}
+
+.explore-grid.list-view .explore-user i {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+.explore-grid.list-view .explore-user strong {
+    font-size: .78rem;
+}
+
+.explore-grid.list-view .explore-user small {
+    display: none;
+}
+
+.explore-grid.list-view .explore-bottom {
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.explore-grid.list-view .explore-bottom strong {
+    font-size: 1rem;
+    white-space: nowrap;
+}
+
+.explore-grid.list-view .btn-explore-card {
+    padding: .62rem .9rem;
+    font-size: .78rem;
+    white-space: nowrap;
+}
+
+@media (max-width: 950px) {
+    .explore-grid.list-view .explore-card {
+        grid-template-columns: 72px 1fr auto;
+    }
+
+    .explore-grid.list-view .explore-body p,
+    .explore-grid.list-view .explore-user {
+        display: none;
+    }
+}
+
+@media (max-width: 620px) {
+    .explore-grid.list-view .explore-card {
+        grid-template-columns: 60px 1fr;
+    }
+
+    .explore-grid.list-view .explore-bottom {
+        grid-column: 1 / -1;
+        justify-content: space-between;
+    }
+
+    .explore-grid.list-view .explore-img {
+        width: 60px;
+        height: 60px;
+    }
+}
+.view-switcher {
+    background: var(--fl-surface);
+    width: fit-content;
+    margin-left: auto;
+    margin-bottom: 1rem;
+    padding: .35rem;
+    border: 1px solid var(--fl-border);
+    border-radius: 999px;
+    display: flex;
+    gap: .25rem;
+    box-shadow: 0 12px 30px rgba(15,23,42,.05);
+}
+
+.view-btn {
+    border: none;
+    background: transparent;
+    color: var(--fl-text-muted);
+    padding: .65rem .9rem;
+    border-radius: 999px;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.view-btn.active {
+    background: var(--fl-brand);
+    color: white;
+}
+</style>
+
+<script>
+function setView(type) {
+    const container = document.getElementById('servicesView');
+    const gridBtn = document.getElementById('gridBtn');
+    const listBtn = document.getElementById('listBtn');
+
+    if (!container) return;
+
+    if (type === 'list') {
+        container.classList.add('list-view');
+        gridBtn.classList.remove('active');
+        listBtn.classList.add('active');
+        localStorage.setItem('freelab_view', 'list');
+    } else {
+        container.classList.remove('list-view');
+        listBtn.classList.remove('active');
+        gridBtn.classList.add('active');
+        localStorage.setItem('freelab_view', 'grid');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const savedView = localStorage.getItem('freelab_view') || 'grid';
+    setView(savedView);
+});
+</script>
+{% endblock %}

@@ -70,7 +70,7 @@
         <div class="quick-actions-full">
             <h2>Acciones rápidas</h2>
             <div class="actions-grid-full">
-                <a href="{{ url_for('explorar_productos') }}" class="action-card-full">
+                <a href="{{ url_for('servicios.explorar_productos') }}" class="action-card-full">
                     <div class="action-icon-full">
                         <i class="fas fa-search"></i>
                     </div>
@@ -80,7 +80,7 @@
                     </div>
                 </a>
 
-                <a href="{{ url_for('mis_compras') }}" class="action-card-full">
+                <a href="{{ url_for('comprador.mis_compras') }}" class="action-card-full">
                     <div class="action-icon-full">
                         <i class="fas fa-history"></i>
                     </div>
@@ -90,7 +90,7 @@
                     </div>
                 </a>
 
-                <a href="{{ url_for('favoritos') }}" class="action-card-full">
+                <a href="{{ url_for('comprador.favoritos') }}" class="action-card-full">
                     <div class="action-icon-full">
                         <i class="fas fa-heart"></i>
                     </div>
@@ -100,7 +100,7 @@
                     </div>
                 </a>
 
-                <a href="{{ url_for('mis_resenas') }}" class="action-card-full">
+                <a href="{{ url_for('comprador.mis_resenas') }}" class="action-card-full">
                     <div class="action-icon-full">
                         <i class="fas fa-star"></i>
                     </div>
@@ -116,7 +116,7 @@
         <div class="steps-full">
             <h2>Categorías destacadas</h2>
             <div class="steps-grid-full">
-                <a href="{{ url_for('explorar_productos', categoria=2) }}" class="step-full category-link">
+                <a href="{{ url_for('servicios.explorar_productos', categoria=2) }}" class="step-full category-link">
                     <div class="step-number-full">
                         <i class="fas fa-laptop-code"></i>
                     </div>
@@ -126,7 +126,7 @@
                     </div>
                 </a>
 
-                <a href="{{ url_for('explorar_productos', categoria=3) }}" class="step-full category-link">
+                <a href="{{ url_for('servicios.explorar_productos', categoria=3) }}" class="step-full category-link">
                     <div class="step-number-full">
                         <i class="fas fa-paint-brush"></i>
                     </div>
@@ -136,7 +136,7 @@
                     </div>
                 </a>
 
-                <a href="{{ url_for('explorar_productos', categoria=1) }}" class="step-full category-link">
+                <a href="{{ url_for('servicios.explorar_productos', categoria=1) }}" class="step-full category-link">
                     <div class="step-number-full">
                         <i class="fas fa-chalkboard-user"></i>
                     </div>
@@ -146,7 +146,7 @@
                     </div>
                 </a>
 
-                <a href="{{ url_for('explorar_productos', categoria=4) }}" class="step-full category-link">
+                <a href="{{ url_for('servicios.explorar_productos', categoria=4) }}" class="step-full category-link">
                     <div class="step-number-full">
                         <i class="fas fa-music"></i>
                     </div>
@@ -167,7 +167,7 @@
                     <div class="step-content-full">
                         <h3>Completa tu perfil</h3>
                         <p>Agrega tus intereses para mejores recomendaciones</p>
-                        <a href="{{ url_for('configuracion') }}" class="step-link-full">Configurar perfil →</a>
+                        <a href="{{ url_for('comprador.configuracion') }}" class="step-link-full">Configurar perfil →</a>
                     </div>
                 </div>
 
@@ -176,7 +176,7 @@
                     <div class="step-content-full">
                         <h3>Explora productos</h3>
                         <p>Descubre servicios de otros estudiantes</p>
-                        <a href="{{ url_for('explorar_productos') }}" class="step-link-full">Ver productos →</a>
+                        <a href="{{ url_for('servicios.explorar_productos') }}" class="step-link-full">Ver productos →</a>
                     </div>
                 </div>
 
@@ -185,7 +185,7 @@
                     <div class="step-content-full">
                         <h3>Deja tu primera reseña</h3>
                         <p>Ayuda a la comunidad con tu opinión</p>
-                        <a href="{{ url_for('mis_compras') }}" class="step-link-full">Calificar →</a>
+                        <a href="{{ url_for('comprador.mis_compras') }}" class="step-link-full">Calificar →</a>
                     </div>
                 </div>
             </div>
@@ -193,10 +193,10 @@
 
         <!-- Botones Inferiores -->
         <div class="nav-buttons-full">
-            <a href="{{ url_for('home') }}" class="btn-link">
+            <a href="{{ url_for('comprador.dashboard_comprador') }}" class="btn-link">
                 <i class="fas fa-home"></i> Inicio
             </a>
-            <a href="{{ url_for('logout') }}" class="btn-link">
+            <a href="{{ url_for('auth.logout') }}" class="btn-link">
                 <i class="fas fa-sign-out-alt"></i> Cerrar sesión
             </a>
         </div>

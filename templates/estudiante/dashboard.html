@@ -1,0 +1,1059 @@
+{% extends "base_estudiante.html" %}
+
+{% block title %}Dashboard Estudiante Freelance{% endblock %}
+
+{% block content %}
+<div class="freelance-shell">
+
+    <aside class="freelance-sidebar">
+        <div class="brand-box">
+            <i class="fas fa-layer-group"></i>
+            <span>FreeLab</span>
+        </div>
+
+        <div class="menu-section">
+            <p class="menu-label">Panel</p>
+            <a class="menu-item active" href="{{ url_for('estudiante.dashboard_estudiante') }}">
+                <i class="fas fa-th-large"></i> Dashboard
+            </a>
+            <a class="menu-item" href="{{ url_for('servicios.mis_productos') }}">
+                <i class="fas fa-briefcase"></i> Mis servicios
+            </a>
+            <a class="menu-item" href="{{ url_for('servicios.publicar_producto') }}">
+                <i class="fas fa-plus-circle"></i> Publicar servicio
+            </a>
+        </div>
+
+        <div class="menu-section">
+            <p class="menu-label">Cuenta</p>
+            <a class="menu-item" href="{{ url_for('estudiante.perfil_freelance') }}">
+                <i class="fas fa-user"></i> Perfil freelance
+            </a>
+            <a class="menu-item" href="{{ url_for('estudiante.mi_portafolio') }}">
+                <i class="fas fa-images"></i> Portafolio
+            </a>
+            <a class="menu-item" href="{{ url_for('auth.logout') }}">
+                <i class="fas fa-sign-out-alt"></i> Salir
+            </a>
+        </div>
+
+        <div class="sidebar-user">
+            <img src="{{ usuario.user_metadata.get('avatar_url') }}" alt="Avatar">
+            <div>
+                <strong>{{ usuario.user_metadata.get('name', 'Estudiante') }}</strong>
+                <small>Estudiante Freelance</small>
+            </div>
+        </div>
+    </aside>
+
+    <main class="freelance-main">
+        <header class="freelance-topbar">
+            <div>
+                <h1>Dashboard</h1>
+                <p>Gestiona tus servicios, clientes y entregas desde un solo lugar.</p>
+            </div>
+
+            <div class="topbar-actions">
+                <a href="{{ url_for('servicios.publicar_producto') }}" class="btn-primary-soft">
+                    <i class="fas fa-plus"></i> Nuevo servicio
+                </a>
+
+                <div class="notification-widget">
+                    <button class="notification-btn" type="button" onclick="toggleNotifications()">
+                        <i class="fas fa-bell"></i>
+                        {% if notificaciones_no_leidas > 0 %}
+                        <span class="notification-dot">{{ notificaciones_no_leidas }}</span>
+                        {% endif %}
+                    </button>
+
+                    <div class="notification-dropdown" id="notificationDropdown">
+                        <div class="notification-dropdown-head">
+                            <strong>Notificaciones</strong>
+                            <a href="{{ url_for('notificaciones.listar_notificaciones') }}">Ver todas</a>
+                        </div>
+
+                        {% if notificaciones %}
+                            {% for n in notificaciones %}
+                            <a href="{% if n.venta_id %}{{ url_for('comprador.detalle_contratacion', venta_id=n.venta_id) }}{% else %}{{ url_for('notificaciones.listar_notificaciones') }}{% endif %}"
+                               class="notification-mini {% if not n.leida %}unread{% endif %}">
+                                <div>
+                                    {% if n.tipo == 'success' %}<i class="fas fa-circle-check"></i>
+                                    {% elif n.tipo == 'warning' %}<i class="fas fa-triangle-exclamation"></i>
+                                    {% else %}<i class="fas fa-bell"></i>{% endif %}
+                                </div>
+                                <section>
+                                    <strong>{{ n.titulo }}</strong>
+                                    <p>{{ n.mensaje }}</p>
+                                    <small>{{ n.created_at[:10] if n.created_at else '' }}</small>
+                                </section>
+                            </a>
+                            {% endfor %}
+                        {% else %}
+                            <div class="notification-empty-mini">
+                                <i class="fas fa-bell-slash"></i>
+                                <p>Sin notificaciones nuevas</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section class="kpi-grid">
+            <div class="kpi-card featured" style="--i:0">
+                <div>
+                    <span>Servicios activos</span>
+                    <h2>{{ stats.productos }}</h2>
+                    <p><i class="fas fa-arrow-up"></i> Portafolio disponible</p>
+                </div>
+                <i class="fas fa-briefcase kpi-icon"></i>
+            </div>
+            <div class="kpi-card" style="--i:1">
+                <div>
+                    <span>Ventas totales</span>
+                    <h2>{{ stats.ventas }}</h2>
+                    <p>Contrataciones recibidas</p>
+                </div>
+                <i class="fas fa-receipt kpi-icon"></i>
+            </div>
+            <div class="kpi-card" style="--i:2">
+                <div>
+                    <span>Clientes</span>
+                    <h2>{{ stats.clientes }}</h2>
+                    <p>Mypes o personas atendidas</p>
+                </div>
+                <i class="fas fa-users kpi-icon"></i>
+            </div>
+            <div class="kpi-card" style="--i:3">
+                <div>
+                    <span>Calificación</span>
+                    <h2>{{ stats.calificacion }}</h2>
+                    <p>Promedio de reseñas</p>
+                </div>
+                <i class="fas fa-star kpi-icon"></i>
+            </div>
+        </section>
+
+        <section class="dashboard-grid">
+            <div class="panel-card wide">
+                <div class="panel-header">
+                    <div>
+                        <h3>Actividad por estado</h3>
+                        <p>Distribución real de tus contrataciones como freelancer</p>
+                    </div>
+                    <span class="pill">Datos reales</span>
+                </div>
+                <div class="bar-chart-real">
+                    {% for item in chart_estados %}
+                    <div class="real-bar-item">
+                        <div class="real-bar-value">{{ item.total }}</div>
+                        <div class="real-bar-track">
+                            <div class="real-bar-fill"
+                                 style="--target-height: {{ item.height }}%; --delay: {{ loop.index0 * 0.1 }}s;"></div>
+                        </div>
+                        <small>{{ item.label }}</small>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <a href="{{ url_for('estudiante.solicitudes_recibidas') }}" class="dashboard-card">
+                <i class="fas fa-inbox"></i>
+                <div>
+                    <h3>Solicitudes recibidas</h3>
+                    <p>Clientes interesados en tus servicios</p>
+                </div>
+            </a>
+
+            <a href="{{ url_for('estudiante.mi_portafolio') }}" class="dashboard-card">
+                <i class="fas fa-images"></i>
+                <div>
+                    <h3>Mi Portafolio</h3>
+                    <p>Muestra tus mejores trabajos</p>
+                </div>
+            </a>
+
+            <div class="panel-card">
+                <div class="panel-header">
+                    <div>
+                        <h3>Progreso del perfil</h3>
+                        <p>Completa tu perfil para generar confianza</p>
+                    </div>
+                </div>
+                <div class="progress-ring-wrap">
+                    <svg class="progress-ring" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+                        <circle class="ring-bg" cx="60" cy="60" r="50"/>
+                        <circle class="ring-fill" cx="60" cy="60" r="50"
+                                stroke-dasharray="314"
+                                stroke-dashoffset="113"
+                                style="--dash-end: 113;"/>
+                    </svg>
+                    <span class="ring-label">64%</span>
+                </div>
+                <ul class="check-list">
+                    <li><i class="fas fa-check"></i> Cuenta verificada</li>
+                    <li><i class="fas fa-check"></i> Foto de perfil</li>
+                    <li class="pending"><i class="fas fa-minus"></i> QR Yape/Plin pendiente</li>
+                </ul>
+            </div>
+
+            <div class="panel-card">
+                <div class="panel-header">
+                    <div>
+                        <h3>Próximas acciones</h3>
+                        <p>Pasos sugeridos para empezar</p>
+                    </div>
+                </div>
+                <div class="task-list">
+                    <a href="{{ url_for('servicios.publicar_producto') }}">
+                        <i class="fas fa-plus"></i>
+                        <div>
+                            <strong>Publicar servicio</strong>
+                            <small>Crea una oferta para mypes</small>
+                        </div>
+                    </a>
+                    <a href="#">
+                        <i class="fas fa-image"></i>
+                        <div>
+                            <strong>Subir portafolio</strong>
+                            <small>Muestra trabajos anteriores</small>
+                        </div>
+                    </a>
+                    <a href="{{ url_for('estudiante.perfil_freelance') }}">
+                        <i class="fas fa-qrcode"></i>
+                        <div>
+                            <strong>Agregar QR de pago</strong>
+                            <small>Configura Yape o Plin</small>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="panel-card wide">
+                <div class="panel-header">
+                    <div>
+                        <h3>Trabajos recientes</h3>
+                        <p>Últimas contrataciones recibidas</p>
+                    </div>
+                    <span class="pill">Real</span>
+                </div>
+
+                {% if trabajos_recientes %}
+                <div class="orders-table">
+                    <div class="table-row head">
+                        <span>Servicio</span>
+                        <span>Cliente</span>
+                        <span>Estado</span>
+                        <span>Pago</span>
+                    </div>
+                    {% for t in trabajos_recientes %}
+                    <div class="table-row">
+                        <span>{{ t.producto.titulo if t.producto else 'Servicio eliminado' }}</span>
+                        <span>{{ t.comprador.nombre if t.comprador else 'Cliente' }}</span>
+                        <span>
+                            <b class="status {{ t.estado }}">
+                                {% if t.estado == 'pendiente_adelanto' %}Pendiente
+                                {% elif t.estado == 'adelanto_enviado' %}Adelanto enviado
+                                {% elif t.estado == 'en_proceso' %}En proceso
+                                {% elif t.estado == 'entrega_realizada' %}Entregado
+                                {% elif t.estado == 'pago_final_enviado' %}Pago final
+                                {% elif t.estado == 'completado' %}Completado
+                                {% elif t.estado == 'cancelado' %}Cancelado
+                                {% else %}{{ t.estado }}{% endif %}
+                            </b>
+                        </span>
+                        <span>
+                            {% if t.estado == 'completado' %}100%
+                            {% elif t.estado in ['en_proceso', 'entrega_realizada', 'pago_final_enviado'] %}50%
+                            {% else %}0%{% endif %}
+                        </span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-dashboard-box">
+                    <i class="fas fa-inbox"></i>
+                    <h4>Aún no tienes contrataciones</h4>
+                    <p>Cuando un comprador solicite tus servicios, aparecerá aquí.</p>
+                </div>
+                {% endif %}
+            </div>
+        </section>
+    </main>
+</div>
+
+<script>
+function toggleNotifications() {
+    document.getElementById('notificationDropdown').classList.toggle('show');
+}
+document.addEventListener('click', function(e) {
+    const widget = document.querySelector('.notification-widget');
+    if (widget && !widget.contains(e.target)) {
+        document.getElementById('notificationDropdown').classList.remove('show');
+    }
+});
+</script>
+
+<style>
+/* Lora + DM Sans ya se cargan desde base_estudiante.html, no hace falta
+   volver a importarlas aquí. */
+
+/* ─── RESET DE FUENTE: UNA SOLA REGLA ──────────────────────────────────── */
+.freelance-shell * {
+    font-family: 'DM Sans', sans-serif;
+    box-sizing: border-box;
+}
+
+/* Fuente serif de display para títulos grandes */
+.freelance-shell h1,
+.brand-box span,
+.kpi-card h2,
+.real-bar-value,
+.ring-label,
+.panel-header h3,
+.dashboard-card h3 {
+    font-family: 'Lora', Georgia, serif;
+}
+
+/* Font Awesome nunca hereda la fuente de texto */
+.freelance-shell [class^="fas"],
+.freelance-shell [class^="fa-"],
+.freelance-shell .fas,
+.freelance-shell .far,
+.freelance-shell .fab {
+    font-family: "Font Awesome 5 Free" !important;
+    font-weight: 900;
+}
+
+/* ─── SHELL ─────────────────────────────────────────────────────────────── */
+.freelance-shell {
+    min-height: 100vh;
+    background: var(--fl-page-bg);
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    padding: 1.75rem;
+    gap: 1.5rem;
+}
+
+/* ─── SIDEBAR ───────────────────────────────────────────────────────────── */
+.freelance-sidebar {
+    background: var(--fl-surface);
+    border-radius: 28px;
+    padding: 1.5rem;
+    border: 1px solid rgba(6, 95, 70, .08);
+    box-shadow: 0 4px 24px rgba(15, 23, 42, .06);
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 1.75rem;
+    align-self: start;
+    height: calc(100vh - 3.5rem);   /* ← antes era max-height, ahora es height fijo */
+}
+
+.brand-box {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    font-style: italic;
+    color: var(--fl-brand);
+    margin-bottom: 2.25rem;
+    letter-spacing: -.01em;
+}
+
+.brand-box i {
+    background: #dcfce7;
+    padding: .65rem;
+    border-radius: 14px;
+    font-size: 1rem;
+}
+
+.menu-label {
+    color: var(--fl-text-faint);
+    font-size: .68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    margin-bottom: .6rem;
+}
+
+.menu-section {
+    margin-bottom: 1.75rem;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .8rem 1rem;
+    border-radius: 14px;
+    text-decoration: none;
+    color: var(--fl-text-muted);
+    font-weight: 600;
+    font-size: .875rem;
+    margin-bottom: .25rem;
+    transition: background .2s ease, color .2s ease;
+}
+
+.menu-item i { width: 18px; text-align: center; font-size: .9rem; }
+
+.menu-item:hover,
+.menu-item.active {
+    background: #e8f5ee;
+    color: var(--fl-brand);
+}
+
+.sidebar-user {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f1f5f9;
+}
+
+.sidebar-user img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.sidebar-user strong {
+    display: block;
+    font-size: .85rem;
+    color: var(--fl-heading);
+    font-weight: 700;
+}
+
+.sidebar-user small {
+    color: var(--fl-text-faint);
+    font-size: .75rem;
+}
+
+/* ─── MAIN ──────────────────────────────────────────────────────────────── */
+.freelance-main {
+    background: var(--fl-surface);
+    border-radius: 32px;
+    padding: 2rem;
+    border: 1px solid rgba(6, 95, 70, .07);
+    box-shadow: 0 4px 32px rgba(15, 23, 42, .05);
+}
+
+/* ─── TOPBAR ────────────────────────────────────────────────────────────── */
+.freelance-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.freelance-topbar h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    font-style: italic;
+    color: var(--fl-heading);
+    letter-spacing: -.01em;
+    line-height: 1;
+    margin-bottom: .3rem;
+}
+
+.freelance-topbar > div > p {
+    color: var(--fl-text-faint);
+    font-size: .9rem;
+    font-weight: 500;
+}
+
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+}
+
+.btn-primary-soft {
+    background: var(--fl-brand);
+    color: #fff;
+    padding: .8rem 1.3rem;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: .875rem;
+    letter-spacing: -.01em;
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
+    box-shadow: 0 8px 20px rgba(6, 95, 70, .28);
+}
+
+.btn-primary-soft:hover {
+    background: var(--fl-brand-accent);
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px rgba(6, 95, 70, .35);
+}
+
+/* ─── KPI GRID ──────────────────────────────────────────────────────────── */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.kpi-card {
+    background: var(--fl-surface);
+    border-radius: 22px;
+    padding: 1.35rem;
+    border: 1px solid #eef2ee;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    animation: kpiIn .5s cubic-bezier(.22, 1, .36, 1) both;
+    animation-delay: calc(var(--i) * .08s);
+    transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.kpi-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 18px 40px rgba(15, 23, 42, .09);
+}
+
+.kpi-card.featured {
+    background: linear-gradient(145deg, #065f46, #042f1e);
+    color: #fff;
+    border-color: transparent;
+}
+
+.kpi-card span {
+    opacity: .7;
+    font-size: .8rem;
+    font-weight: 600;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+}
+
+.kpi-card h2 {
+    font-size: 2.6rem;
+    font-weight: 700;
+    letter-spacing: -.02em;
+    margin: .4rem 0 .3rem;
+    line-height: 1;
+}
+
+.kpi-card p {
+    font-size: .78rem;
+    opacity: .65;
+    font-weight: 500;
+}
+
+.kpi-icon {
+    font-size: 1.3rem;
+    opacity: .35;
+    margin-top: .2rem;
+}
+
+/* ─── DASHBOARD GRID ────────────────────────────────────────────────────── */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1.4fr .85fr .85fr;
+    gap: 1rem;
+}
+
+/* ─── PANEL CARD ────────────────────────────────────────────────────────── */
+.panel-card {
+    background: var(--fl-surface);
+    border-radius: 24px;
+    padding: 1.4rem;
+    border: 1px solid #eef2ee;
+    box-shadow: 0 2px 12px rgba(15,23,42,.04);
+}
+
+.panel-card.wide { grid-column: span 2; }
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.25rem;
+}
+
+.panel-header h3 {
+    color: var(--fl-heading);
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: -.01em;
+    margin-bottom: .2rem;
+}
+
+.panel-header p {
+    color: var(--fl-text-faint);
+    font-size: .8rem;
+    font-weight: 500;
+}
+
+.pill {
+    background: #edfdf5;
+    color: var(--fl-brand-accent);
+    padding: .3rem .7rem;
+    border-radius: 999px;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+/* ─── BAR CHART ─────────────────────────────────────────────────────────── */
+.bar-chart-real {
+    height: 230px;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1rem;
+    align-items: end;
+    padding-top: .75rem;
+}
+
+.real-bar-item {
+    height: 100%;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: .4rem;
+    text-align: center;
+}
+
+.real-bar-value {
+    color: var(--fl-heading);
+    font-weight: 800;
+    font-size: .95rem;
+    letter-spacing: -.02em;
+}
+
+.real-bar-track {
+    height: 100%;
+    background: #f1f5f1;
+    border-radius: 10px 10px 6px 6px;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+}
+
+.real-bar-fill {
+    width: 100%;
+    height: 0;
+    background: linear-gradient(180deg, #065f46 0%, #6ee7b7 100%);
+    border-radius: 10px 10px 6px 6px;
+    animation: barGrow 1s cubic-bezier(.22, 1, .36, 1) forwards;
+    animation-delay: var(--delay, 0s);
+    transition: filter .2s ease;
+}
+
+.real-bar-track:hover .real-bar-fill { filter: brightness(1.1); }
+
+.real-bar-item small {
+    color: var(--fl-text-faint);
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+/* ─── DASHBOARD CARDS (links) ───────────────────────────────────────────── */
+.dashboard-card {
+    background: var(--fl-surface);
+    border-radius: 24px;
+    padding: 1.4rem;
+    border: 1px solid #eef2ee;
+    box-shadow: 0 2px 12px rgba(15,23,42,.04);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    text-decoration: none;
+    color: var(--fl-heading);
+    transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 42px rgba(15,23,42,.09);
+}
+
+.dashboard-card i {
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 18px;
+    background: #e8f5ee;
+    color: var(--fl-brand);
+    font-size: 1.25rem;
+    transition: background .2s ease;
+}
+
+.dashboard-card:hover i { background: #d1fae5; }
+
+.dashboard-card h3 {
+    margin: 0 0 .2rem;
+    color: var(--fl-heading);
+    font-size: .97rem;
+    font-weight: 600;
+    letter-spacing: -.01em;
+}
+
+.dashboard-card p {
+    margin: 0;
+    color: var(--fl-text-faint);
+    font-size: .8rem;
+    font-weight: 500;
+}
+
+/* ─── PROGRESS RING ─────────────────────────────────────────────────────── */
+.progress-ring-wrap {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    margin: .75rem auto 1.25rem;
+}
+
+.progress-ring { width: 100%; height: 100%; transform: rotate(-90deg); }
+
+.ring-bg {
+    fill: none;
+    stroke: #f1f5f1;
+    stroke-width: 10;
+}
+
+.ring-fill {
+    fill: none;
+    stroke: #065f46;
+    stroke-width: 10;
+    stroke-linecap: round;
+    stroke-dasharray: 314;
+    stroke-dashoffset: 314;
+    animation: ringGrow 1.2s cubic-bezier(.22, 1, .36, 1) .4s forwards;
+}
+
+.ring-label {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-size: 1.7rem;
+    font-weight: 800;
+    color: var(--fl-heading);
+    letter-spacing: -.04em;
+}
+
+/* ─── CHECKLIST ─────────────────────────────────────────────────────────── */
+.check-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.check-list li {
+    padding: .5rem 0;
+    color: var(--fl-text-body);
+    font-size: .85rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    border-bottom: 1px solid #f8fafc;
+}
+
+.check-list li:last-child { border-bottom: none; }
+
+.check-list i { color: var(--fl-brand-accent); font-size: .8rem; }
+.check-list li.pending { color: var(--fl-text-faint); }
+.check-list li.pending i { color: #cbd5e1; }
+
+/* ─── TASK LIST ─────────────────────────────────────────────────────────── */
+.task-list { display: grid; gap: .6rem; }
+
+.task-list a {
+    display: flex;
+    align-items: center;
+    gap: .85rem;
+    text-decoration: none;
+    color: var(--fl-heading);
+    padding: .85rem;
+    border-radius: 16px;
+    background: var(--fl-soft-bg);
+    transition: background .2s ease, transform .2s ease;
+}
+
+.task-list a:hover {
+    background: #e8f5ee;
+    transform: translateX(4px);
+}
+
+.task-list i {
+    color: var(--fl-brand);
+    font-size: .9rem;
+    width: 18px;
+    text-align: center;
+}
+
+.task-list strong {
+    display: block;
+    font-size: .875rem;
+    font-weight: 700;
+    color: var(--fl-heading);
+    letter-spacing: -.01em;
+}
+
+.task-list small {
+    display: block;
+    color: var(--fl-text-faint);
+    font-size: .78rem;
+    margin-top: .1rem;
+}
+
+/* ─── ORDERS TABLE ──────────────────────────────────────────────────────── */
+.orders-table { display: grid; gap: .4rem; }
+
+.table-row {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr 1fr .5fr;
+    padding: .85rem 1rem;
+    border-radius: 14px;
+    background: var(--fl-soft-bg);
+    align-items: center;
+    font-size: .865rem;
+    font-weight: 500;
+    transition: background .2s ease;
+}
+
+.table-row:not(.head):hover { background: #f0fdf4; }
+
+.table-row.head {
+    background: transparent;
+    color: var(--fl-text-faint);
+    font-size: .72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    padding-bottom: .5rem;
+}
+
+/* ─── STATUS BADGES ─────────────────────────────────────────────────────── */
+.status {
+    padding: .28rem .65rem;
+    border-radius: 999px;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .02em;
+}
+
+.status.pendiente_adelanto { background: #fef3c7; color: #92400e; }
+.status.adelanto_enviado,
+.status.en_proceso,
+.status.entrega_realizada,
+.status.pago_final_enviado { background: #dbeafe; color: #1d4ed8; }
+.status.completado  { background: #dcfce7; color: var(--fl-brand); }
+.status.cancelado   { background: #fee2e2; color: #b91c1c; }
+
+/* ─── EMPTY STATE ───────────────────────────────────────────────────────── */
+.empty-dashboard-box {
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+    background: var(--fl-soft-bg);
+    border-radius: 20px;
+    color: var(--fl-text-faint);
+}
+
+.empty-dashboard-box i {
+    font-size: 2rem;
+    color: #a7f3d0;
+    margin-bottom: .75rem;
+    display: block;
+}
+
+.empty-dashboard-box h4 {
+    color: var(--fl-text-body);
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: .4rem;
+    letter-spacing: -.01em;
+}
+
+.empty-dashboard-box p { font-size: .875rem; }
+
+/* ─── NOTIFICATIONS ─────────────────────────────────────────────────────── */
+.notification-widget { position: relative; }
+
+.notification-btn {
+    width: 46px;
+    height: 46px;
+    border: 1px solid #eef2ee;
+    border-radius: 16px;
+    background: var(--fl-surface);
+    color: var(--fl-brand);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(15,23,42,.07);
+    position: relative;
+    transition: background .2s ease;
+}
+
+.notification-btn:hover { background: #f0fdf4; }
+.notification-btn i { font-size: 1rem; }
+
+.notification-dot {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    min-width: 19px;
+    height: 19px;
+    padding: 0 .3rem;
+    border-radius: 999px;
+    background: #dc2626;
+    color: #fff;
+    font-size: .67rem;
+    display: grid;
+    place-items: center;
+    font-weight: 800;
+}
+
+.notification-dropdown {
+    position: absolute;
+    top: 56px;
+    right: 0;
+    width: 360px;
+    background: var(--fl-surface);
+    border: 1px solid var(--fl-border);
+    border-radius: 24px;
+    box-shadow: 0 24px 64px rgba(15,23,42,.16);
+    padding: .75rem;
+    z-index: 2000;
+    display: none;
+    animation: dropdownIn .2s ease both;
+}
+
+.notification-dropdown.show { display: block; }
+
+.notification-dropdown-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: .4rem .4rem .75rem;
+    border-bottom: 1px solid #f1f5f9;
+    margin-bottom: .4rem;
+}
+
+.notification-dropdown-head strong {
+    color: var(--fl-heading);
+    font-size: .9rem;
+    font-weight: 700;
+}
+
+.notification-dropdown-head a {
+    color: var(--fl-brand);
+    font-size: .78rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.notification-mini {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: .75rem;
+    padding: .7rem;
+    border-radius: 16px;
+    text-decoration: none;
+    color: inherit;
+    transition: background .15s ease;
+}
+
+.notification-mini:hover { background: var(--fl-soft-bg); }
+.notification-mini.unread { background: #f0fdf4; }
+
+.notification-mini > div {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    background: #dcfce7;
+    color: var(--fl-brand);
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+}
+
+.notification-mini strong {
+    display: block;
+    color: var(--fl-heading);
+    font-size: .85rem;
+    font-weight: 700;
+}
+
+.notification-mini p {
+    color: var(--fl-text-muted);
+    font-size: .78rem;
+    line-height: 1.45;
+    margin: .1rem 0;
+}
+
+.notification-mini small {
+    color: var(--fl-text-faint);
+    font-size: .7rem;
+}
+
+.notification-empty-mini {
+    text-align: center;
+    padding: 1.5rem;
+    color: var(--fl-text-faint);
+}
+
+.notification-empty-mini i {
+    font-size: 1.4rem;
+    color: #cbd5e1;
+    display: block;
+    margin-bottom: .5rem;
+}
+
+/* ─── ANIMATIONS ────────────────────────────────────────────────────────── */
+@keyframes barGrow {
+    from { height: 0; opacity: .5; }
+    to   { height: var(--target-height); opacity: 1; }
+}
+
+@keyframes ringGrow {
+    from { stroke-dashoffset: 314; }
+    to   { stroke-dashoffset: var(--dash-end, 113); }
+}
+
+@keyframes kpiIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes dropdownIn {
+    from { opacity: 0; transform: translateY(-8px) scale(.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ─── RESPONSIVE ────────────────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+    .freelance-shell        { grid-template-columns: 1fr; padding: 1.25rem; }
+    .freelance-sidebar      { position: static; }
+    .kpi-grid               { grid-template-columns: repeat(2, 1fr); }
+    .dashboard-grid         { grid-template-columns: 1fr 1fr; }
+    .panel-card.wide        { grid-column: span 2; }
+}
+
+@media (max-width: 700px) {
+    .freelance-shell        { padding: 1rem; gap: 1rem; }
+    .kpi-grid               { grid-template-columns: 1fr 1fr; }
+    .dashboard-grid         { grid-template-columns: 1fr; }
+    .panel-card.wide        { grid-column: span 1; }
+    .freelance-topbar       { flex-direction: column; align-items: flex-start; gap: 1rem; }
+    .freelance-topbar h1    { font-size: 1.9rem; }
+    .table-row              { grid-template-columns: 1fr 1fr; gap: .35rem; }
+    .table-row.head         { display: none; }
+}
+</style>
+{% endblock %}

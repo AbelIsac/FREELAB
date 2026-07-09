@@ -1,0 +1,235 @@
+
+{% extends "base.html" %}
+{% block title %}Notificaciones - FreeLab{% endblock %}
+
+{% block content %}
+<section class="notifications-page">
+
+    <div class="notifications-hero">
+        <div>
+            <span>
+                <i class="fas fa-bell"></i>
+                Centro de actividad
+            </span>
+
+            <h1>Notificaciones</h1>
+
+            <p>
+                Mantente al día con solicitudes, pagos,
+                entregas y contrataciones dentro de FreeLab.
+            </p>
+        </div>
+    </div>
+
+    {% if notificaciones %}
+
+    <div class="notifications-list">
+
+        {% for n in notificaciones %}
+
+        <article class="notification-card {% if not n.leida %}unread{% endif %}">
+
+            <div class="notification-icon">
+
+                {% if n.tipo == "success" %}
+                    <i class="fas fa-circle-check"></i>
+
+                {% elif n.tipo == "warning" %}
+                    <i class="fas fa-triangle-exclamation"></i>
+
+                {% else %}
+                    <i class="fas fa-bell"></i>
+                {% endif %}
+
+            </div>
+
+            <div class="notification-content">
+
+                <div class="notification-top">
+
+                    <h3>{{ n.titulo }}</h3>
+
+                    <small>
+                        {{ n.created_at[:10] if n.created_at else '' }}
+                    </small>
+
+                </div>
+
+                <p>{{ n.mensaje }}</p>
+
+                {% if n.venta %}
+                <a href="/contratacion/{{ n.venta.id }}">
+                    Ver contratación #{{ n.venta.id }}
+                </a>
+                {% endif %}
+
+            </div>
+
+            {% if not n.leida %}
+            <form
+                method="POST"
+                action="{{ url_for('notificaciones.marcar_leida', notificacion_id=n.id) }}"
+            >
+                <button type="submit">
+                    Marcar leída
+                </button>
+            </form>
+            {% endif %}
+
+        </article>
+
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <div class="empty-notifications">
+
+        <i class="fas fa-bell-slash"></i>
+
+        <h2>No tienes notificaciones</h2>
+
+        <p>
+            Cuando ocurran eventos importantes aparecerán aquí.
+        </p>
+
+    </div>
+
+    {% endif %}
+
+</section>
+
+<style>
+
+.notifications-page{
+    padding:120px 6vw 60px;
+    background: var(--fl-page-bg);
+    min-height:100vh;
+}
+
+.notifications-hero{
+    background:
+        radial-gradient(circle at 85% 10%, rgba(134,239,172,.25), transparent 30%),
+        linear-gradient(135deg,#0b0f0d,#052e22);
+    color:white;
+    border-radius:38px;
+    padding:2.5rem;
+    margin-bottom:1rem;
+}
+
+.notifications-hero span{
+    display:inline-flex;
+    gap:.5rem;
+    align-items:center;
+    background:rgba(255,255,255,.12);
+    padding:.45rem .8rem;
+    border-radius:999px;
+    font-size:.8rem;
+    font-weight:900;
+}
+
+.notifications-hero h1{
+    font-size:clamp(3rem,7vw,6rem);
+    line-height:.85;
+    letter-spacing:-.08em;
+    margin:1rem 0;
+}
+
+.notifications-hero p{
+    color:rgba(255,255,255,.7);
+}
+
+.notifications-list{
+    display:grid;
+    gap:1rem;
+}
+
+.notification-card{
+    background: var(--fl-surface);
+    border:1px solid var(--fl-border);
+    border-radius:28px;
+    padding:1rem;
+    display:flex;
+    gap:1rem;
+    align-items:flex-start;
+    box-shadow:0 20px 60px rgba(15,23,42,.05);
+}
+
+.notification-card.unread{
+    border-left:5px solid #065f46;
+}
+
+.notification-icon{
+    width:52px;
+    height:52px;
+    border-radius:18px;
+    background:#dcfce7;
+    color: var(--fl-brand);
+    display:grid;
+    place-items:center;
+    flex:none;
+}
+
+.notification-content{
+    flex:1;
+}
+
+.notification-top{
+    display:flex;
+    justify-content:space-between;
+    gap:1rem;
+}
+
+.notification-top h3{
+    color: var(--fl-heading);
+}
+
+.notification-top small{
+    color: var(--fl-text-faint);
+    font-weight:800;
+}
+
+.notification-content p{
+    color: var(--fl-text-muted);
+    margin:.5rem 0;
+}
+
+.notification-content a{
+    color: var(--fl-brand);
+    font-weight:900;
+    text-decoration:none;
+}
+
+.notification-card button{
+    border:none;
+    background: var(--fl-brand);
+    color:white;
+    padding:.75rem 1rem;
+    border-radius:999px;
+    cursor:pointer;
+    font-weight:900;
+}
+
+.empty-notifications{
+    background: var(--fl-surface);
+    border-radius:30px;
+    text-align:center;
+    padding:4rem 2rem;
+}
+
+.empty-notifications i{
+    width:76px;
+    height:76px;
+    margin:0 auto 1rem;
+    display:grid;
+    place-items:center;
+    border-radius:24px;
+    background:#dcfce7;
+    color: var(--fl-brand);
+    font-size:2rem;
+}
+
+</style>
+{% endblock %}
+

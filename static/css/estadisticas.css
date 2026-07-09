@@ -31,7 +31,7 @@
 }
 
 .stats-hero p {
-    color: #64748b;
+    color: var(--fl-text-muted);
 }
 
 /* Grid de estadísticas mejorado */
@@ -43,7 +43,7 @@
 }
 
 .stat-card-enhanced {
-    background: white;
+    background: var(--fl-surface);
     border-radius: 20px;
     padding: 1.5rem;
     display: flex;
@@ -107,7 +107,7 @@
 .stat-info-enhanced h3 {
     font-size: 0.75rem;
     font-weight: 600;
-    color: #64748b;
+    color: var(--fl-text-muted);
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-bottom: 0.5rem;
@@ -142,7 +142,7 @@
 
 /* Gráfico simple */
 .chart-container {
-    background: white;
+    background: var(--fl-surface);
     border-radius: 20px;
     padding: 1.5rem;
     margin-top: 1.5rem;
@@ -180,5 +180,5 @@
     text-align: center;
     margin-top: 0.5rem;
     font-size: 0.7rem;
-    color: #64748b;
+    color: var(--fl-text-muted);
 }

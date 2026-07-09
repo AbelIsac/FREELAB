@@ -18,7 +18,7 @@
 }
 
 .producto-card-mio {
-    background: white;
+    background: var(--fl-surface);
     border-radius: 20px;
     overflow: hidden;
     transition: all 0.3s ease;
@@ -74,7 +74,7 @@
 }
 
 .producto-desc-mio {
-    color: #64748b;
+    color: var(--fl-text-muted);
     font-size: 0.8rem;
     margin-bottom: 1rem;
     line-height: 1.4;
@@ -101,8 +101,8 @@
 }
 
 .btn-edit {
-    background: #e2e8f0;
-    color: #475569;
+    background: var(--fl-border);
+    color: var(--fl-text-body);
     border: none;
     padding: 0.3rem 0.8rem;
     border-radius: 8px;
@@ -157,7 +157,7 @@
 .empty-state {
     text-align: center;
     padding: 4rem 2rem;
-    background: #f8fafc;
+    background: var(--fl-soft-bg);
     border-radius: 24px;
     margin: 2rem 0;
 }
@@ -174,7 +174,7 @@
 }
 
 .empty-state p {
-    color: #64748b;
+    color: var(--fl-text-muted);
     margin-bottom: 1.5rem;
 }
 
@@ -220,7 +220,7 @@
 .swal2-popup-custom {
     border-radius: 24px !important;
     padding: 1.5rem !important;
-    font-family: 'Poppins', sans-serif !important;
+    font-family: var(--font-ui) !important;
 }
 
 .swal2-title-custom {

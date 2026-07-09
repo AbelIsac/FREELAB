@@ -1,0 +1,700 @@
+{% extends "base_estudiante.html" %}
+
+{% block title %}Mi portafolio - FreeLab{% endblock %}
+
+{% block content %}
+<section class="portfolio-studio-page">
+
+    <div class="portfolio-studio-hero">
+        <div>
+            <span class="studio-pill">Portafolio freelance</span>
+            <h1>Tu galería profesional</h1>
+            <p>
+                Muestra tus mejores trabajos como una vitrina visual para compradores,
+                mypes y emprendedores.
+            </p>
+        </div>
+
+        <div class="hero-actions">
+            <a href="{{ url_for('estudiante.dashboard_estudiante') }}" class="btn-ghost">
+                <i class="fas fa-arrow-left"></i> Dashboard
+            </a>
+
+            <button type="button" class="btn-new-work" onclick="openFormPanel()">
+                <i class="fas fa-plus"></i> Nuevo trabajo
+            </button>
+        </div>
+    </div>
+
+    <div class="portfolio-stats">
+        <div class="stat-box active">
+            <small>Trabajos</small>
+            <strong>{{ trabajos|length }}</strong>
+        </div>
+
+        <div class="stat-box">
+            <small>Visibilidad</small>
+            <strong>Alta</strong>
+        </div>
+
+        <div class="stat-box">
+            <small>Formato</small>
+            <strong>Galería</strong>
+        </div>
+    </div>
+
+    <div class="studio-filters">
+        <button class="filter-btn active" type="button">Todo</button>
+        <button class="filter-btn" type="button">Diseño</button>
+        <button class="filter-btn" type="button">Web</button>
+        <button class="filter-btn" type="button">Marketing</button>
+        <button class="filter-btn" type="button">Video</button>
+    </div>
+
+    {% if trabajos %}
+    <div class="masonry-gallery">
+        {% for t in trabajos %}
+        <article class="masonry-item" onclick="openProjectModal('{{ t.id }}')">
+            {% if t.imagen_url %}
+                <img src="{{ t.imagen_url }}" alt="{{ t.titulo }}">
+            {% else %}
+                <div class="masonry-empty">
+                    <i class="fas fa-image"></i>
+                </div>
+            {% endif %}
+
+            <div class="masonry-overlay">
+                <span>{{ t.categoria or 'Proyecto' }}</span>
+                <h3>{{ t.titulo }}</h3>
+                <p>{{ t.descripcion or 'Trabajo agregado al portafolio.' }}</p>
+
+                <div class="overlay-actions" onclick="event.stopPropagation()">
+                    {% if t.link_demo %}
+                    <a href="{{ t.link_demo }}" target="_blank" title="Ver demo">
+                        <i class="fas fa-arrow-up-right-from-square"></i>
+                    </a>
+                    {% endif %}
+
+                    <button type="button" onclick="openProjectModal('{{ t.id }}')" title="Ver detalle">
+                        <i class="fas fa-eye"></i>
+                    </button>
+
+                    <form method="POST" action="{{ url_for('estudiante.eliminar_portafolio', trabajo_id=t.id) }}">
+                        <button type="submit" onclick="return confirm('¿Eliminar este trabajo?')" title="Eliminar">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </article>
+
+        <div class="project-modal" id="projectModal{{ t.id }}">
+            <div class="project-modal-backdrop" onclick="closeProjectModal('{{ t.id }}')"></div>
+
+            <div class="project-modal-content">
+                <button class="modal-close" type="button" onclick="closeProjectModal('{{ t.id }}')">
+                    Cerrar
+                </button>
+
+                <div class="modal-info">
+                    <span>{{ t.categoria or 'Proyecto' }}</span>
+                    <h2>{{ t.titulo }}</h2>
+                    <p>{{ t.descripcion or 'Trabajo agregado al portafolio.' }}</p>
+
+                    {% if t.link_demo %}
+                    <a href="{{ t.link_demo }}" target="_blank" class="modal-demo">
+                        Ir al proyecto
+                    </a>
+                    {% endif %}
+                </div>
+
+                <div class="modal-image-wrap">
+                    {% if t.imagen_url %}
+                        <img src="{{ t.imagen_url }}" alt="{{ t.titulo }}">
+                    {% else %}
+                        <div class="modal-empty">
+                            <i class="fas fa-image"></i>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="portfolio-empty-studio">
+        <i class="fas fa-images"></i>
+        <h2>Aún no tienes trabajos</h2>
+        <p>Agrega tu primer proyecto para empezar a construir tu marca personal.</p>
+        <button type="button" onclick="openFormPanel()">
+            <i class="fas fa-plus"></i> Agregar primer trabajo
+        </button>
+    </div>
+    {% endif %}
+
+    <aside class="form-drawer" id="formDrawer">
+        <div class="drawer-backdrop" onclick="closeFormPanel()"></div>
+
+        <div class="drawer-panel">
+            <button type="button" class="drawer-close" onclick="closeFormPanel()">
+                <i class="fas fa-times"></i>
+            </button>
+
+            <span class="form-pill">Nuevo trabajo</span>
+            <h2>Agregar proyecto</h2>
+            <p>Sube una imagen potente, un título claro y una descripción breve.</p>
+
+            <form method="POST" action="{{ url_for('estudiante.crear_portafolio') }}" enctype="multipart/form-data">
+                <label>Título *</label>
+                <input type="text" name="titulo" placeholder="Ej: Landing page para cafetería" required>
+
+                <label>Descripción</label>
+                <textarea name="descripcion" rows="4" placeholder="Describe qué hiciste, herramientas usadas y resultado..."></textarea>
+
+                <label>Categoría</label>
+                <select name="categoria">
+                    <option value="Diseño gráfico">Diseño gráfico</option>
+                    <option value="Desarrollo web">Desarrollo web</option>
+                    <option value="Marketing digital">Marketing digital</option>
+                    <option value="Edición multimedia">Edición multimedia</option>
+                    <option value="Soporte técnico">Soporte técnico</option>
+                </select>
+
+                <label>Imagen del trabajo</label>
+                <input type="file" name="imagen" accept="image/*">
+
+                <label>Link demo opcional</label>
+                <input type="url" name="link_demo" placeholder="https://...">
+
+                <button type="submit">
+                    <i class="fas fa-cloud-upload-alt"></i> Guardar trabajo
+                </button>
+            </form>
+        </div>
+    </aside>
+</section>
+
+<script>
+function openFormPanel() {
+    document.getElementById('formDrawer').classList.add('show');
+}
+
+function closeFormPanel() {
+    document.getElementById('formDrawer').classList.remove('show');
+}
+
+function openProjectModal(id) {
+    const modal = document.getElementById('projectModal' + id);
+    if (modal) modal.classList.add('show');
+}
+
+function closeProjectModal(id) {
+    const modal = document.getElementById('projectModal' + id);
+    if (modal) modal.classList.remove('show');
+}
+</script>
+
+<style>
+.portfolio-studio-page {
+    min-height: 100vh;
+    padding: 2rem;
+    background:
+        radial-gradient(circle at 8% 8%, rgba(134,239,172,.25), transparent 28%),
+        #f3f4f1;
+}
+
+.portfolio-studio-hero {
+    min-height: 360px;
+    border-radius: 38px;
+    padding: 2.5rem;
+    color: white;
+    background:
+        radial-gradient(circle at 85% 12%, rgba(134,239,172,.28), transparent 30%),
+        linear-gradient(135deg, #0b0f0d, #052e22);
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 32px 90px rgba(15,23,42,.18);
+}
+
+.portfolio-studio-hero::after {
+    content: "PORTFOLIO";
+    position: absolute;
+    right: -2vw;
+    bottom: -1.5rem;
+    font-size: 10vw;
+    font-weight: 900;
+    color: rgba(255,255,255,.045);
+    letter-spacing: -.08em;
+}
+
+.studio-pill,
+.form-pill {
+    display: inline-flex;
+    width: fit-content;
+    background: rgba(255,255,255,.13);
+    border: 1px solid rgba(255,255,255,.14);
+    padding: .42rem .8rem;
+    border-radius: 999px;
+    font-size: .78rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+}
+
+.portfolio-studio-hero h1 {
+    font-size: clamp(3rem, 7vw, 7rem);
+    line-height: .85;
+    letter-spacing: -.08em;
+    max-width: 850px;
+    margin-bottom: 1rem;
+}
+
+.portfolio-studio-hero p {
+    color: rgba(255,255,255,.68);
+    max-width: 620px;
+    line-height: 1.75;
+}
+
+.hero-actions {
+    display: flex;
+    gap: .75rem;
+    position: relative;
+    z-index: 2;
+}
+
+.btn-ghost,
+.btn-new-work {
+    border: none;
+    border-radius: 999px;
+    padding: .9rem 1.15rem;
+    font-weight: 900;
+    text-decoration: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: .55rem;
+    font-family: inherit;
+    white-space: nowrap;
+}
+
+.btn-ghost {
+    background: rgba(255,255,255,.12);
+    color: white;
+}
+
+.btn-new-work {
+    background: #dcfce7;
+    color: var(--fl-brand);
+}
+
+.portfolio-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: .9rem;
+    margin: 1rem 0;
+}
+
+.stat-box {
+    background: var(--fl-surface);
+    border: 1px solid var(--fl-border);
+    border-radius: 22px;
+    padding: 1rem;
+}
+
+.stat-box.active {
+    background: var(--fl-brand);
+    color: white;
+}
+
+.stat-box small {
+    display: block;
+    opacity: .68;
+    font-weight: 800;
+}
+
+.stat-box strong {
+    font-size: 1.6rem;
+}
+
+.studio-filters {
+    display: flex;
+    gap: .55rem;
+    flex-wrap: wrap;
+    margin: 1rem 0 1.2rem;
+}
+
+.filter-btn {
+    border: 1px solid var(--fl-border);
+    background: var(--fl-surface);
+    color: var(--fl-text-muted);
+    border-radius: 999px;
+    padding: .65rem .95rem;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.filter-btn.active,
+.filter-btn:hover {
+    background: var(--fl-brand);
+    color: white;
+}
+
+.masonry-gallery {
+    columns: 4 260px;
+    column-gap: 1rem;
+}
+
+.masonry-item {
+    break-inside: avoid;
+    margin-bottom: 1rem;
+    border-radius: 26px;
+    overflow: hidden;
+    position: relative;
+    background: var(--fl-surface);
+    border: 1px solid var(--fl-border);
+    cursor: pointer;
+    box-shadow: 0 18px 45px rgba(15,23,42,.06);
+}
+
+.masonry-item img,
+.masonry-empty {
+    width: 100%;
+    min-height: 220px;
+    display: block;
+    object-fit: cover;
+}
+
+.masonry-empty {
+    display: grid;
+    place-items: center;
+    color: #cbd5e1;
+    font-size: 2.2rem;
+    background: var(--fl-soft-bg);
+}
+
+.masonry-overlay {
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(to top, rgba(0,0,0,.82), rgba(0,0,0,.05));
+    color: white;
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    opacity: 0;
+    transition: .28s ease;
+}
+
+.masonry-item:hover .masonry-overlay {
+    opacity: 1;
+}
+
+.masonry-overlay span {
+    width: fit-content;
+    background: rgba(255,255,255,.16);
+    border-radius: 999px;
+    padding: .3rem .65rem;
+    font-size: .72rem;
+    font-weight: 900;
+    margin-bottom: .6rem;
+}
+
+.masonry-overlay h3 {
+    font-size: 1.3rem;
+    margin-bottom: .35rem;
+}
+
+.masonry-overlay p {
+    color: rgba(255,255,255,.7);
+    line-height: 1.45;
+    font-size: .88rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.overlay-actions {
+    display: flex;
+    gap: .5rem;
+    margin-top: .9rem;
+}
+
+.overlay-actions a,
+.overlay-actions button {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 14px;
+    background: var(--fl-surface);
+    color: var(--fl-brand);
+    display: grid;
+    place-items: center;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.overlay-actions form {
+    margin: 0;
+}
+
+.project-modal,
+.form-drawer {
+    display: none;
+}
+
+.project-modal.show,
+.form-drawer.show {
+    display: block;
+}
+
+.project-modal-backdrop,
+.drawer-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.72);
+    backdrop-filter: blur(12px);
+    z-index: 2000;
+}
+
+.project-modal-content {
+    position: fixed;
+    inset: 7vh 6vw;
+    background:
+        radial-gradient(circle at 85% 10%, rgba(255,255,255,.08), transparent 28%),
+        #151515;
+    color: white;
+    z-index: 2001;
+    border-radius: 28px;
+    display: grid;
+    grid-template-columns: .75fr 1.25fr;
+    gap: 2rem;
+    padding: 2rem;
+    overflow: hidden;
+    box-shadow: 0 40px 120px rgba(0,0,0,.45);
+}
+
+.modal-close {
+    position: absolute;
+    top: 1.2rem;
+    right: 1.2rem;
+    background: var(--fl-surface);
+    color: #111827;
+    border: none;
+    border-radius: 999px;
+    padding: .55rem .9rem;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.modal-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.modal-info span {
+    color: #86efac;
+    font-weight: 900;
+    margin-bottom: 1rem;
+}
+
+.modal-info h2 {
+    font-size: clamp(2rem, 5vw, 5rem);
+    line-height: .9;
+    letter-spacing: -.07em;
+    margin-bottom: 1rem;
+}
+
+.modal-info p {
+    color: rgba(255,255,255,.68);
+    line-height: 1.8;
+}
+
+.modal-demo {
+    width: fit-content;
+    margin-top: 1.4rem;
+    background: var(--fl-surface);
+    color: #111827;
+    text-decoration: none;
+    padding: .85rem 1.1rem;
+    border-radius: 999px;
+    font-weight: 900;
+}
+
+.modal-image-wrap {
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+}
+
+.modal-image-wrap img {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 22px;
+    object-fit: contain;
+}
+
+.modal-empty {
+    width: 100%;
+    height: 100%;
+    border-radius: 22px;
+    background: rgba(255,255,255,.06);
+    display: grid;
+    place-items: center;
+    color: rgba(255,255,255,.35);
+    font-size: 3rem;
+}
+
+.drawer-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: min(470px, 100%);
+    height: 100vh;
+    background: var(--fl-surface);
+    z-index: 2002;
+    padding: 2rem;
+    overflow-y: auto;
+    box-shadow: -30px 0 80px rgba(0,0,0,.2);
+}
+
+.drawer-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 42px;
+    height: 42px;
+    border: none;
+    border-radius: 50%;
+    background: #f1f5f9;
+    cursor: pointer;
+}
+
+.drawer-panel .form-pill {
+    background: #dcfce7;
+    color: var(--fl-brand-accent);
+    border: none;
+}
+
+.drawer-panel h2 {
+    font-size: 2.2rem;
+    color: var(--fl-heading);
+    letter-spacing: -.05em;
+}
+
+.drawer-panel p {
+    color: var(--fl-text-muted);
+    line-height: 1.6;
+    margin-bottom: 1.3rem;
+}
+
+.drawer-panel label {
+    display: block;
+    margin: .9rem 0 .35rem;
+    color: #334155;
+    font-weight: 900;
+    font-size: .82rem;
+}
+
+.drawer-panel input,
+.drawer-panel textarea,
+.drawer-panel select {
+    width: 100%;
+    border: 1px solid var(--fl-border);
+    border-radius: 16px;
+    padding: .9rem;
+    font-family: inherit;
+    outline: none;
+}
+
+.drawer-panel select {
+    padding-right: 2.75rem;
+}
+}
+
+.drawer-panel input:focus,
+.drawer-panel textarea:focus,
+.drawer-panel select:focus {
+    border-color: var(--fl-brand);
+    box-shadow: 0 0 0 4px rgba(6,95,70,.08);
+}
+
+.drawer-panel form > button {
+    width: 100%;
+    border: none;
+    border-radius: 999px;
+    margin-top: 1rem;
+    background: var(--fl-brand);
+    color: white;
+    padding: 1rem;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.portfolio-empty-studio {
+    background: var(--fl-surface);
+    border-radius: 34px;
+    text-align: center;
+    padding: 4rem 2rem;
+    box-shadow: 0 18px 45px rgba(15,23,42,.06);
+}
+
+.portfolio-empty-studio i {
+    width: 86px;
+    height: 86px;
+    margin: 0 auto 1rem;
+    border-radius: 28px;
+    background: #dcfce7;
+    color: var(--fl-brand);
+    display: grid;
+    place-items: center;
+    font-size: 2rem;
+}
+
+.portfolio-empty-studio h2 {
+    color: var(--fl-heading);
+    margin-bottom: .5rem;
+}
+
+.portfolio-empty-studio p {
+    color: var(--fl-text-muted);
+    margin-bottom: 1.2rem;
+}
+
+.portfolio-empty-studio button {
+    border: none;
+    background: var(--fl-brand);
+    color: white;
+    border-radius: 999px;
+    padding: .9rem 1.1rem;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+@media (max-width: 900px) {
+    .portfolio-studio-hero {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .portfolio-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .project-modal-content {
+        inset: 4vh 1rem;
+        grid-template-columns: 1fr;
+        overflow-y: auto;
+    }
+
+    .modal-image-wrap img {
+        max-height: 55vh;
+    }
+}
+</style>
+{% endblock %}

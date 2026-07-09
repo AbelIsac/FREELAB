@@ -1,0 +1,281 @@
+
+{% extends "base.html" %}
+{% block title %}Valoraciones - Admin FreeLab{% endblock %}
+
+{% block content %}
+<section class="admin-reviews-page">
+
+    <div class="reviews-hero">
+        <div>
+            <span>
+                <i class="fas fa-star"></i>
+                Calidad y reputación
+            </span>
+
+            <h1>Valoraciones</h1>
+
+            <p>
+                Supervisa las reseñas realizadas por los compradores
+                y la reputación de los freelancers.
+            </p>
+        </div>
+
+        <a href="{{ url_for('admin.admin_dashboard') }}">
+            Volver al panel
+        </a>
+    </div>
+
+    <div class="reviews-stats">
+
+        <div class="review-stat">
+            <small>Total reseñas</small>
+            <strong>{{ valoraciones|length }}</strong>
+        </div>
+
+        <div class="review-stat">
+            <small>Promedio global</small>
+
+            <strong>
+                {% if valoraciones %}
+                    {{
+                    (
+                    valoraciones|sum(attribute='calificacion')
+                    / valoraciones|length
+                    )|round(1)
+                    }}
+                {% else %}
+                    0
+                {% endif %}
+            </strong>
+        </div>
+
+    </div>
+
+    {% if valoraciones %}
+    <div class="reviews-grid">
+
+        {% for r in valoraciones %}
+        <article class="review-card">
+
+            <div class="review-top">
+
+                <div class="stars">
+                    {% for i in range(r.calificacion) %}
+                    ★
+                    {% endfor %}
+                </div>
+
+                <span class="review-date">
+                    {{ r.fecha[:10] if r.fecha else 'Sin fecha' }}
+                </span>
+
+            </div>
+
+            <div class="review-info">
+
+                <div>
+                    <small>Comprador</small>
+                    <strong>
+                        {{ r.comprador.nombre if r.comprador else 'Desconocido' }}
+                    </strong>
+                </div>
+
+                <div>
+                    <small>Freelancer</small>
+                    <strong>
+                        {{ r.vendedor.nombre if r.vendedor else 'Desconocido' }}
+                    </strong>
+                </div>
+
+                <div>
+                    <small>Servicio</small>
+                    <strong>
+                        {{ r.producto.titulo if r.producto else 'Servicio eliminado' }}
+                    </strong>
+                </div>
+
+            </div>
+
+            {% if r.comentario %}
+            <div class="review-comment">
+                "{{ r.comentario }}"
+            </div>
+            {% endif %}
+
+        </article>
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+    <div class="empty-reviews">
+
+        <i class="fas fa-star"></i>
+
+        <h2>No existen valoraciones</h2>
+
+        <p>
+            Las reseñas aparecerán aquí cuando los compradores
+            completen contrataciones.
+        </p>
+
+    </div>
+    {% endif %}
+
+</section>
+
+<style>
+
+.admin-reviews-page{
+    padding:120px 6vw 60px;
+    background: var(--fl-page-bg);
+    min-height:100vh;
+}
+
+.reviews-hero{
+    background:
+        radial-gradient(circle at 85% 10%, rgba(134,239,172,.25), transparent 30%),
+        linear-gradient(135deg,#0b0f0d,#052e22);
+    color:white;
+    border-radius:38px;
+    padding:2.5rem;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:1rem;
+    margin-bottom:1rem;
+}
+
+.reviews-hero span{
+    display:inline-flex;
+    gap:.5rem;
+    align-items:center;
+    background:rgba(255,255,255,.12);
+    padding:.45rem .8rem;
+    border-radius:999px;
+    font-size:.8rem;
+    font-weight:900;
+}
+
+.reviews-hero h1{
+    font-size:clamp(3rem,7vw,6rem);
+    line-height:.85;
+    letter-spacing:-.08em;
+    margin:1rem 0;
+}
+
+.reviews-hero p{
+    color:rgba(255,255,255,.7);
+}
+
+.reviews-hero a{
+    background: var(--fl-surface);
+    color: var(--fl-heading);
+    text-decoration:none;
+    padding:.9rem 1.1rem;
+    border-radius:999px;
+    font-weight:900;
+}
+
+.reviews-stats{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:1rem;
+    margin-bottom:1rem;
+}
+
+.review-stat{
+    background: var(--fl-surface);
+    border-radius:24px;
+    border:1px solid var(--fl-border);
+    padding:1rem;
+}
+
+.review-stat small{
+    display:block;
+    color: var(--fl-text-muted);
+    font-weight:800;
+}
+
+.review-stat strong{
+    font-size:2rem;
+    color: var(--fl-heading);
+}
+
+.reviews-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
+    gap:1rem;
+}
+
+.review-card{
+    background: var(--fl-surface);
+    border-radius:28px;
+    border:1px solid var(--fl-border);
+    padding:1.2rem;
+    box-shadow:0 20px 60px rgba(15,23,42,.06);
+}
+
+.review-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:1rem;
+}
+
+.stars{
+    color:#f59e0b;
+    font-size:1.4rem;
+}
+
+.review-date{
+    color: var(--fl-text-faint);
+    font-size:.8rem;
+    font-weight:800;
+}
+
+.review-info{
+    display:grid;
+    gap:.7rem;
+}
+
+.review-info small{
+    display:block;
+    color: var(--fl-text-faint);
+    font-weight:800;
+}
+
+.review-info strong{
+    color: var(--fl-heading);
+}
+
+.review-comment{
+    margin-top:1rem;
+    background: var(--fl-soft-bg);
+    border-radius:18px;
+    padding:1rem;
+    color: var(--fl-text-body);
+    line-height:1.6;
+}
+
+.empty-reviews{
+    background: var(--fl-surface);
+    border-radius:30px;
+    text-align:center;
+    padding:4rem 2rem;
+}
+
+.empty-reviews i{
+    width:76px;
+    height:76px;
+    display:grid;
+    place-items:center;
+    margin:0 auto 1rem;
+    border-radius:24px;
+    background:#fef3c7;
+    color:#f59e0b;
+    font-size:2rem;
+}
+</style>
+{% endblock %}
+

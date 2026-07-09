@@ -1,105 +1,291 @@
 {% extends "base.html" %}
 {% block title %}Panel de Administración{% endblock %}
 {% block content %}
-<div class="admin-container">
-    <h1>Panel de Administración</h1>
-    <div class="stats-grid">
-        <div class="stat-card">
-            <i class="fas fa-tags"></i>
-            <h3>{{ stats.total_categorias }}</h3>
-            <p>Categorías</p>
-            <a href="{{ url_for('admin_categorias') }}">Gestionar →</a>
+<div class="admin-page">
+
+    <section class="admin-hero">
+        <div>
+            <span class="admin-pill">
+                <i class="fas fa-shield-halved"></i>
+                Administración FreeLab
+            </span>
+
+            <h1>Centro de Control</h1>
+
+            <p>
+                Supervisa usuarios, contrataciones, comprobantes,
+                valoraciones y actividad general de la plataforma.
+            </p>
         </div>
-        <div class="stat-card">
-            <i class="fas fa-clock"></i>
-            <h3>{{ stats.productos_pendientes }}</h3>
-            <p>Publicaciones pendientes</p>
-            <a href="{{ url_for('admin_publicaciones') }}">Revisar →</a>
+    </section>
+
+    <section class="admin-kpis">
+
+        <a href="{{ url_for('admin.admin_usuarios') }}" class="kpi-card kpi-link">
+            <small>Usuarios</small>
+            <strong>{{ stats.usuarios }}</strong>
+            <span>Ver usuarios <i class="fas fa-arrow-right"></i></span>
+        </a>
+
+        <div class="kpi-card">
+            <small>Estudiantes</small>
+            <strong>{{ stats.estudiantes }}</strong>
         </div>
-        <div class="stat-card">
-            <i class="fas fa-hourglass-half"></i>
-            <h3>{{ stats.ventas_pendientes }}</h3>
-            <p>Transacciones pendientes</p>
-            <a href="{{ url_for('admin_transacciones') }}">Aprobar →</a>
+
+        <div class="kpi-card">
+            <small>Compradores</small>
+            <strong>{{ stats.compradores }}</strong>
         </div>
-    </div>
+
+        <div class="kpi-card">
+            <small>Ventas</small>
+            <strong>{{ stats.total_ventas }}</strong>
+        </div>
+
+        <div class="kpi-card">
+            <small>Completadas</small>
+            <strong>{{ stats.ventas_completadas }}</strong>
+        </div>
+
+        <div class="kpi-card">
+            <small>Ingresos</small>
+            <strong>S/ {{ stats.ingresos_totales }}</strong>
+        </div>
+
+    </section>
+
+    <section class="admin-grid">
+
+        <article class="admin-card">
+            <i class="fas fa-briefcase"></i>
+
+            <h3>Servicios</h3>
+
+            <p>
+                Gestiona publicaciones y revisa contenido pendiente.
+            </p>
+
+            <div class="card-stats">
+                <span>{{ stats.total_productos }} servicios</span>
+                <span>{{ stats.productos_pendientes }} pendientes</span>
+            </div>
+
+            <a href="{{ url_for('admin.admin_todas_publicaciones') }}">
+                Gestionar
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </article>
+
+        <article class="admin-card">
+            <i class="fas fa-money-bill-transfer"></i>
+
+            <h3>Contrataciones</h3>
+
+            <p>
+                Supervisa estados, pagos y flujo de trabajo.
+            </p>
+
+            <div class="card-stats">
+                <span>{{ stats.total_ventas }} ventas</span>
+                <span>{{ stats.ventas_activas }} activas</span>
+            </div>
+
+            <a href="{{ url_for('admin.admin_transacciones') }}">
+                Ver transacciones
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </article>
+
+        <article class="admin-card">
+            <i class="fas fa-file-invoice"></i>
+
+            <h3>Comprobantes</h3>
+
+            <p>
+                Revisión de pagos y validaciones.
+            </p>
+
+            <div class="card-stats">
+                <span>{{ stats.comprobantes }} registrados</span>
+            </div>
+
+            <a href="{{ url_for('admin.admin_comprobantes') }}">
+                Ver comprobantes
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </article>
+
+        <article class="admin-card">
+            <i class="fas fa-star"></i>
+
+            <h3>Valoraciones</h3>
+
+            <p>
+                Calidad y reputación de freelancers.
+            </p>
+
+            <div class="card-stats">
+                <span>{{ stats.valoraciones }} reseñas</span>
+                <span>{{ stats.promedio_global }}/5</span>
+            </div>
+            <a href="{{ url_for('admin.admin_valoraciones') }}">
+                Ver valoraciones
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </article>
+
+    </section>
+
 </div>
 
+
 <style>
-.admin-container {
-    max-width: 1200px;
-    margin: 6rem auto 2rem auto;   /* antes era 2rem, ahora margen superior más grande */
-    padding: 1rem;
+
+
+
+.admin-page{
+    padding:120px 6vw 60px;
+    background: var(--fl-page-bg);
+    min-height:100vh;
 }
 
-.admin-container h1 {
-    text-align: center;
-    margin-bottom: 2rem;
-    color: #1e293b;
+.admin-hero{
+    background:
+        radial-gradient(circle at 85% 10%, rgba(134,239,172,.25), transparent 30%),
+        linear-gradient(135deg,#0b0f0d,#052e22);
+    color:white;
+    border-radius:40px;
+    padding:3rem;
+    margin-bottom:1.5rem;
 }
 
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.8rem;
-    margin-top: 1rem;
+.admin-pill{
+    display:inline-flex;
+    gap:.5rem;
+    align-items:center;
+    background:rgba(255,255,255,.12);
+    padding:.5rem .9rem;
+    border-radius:999px;
+    font-size:.8rem;
+    font-weight:900;
 }
 
-.stat-card {
-    background: white;
-    border-radius: 24px;
-    padding: 2rem 1.5rem;
-    text-align: center;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-    transition: transform 0.2s, box-shadow 0.2s;
+.admin-hero h1{
+    font-size:clamp(3rem,7vw,6rem);
+    line-height:.85;
+    letter-spacing:-.08em;
+    margin:1rem 0;
 }
 
-.stat-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+.admin-hero p{
+    max-width:650px;
+    color:rgba(255,255,255,.7);
 }
 
-.stat-card i {
-    font-size: 2.8rem;
-    color: #3b82f6;
-    margin-bottom: 1rem;
+.admin-kpis{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    gap:1rem;
+    margin-bottom:1.5rem;
 }
 
-.stat-card h3 {
-    font-size: 2.2rem;
-    margin: 0.5rem 0;
-    color: #0f172a;
-    font-weight: 700;
+.kpi-card{
+    background: var(--fl-surface);
+    border-radius:24px;
+    padding:1.2rem;
+    border:1px solid var(--fl-border);
 }
 
-.stat-card p {
-    color: #64748b;
-    font-size: 0.95rem;
-    margin-bottom: 1.2rem;
+.kpi-card small{
+    color: var(--fl-text-muted);
+    display:block;
+    font-weight:800;
 }
 
-.stat-card a {
-    display: inline-block;
-    margin-top: 0.5rem;
-    color: #3b82f6;
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.2s;
+.kpi-card strong{
+    font-size:2rem;
+    color: var(--fl-heading);
 }
 
-.stat-card a:hover {
-    color: #1d4ed8;
-    text-decoration: underline;
+.admin-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    gap:1rem;
 }
 
-@media (max-width: 768px) {
-    .admin-container {
-        margin: 4rem auto 2rem auto;
+.admin-card{
+    background: var(--fl-surface);
+    border:1px solid var(--fl-border);
+    border-radius:30px;
+    padding:1.5rem;
+    box-shadow:0 20px 60px rgba(15,23,42,.06);
+}
+
+.admin-card i{
+    font-size:2rem;
+    color: var(--fl-brand);
+    margin-bottom:1rem;
+}
+
+.admin-card h3{
+    color: var(--fl-heading);
+    margin-bottom:.5rem;
+}
+
+.admin-card p{
+    color: var(--fl-text-muted);
+    line-height:1.6;
+}
+
+.card-stats{
+    display:flex;
+    gap:.6rem;
+    flex-wrap:wrap;
+    margin:1rem 0;
+}
+
+.card-stats span{
+    background: var(--fl-soft-bg);
+    border-radius:999px;
+    padding:.45rem .8rem;
+    font-size:.8rem;
+    font-weight:800;
+}
+
+.admin-card a{
+    display:inline-flex;
+    align-items:center;
+    gap:.5rem;
+    color: var(--fl-brand);
+    font-weight:900;
+    text-decoration:none;
+}
+.kpi-link{
+    text-decoration:none;
+    display:block;
+    transition:.25s ease;
+}
+
+.kpi-link span{
+    display:inline-flex;
+    align-items:center;
+    gap:.4rem;
+    margin-top:.6rem;
+    color: var(--fl-brand);
+    font-size:.82rem;
+    font-weight:900;
+}
+
+.kpi-link:hover{
+    transform:translateY(-4px);
+    box-shadow:0 18px 45px rgba(15,23,42,.08);
+}
+@media(max-width:1100px){
+    .admin-kpis{
+        grid-template-columns:repeat(2,1fr);
     }
-    .stats-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
 }
+
+
 </style>
 {% endblock %}

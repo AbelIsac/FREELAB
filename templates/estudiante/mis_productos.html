@@ -1,0 +1,562 @@
+{% extends "base_estudiante.html" %}
+
+{% block title %}Mis Servicios - FreeLab{% endblock %}
+
+{% block content %}
+<div class="services-shell">
+    <aside class="services-sidebar">
+        <div class="brand-box">
+            <i class="fas fa-layer-group"></i>
+            <span>FreeLab</span>
+        </div>
+
+        <a href="{{ url_for('estudiante.dashboard_estudiante') }}" class="side-link">
+            <i class="fas fa-arrow-left"></i> Volver al dashboard
+        </a>
+
+        <div class="sidebar-card">
+            <span>Gestión</span>
+            <h3>Tus servicios publicados</h3>
+            <p>Controla qué servicios están activos, pendientes o rechazados.</p>
+        </div>
+    </aside>
+
+    <main class="services-main">
+        <div class="services-header">
+            <div>
+                <span class="eyebrow">Panel freelance</span>
+                <h1>Mis servicios</h1>
+                <p>Administra las ofertas que publicarás para mypes y emprendedores.</p>
+            </div>
+
+            <a href="{{ url_for('servicios.publicar_producto') }}" class="btn-new-service">
+                <i class="fas fa-plus"></i> Nuevo servicio
+            </a>
+        </div>
+
+        <div class="services-summary">
+            <div class="summary-card active">
+                <i class="fas fa-briefcase"></i>
+                <div>
+                    <span>Total publicados</span>
+                    <strong>{{ productos|length }}</strong>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <i class="fas fa-clock"></i>
+                <div>
+                    <span>Pendientes</span>
+                    <strong>{{ productos|selectattr('estado', 'equalto', 'pendiente')|list|length }}</strong>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <i class="fas fa-check-circle"></i>
+                <div>
+                    <span>Activos</span>
+                    <strong>{{ productos|selectattr('estado', 'equalto', 'activo')|list|length }}</strong>
+                </div>
+            </div>
+        </div>
+
+        {% if productos %}
+        <div class="services-grid">
+            {% for prod in productos %}
+            <article class="service-card">
+                <div class="service-cover">
+                    {% if prod.imagen_url %}
+                        <img src="{{ prod.imagen_url }}" alt="{{ prod.titulo }}">
+                    {% else %}
+                        <div class="empty-cover">
+                            <i class="fas fa-image"></i>
+                        </div>
+                    {% endif %}
+
+                    {% if prod.estado == 'activo' %}
+                        <span class="status-badge active">Activo</span>
+                    {% elif prod.estado == 'pendiente' %}
+                        <span class="status-badge pending">Pendiente</span>
+                    {% elif prod.estado == 'rechazado' %}
+                        <span class="status-badge rejected">Rechazado</span>
+                    {% else %}
+                        <span class="status-badge muted">{{ prod.estado }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="service-body">
+                    <h3>{{ prod.titulo }}</h3>
+                    <p>
+                        {{ prod.descripcion[:105] if prod.descripcion else 'Sin descripción registrada.' }}
+                        {% if prod.descripcion and prod.descripcion|length > 105 %}...{% endif %}
+                    </p>
+
+                    <div class="service-meta">
+                        <div>
+                            <small>Precio base</small>
+                            <strong>S/ {{ "{:,.2f}".format(prod.precio) }}</strong>
+                        </div>
+
+                        <div>
+                            <small>Estado</small>
+                            <strong>{{ prod.estado|capitalize }}</strong>
+                        </div>
+                    </div>
+
+                    <div class="service-actions">
+                        <a href="{{ url_for('servicios.detalle_mi_servicio', producto_id=prod.id) }}" class="btn-view">
+                            <i class="fas fa-eye"></i> Ver
+                        </a>
+
+                        <a href="{{ url_for('servicios.editar_mi_servicio', producto_id=prod.id) }}" class="btn-edit">
+                            <i class="fas fa-pen"></i>
+                        </a>
+
+                        <button class="btn-delete" onclick="eliminarServicio({{ prod.id }}, '{{ prod.titulo }}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state-premium">
+            <div class="empty-icon">
+                <i class="fas fa-briefcase"></i>
+            </div>
+            <h2>Aún no tienes servicios publicados</h2>
+            <p>Publica tu primer servicio freelance para empezar a recibir oportunidades.</p>
+            <a href="{{ url_for('servicios.publicar_producto') }}" class="btn-new-service">
+                <i class="fas fa-plus"></i> Publicar mi primer servicio
+            </a>
+        </div>
+        {% endif %}
+    </main>
+</div>
+
+<script>
+function editarServicio(servicioId) {
+    Swal.fire({
+        title: 'Edición próximamente',
+        text: 'Luego conectaremos esta opción para editar el servicio ID: ' + servicioId,
+        icon: 'info',
+        confirmButtonColor: '#065f46'
+    });
+}
+
+function eliminarServicio(servicioId, servicioNombre) {
+    Swal.fire({
+        title: '¿Eliminar servicio?',
+        html: `¿Seguro que deseas eliminar <strong>${servicioNombre}</strong>?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/mis-servicios/eliminar/${servicioId}`, {method: 'DELETE'})
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire('Eliminado', 'El servicio fue eliminado.', 'success')
+                            .then(() => location.reload());
+                    } else {
+                        Swal.fire('Error', data.error || 'No se pudo eliminar.', 'error');
+                    }
+                })
+                .catch(() => {
+                    Swal.fire('Error', 'No se pudo conectar con el servidor.', 'error');
+                });
+        }
+    });
+}
+</script>
+
+<style>
+.services-shell {
+    min-height: auto;
+    background: var(--fl-page-bg);
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 1.5rem;
+    padding: 2rem;
+    font-family: var(--font-ui);
+}
+
+.services-sidebar {
+    background: rgba(255,255,255,.9);
+    border: 1px solid rgba(15,76,58,.08);
+    border-radius: 30px;
+    padding: 1.5rem;
+    box-shadow: 0 20px 60px rgba(15,23,42,.08);
+    height: fit-content;
+}
+
+.brand-box {
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--fl-brand);
+    margin-bottom: 2rem;
+}
+
+.brand-box i {
+    background: #dcfce7;
+    padding: .7rem;
+    border-radius: 14px;
+}
+
+.side-link {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+    text-decoration: none;
+    color: var(--fl-text-muted);
+    background: var(--fl-soft-bg);
+    padding: .9rem 1rem;
+    border-radius: 16px;
+    font-weight: 700;
+    transition: .25s ease;
+}
+
+.side-link:hover {
+    background: #e8f8ef;
+    color: var(--fl-brand);
+}
+
+.sidebar-card {
+    margin-top: 2rem;
+    background: linear-gradient(145deg, #065f46, #052e22);
+    color: white;
+    padding: 1.4rem;
+    border-radius: 24px;
+}
+
+.sidebar-card span {
+    background: rgba(255,255,255,.16);
+    padding: .3rem .7rem;
+    border-radius: 999px;
+    font-size: .7rem;
+    font-weight: 800;
+}
+
+.sidebar-card h3 {
+    margin: 1rem 0 .5rem;
+}
+
+.sidebar-card p {
+    color: rgba(255,255,255,.72);
+    line-height: 1.6;
+    font-size: .9rem;
+}
+
+.services-main {
+    background: rgba(255,255,255,.7);
+    border-radius: 32px;
+    padding: 2rem;
+    border: 1px solid rgba(15,76,58,.08);
+    box-shadow: 0 20px 70px rgba(15,23,42,.06);
+}
+
+.services-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.4rem;
+}
+
+.eyebrow {
+    display: inline-flex;
+    background: #edfdf5;
+    color: var(--fl-brand-accent);
+    padding: .35rem .75rem;
+    border-radius: 999px;
+    font-size: .75rem;
+    font-weight: 800;
+    margin-bottom: .8rem;
+}
+
+.services-header h1 {
+    color: var(--fl-heading);
+    font-size: 2.4rem;
+    margin-bottom: .3rem;
+}
+
+.services-header p {
+    color: var(--fl-text-muted);
+}
+
+.btn-new-service {
+    background: var(--fl-brand);
+    color: white;
+    padding: .9rem 1.25rem;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 900;
+    display: inline-flex;
+    align-items: center;
+    gap: .6rem;
+    box-shadow: 0 14px 30px rgba(6,95,70,.22);
+}
+
+.services-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.4rem;
+}
+
+.summary-card {
+    background: var(--fl-surface);
+    border: 1px solid #edf2ef;
+    border-radius: 22px;
+    padding: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.summary-card i {
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+    display: grid;
+    place-items: center;
+    background: #f1f5f9;
+    color: var(--fl-brand);
+    font-size: 1.2rem;
+}
+
+.summary-card.active {
+    background: linear-gradient(145deg, #087044, #064e3b);
+    color: white;
+}
+
+.summary-card.active i {
+    background: rgba(255,255,255,.15);
+    color: white;
+}
+
+.summary-card span {
+    color: inherit;
+    opacity: .72;
+    display: block;
+    font-size: .82rem;
+    font-weight: 700;
+}
+
+.summary-card strong {
+    font-size: 1.8rem;
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 1rem;
+}
+
+.service-card {
+    background: var(--fl-surface);
+    border: 1px solid #edf2ef;
+    border-radius: 26px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(15,23,42,.05);
+    transition: .25s ease;
+}
+
+.service-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 40px rgba(15,23,42,.09);
+}
+
+.service-cover {
+    height: 190px;
+    position: relative;
+    background: var(--fl-soft-bg);
+}
+
+.service-cover img,
+.empty-cover {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.empty-cover {
+    display: grid;
+    place-items: center;
+    color: #cbd5e1;
+    font-size: 2.2rem;
+}
+
+.status-badge {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    padding: .35rem .75rem;
+    border-radius: 999px;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .01em;
+    backdrop-filter: blur(10px);
+}
+
+.status-badge.active {
+    background: rgba(220,252,231,.9);
+    color: var(--fl-brand-accent);
+}
+
+.status-badge.pending {
+    background: rgba(254,243,199,.92);
+    color: #b45309;
+}
+
+.status-badge.rejected {
+    background: rgba(254,226,226,.92);
+    color: #dc2626;
+}
+
+.status-badge.muted {
+    background: rgba(241,245,249,.92);
+    color: var(--fl-text-muted);
+}
+
+.service-body {
+    padding: 1.2rem;
+}
+
+.service-body h3 {
+    color: var(--fl-heading);
+    margin-bottom: .5rem;
+}
+
+.service-body p {
+    color: var(--fl-text-muted);
+    line-height: 1.5;
+    min-height: 48px;
+    font-size: .9rem;
+}
+
+.service-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .7rem;
+    margin: 1rem 0;
+}
+
+.service-meta div {
+    background: var(--fl-soft-bg);
+    padding: .75rem;
+    border-radius: 16px;
+}
+
+.service-meta small {
+    display: block;
+    color: var(--fl-text-faint);
+    font-size: .72rem;
+    margin-bottom: .25rem;
+}
+
+.service-meta strong {
+    color: var(--fl-brand);
+}
+
+.service-actions {
+    display: flex;
+    gap: .55rem;
+}
+
+.btn-view,
+.btn-edit,
+.btn-delete {
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 800;
+    transition: .2s ease;
+}
+
+.btn-view {
+    flex: 1;
+    background: #e8f8ef;
+    color: var(--fl-brand);
+    padding: .75rem 1rem;
+    text-align: center;
+}
+
+.btn-edit,
+.btn-delete {
+    width: 44px;
+    display: grid;
+    place-items: center;
+}
+
+.btn-edit {
+    background: #f1f5f9;
+    color: var(--fl-text-body);
+}
+
+.btn-delete {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.btn-view:hover,
+.btn-edit:hover,
+.btn-delete:hover {
+    transform: translateY(-2px);
+}
+
+.empty-state-premium {
+    background: var(--fl-surface);
+    border: 1px solid #edf2ef;
+    border-radius: 28px;
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.empty-icon {
+    width: 84px;
+    height: 84px;
+    margin: 0 auto 1rem;
+    border-radius: 28px;
+    background: #dcfce7;
+    color: var(--fl-brand);
+    display: grid;
+    place-items: center;
+    font-size: 2rem;
+}
+
+.empty-state-premium h2 {
+    color: var(--fl-heading);
+    margin-bottom: .5rem;
+}
+
+.empty-state-premium p {
+    color: var(--fl-text-muted);
+    margin-bottom: 1.3rem;
+}
+
+@media (max-width: 1050px) {
+    .services-shell {
+        grid-template-columns: 1fr;
+    }
+
+    .services-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .services-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+</style>
+{% endblock %}

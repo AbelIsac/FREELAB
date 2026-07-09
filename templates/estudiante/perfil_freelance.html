@@ -1,0 +1,310 @@
+{% extends "base_estudiante.html" %}
+
+{% block title %}Crear Perfil Freelance{% endblock %}
+
+{% block content %}
+<div class="onboarding-shell">
+    <div class="onboarding-card">
+        <div class="onboarding-left">
+            <div class="brand-mini">
+                <i class="fas fa-layer-group"></i>
+                <span>FreeLab</span>
+            </div>
+
+            <h1>Crea tu perfil freelance</h1>
+            <p>
+                Antes de publicar servicios, completa tu información profesional.
+                Esto ayudará a que las mypes confíen más en tu trabajo.
+            </p>
+
+            <div class="steps-preview">
+                <div class="step active">
+                    <span>1</span>
+                    <div>
+                        <strong>Perfil profesional</strong>
+                        <small>Cuéntanos qué sabes hacer</small>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <span>2</span>
+                    <div>
+                        <strong>Portafolio</strong>
+                        <small>Luego subirás tus trabajos</small>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <span>3</span>
+                    <div>
+                        <strong>Servicios</strong>
+                        <small>Publica ofertas para clientes</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="onboarding-right">
+            <div class="profile-preview">
+                <img src="{{ usuario.get('avatar') }}" alt="Avatar">
+                <div>
+                    <h3>{{ usuario.get('name', 'Estudiante') }}</h3>
+                    <p>Estudiante Freelance</p>
+                </div>
+            </div>
+
+            <form method="POST" class="freelance-form">
+                <div class="form-group">
+                    <label>Carrera o especialidad</label>
+                    <select name="carrera" required>
+                        <option value="">Selecciona tu carrera</option>
+                        <option {% if perfil.carrera == 'Diseño y Desarrollo de Software' %}selected{% endif %}>Diseño y Desarrollo de Software</option>
+                        <option {% if perfil.carrera == 'Administración de Sistemas' %}selected{% endif %}>Administración de Sistemas</option>
+                        <option {% if perfil.carrera == 'Diseño Gráfico' %}selected{% endif %}>Diseño Gráfico</option>
+                        <option {% if perfil.carrera == 'Publicidad' %}selected{% endif %}>Publicidad</option>
+                        <option {% if perfil.carrera == 'Marketing y Gestión de Medios Digitales' %}selected{% endif %}>Marketing y Gestión de Medios Digitales</option>
+                        <option {% if perfil.carrera == 'Administración de Empresas' %}selected{% endif %}>Administración de Empresas</option>
+                        <option {% if perfil.carrera == 'Administración de Negocios Internacionales' %}selected{% endif %}>Administración de Negocios Internacionales</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Descripción profesional</label>
+                    <textarea name="descripcion" rows="4" placeholder="Ej: Soy estudiante de desarrollo de software y realizo páginas web, sistemas básicos y landing pages para pequeños negocios." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Habilidades principales</label>
+                    <input type="text" name="habilidades" placeholder="Ej: Flask, HTML, CSS, Supabase, Diseño Web">
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Número Yape</label>
+                        <input type="text" name="yape" value="{{ perfil.yape or '' }}" placeholder="Ej: 999 999 999">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Número Plin</label>
+                        <input type="text" name="plin" placeholder="Opcional">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Ubicación</label>
+                    <input type="text" name="ubicacion" placeholder="Ej: Arequipa, Perú">
+                </div>
+
+                <button type="submit" class="btn-save-profile">
+                    {% if perfil and perfil.perfil_completado %}
+                        Actualizar perfil
+                    {% else %}
+                        Completar perfil y entrar al dashboard
+                    {% endif %}
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.onboarding-shell {
+    min-height: 100vh;
+    background: var(--fl-page-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    font-family: var(--font-ui);
+}
+
+.onboarding-card {
+    width: min(1150px, 100%);
+    background: rgba(255,255,255,0.82);
+    border: 1px solid rgba(15, 76, 58, 0.08);
+    border-radius: 34px;
+    box-shadow: 0 25px 80px rgba(15,23,42,.08);
+    display: grid;
+    grid-template-columns: .9fr 1.1fr;
+    overflow: hidden;
+}
+
+.onboarding-left {
+    background: linear-gradient(145deg, #065f46, #052e22);
+    color: white;
+    padding: 3rem;
+}
+
+.brand-mini {
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+    font-size: 1.2rem;
+    font-weight: 800;
+    margin-bottom: 4rem;
+}
+
+.brand-mini i {
+    background: rgba(255,255,255,.15);
+    padding: .8rem;
+    border-radius: 16px;
+}
+
+.onboarding-left h1 {
+    font-size: 2.6rem;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+}
+
+.onboarding-left p {
+    color: rgba(255,255,255,.72);
+    line-height: 1.7;
+    margin-bottom: 2.5rem;
+}
+
+.steps-preview {
+    display: grid;
+    gap: 1rem;
+}
+
+.step {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 20px;
+    background: rgba(255,255,255,.08);
+}
+
+.step.active {
+    background: rgba(255,255,255,.16);
+}
+
+.step span {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #dcfce7;
+    color: var(--fl-brand);
+    display: grid;
+    place-items: center;
+    font-weight: 800;
+}
+
+.step strong {
+    display: block;
+}
+
+.step small {
+    color: rgba(255,255,255,.65);
+}
+
+.onboarding-right {
+    padding: 3rem;
+}
+
+.profile-preview {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.profile-preview img {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+}
+
+.profile-preview h3 {
+    color: var(--fl-heading);
+    margin-bottom: .2rem;
+}
+
+.profile-preview p {
+    color: var(--fl-text-muted);
+}
+
+.freelance-form {
+    display: grid;
+    gap: 1rem;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: .45rem;
+    font-size: .9rem;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    border: 1px solid var(--fl-border);
+    background-color: var(--fl-soft-bg);
+    padding: .95rem 1rem;
+    border-radius: 16px;
+    font-family: inherit;
+    outline: none;
+    transition: .25s ease;
+}
+
+.form-group select {
+    padding-right: 2.75rem;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    border-color: var(--fl-brand);
+    background-color: var(--fl-surface);
+    box-shadow: 0 0 0 4px rgba(6,95,70,.08);
+}
+
+.btn-save-profile {
+    margin-top: .8rem;
+    border: none;
+    background: var(--fl-brand);
+    color: white;
+    padding: 1rem 1.3rem;
+    border-radius: 999px;
+    font-weight: 800;
+    cursor: pointer;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: .7rem;
+    box-shadow: 0 14px 30px rgba(6,95,70,.25);
+    transition: .25s ease;
+}
+
+.btn-save-profile:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 38px rgba(6,95,70,.32);
+}
+
+@media (max-width: 850px) {
+    .onboarding-card {
+        grid-template-columns: 1fr;
+    }
+
+    .onboarding-left,
+    .onboarding-right {
+        padding: 2rem;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

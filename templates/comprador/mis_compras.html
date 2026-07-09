@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Mis contrataciones - FreeLab{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/mis_compras.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="contracts-page">
+    <div class="contracts-hero">
+        <div>
+            <span class="contracts-pill">
+                <i class="fas fa-clipboard-list"></i> Panel comprador
+            </span>
+            <h1>Mis contrataciones</h1>
+            <p>Revisa los servicios que solicitaste, sus estados, entregas y reseñas.</p>
+        </div>
+
+        <a href="{{ url_for('comprador.inicio_comprador') }}" class="btn-explore">
+            Explorar servicios
+            <i class="fas fa-arrow-right"></i>
+        </a>
+    </div>
+
+    {% if compras %}
+    <div class="contracts-list">
+        {% for venta in compras %}
+        <article class="contract-card">
+            <div class="contract-left">
+                <div class="contract-icon">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+            </div>
+
+            <div class="contract-main">
+                <div class="contract-top">
+                    <div>
+                        <span class="contract-id">Contratación #{{ venta.id }}</span>
+                        <h3>{{ venta.producto.titulo if venta.producto else 'Servicio no disponible' }}</h3>
+                    </div>
+
+                    <span class="contract-date">
+                        <i class="fas fa-calendar"></i>
+                        {{ venta.fecha_venta[:10] if venta.fecha_venta else 'Sin fecha' }}
+                    </span>
+                </div>
+
+                <div class="contract-meta">
+                    <div>
+                        <small>Monto</small>
+                        <strong>S/ {{ "{:,.2f}".format(venta.monto) }}</strong>
+                    </div>
+
+                    <div>
+                        <small>Estado</small>
+                        <strong class="status-chip {{ venta.estado }}">
+                            {% if venta.estado == 'pendiente_adelanto' %}Pendiente adelanto
+                            {% elif venta.estado == 'adelanto_enviado' %}Adelanto enviado
+                            {% elif venta.estado == 'en_proceso' %}En proceso
+                            {% elif venta.estado == 'entrega_realizada' %}Entrega realizada
+                            {% elif venta.estado == 'pago_final_enviado' %}Pago final enviado
+                            {% elif venta.estado == 'completado' %}Completado
+                            {% elif venta.estado == 'cancelado' %}Cancelado
+                            {% else %}{{ venta.estado }}
+                            {% endif %}
+                        </strong>
+                    </div>
+
+                    <div>
+                        <small>Pago inicial</small>
+                        <strong>50%</strong>
+                    </div>
+                </div>
+
+                {% if venta.producto and venta.producto.archivo_url %}
+                <div class="contract-file">
+                    <div>
+                        <i class="fas fa-file-arrow-down"></i>
+                        <span>Material disponible por tu contratación</span>
+                    </div>
+
+                    <a href="{{ venta.producto.archivo_url }}" target="_blank">
+                        Descargar
+                    </a>
+                </div>
+                {% endif %}
+                <div class="contract-actions">
+                    <a href="{{ url_for('comprador.detalle_contratacion', venta_id=venta.id) }}"
+                    class="btn-detail-contract">
+                        Ver detalle
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="contracts-empty">
+        <div class="empty-icon">
+            <i class="fas fa-shopping-bag"></i>
+        </div>
+        <h2>Aún no tienes contrataciones</h2>
+        <p>Explora servicios de estudiantes Certus y solicita tu primer trabajo freelance.</p>
+        <a href="{{ url_for('comprador.inicio_comprador') }}" class="btn-explore">
+            Explorar servicios
+            <i class="fas fa-arrow-right"></i>
+        </a>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

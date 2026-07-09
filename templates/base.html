@@ -3,318 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Marketplace Estudiantil{% endblock %}</title>
+    <title>{% block title %}FreeLab - Talento estudiantil freelance{% endblock %}</title>
+
+    <script>
+        // Aplica el tema guardado ANTES de pintar la página (evita parpadeo)
+        (function () {
+            const saved = localStorage.getItem('fl-theme');
+            const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/checkout.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/loader.css') }}">
+
     {% block extra_css %}{% endblock %}
-    <style>
-    /* ========================
-       BOTONES FLOTANTES (Dashboard + Carrito)
-       ======================== */
-    .floating-buttons {
-        position: fixed;
-        bottom: 30px;
-        right: 30px;
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-        z-index: 1000;
-    }
-
-    /* Botón Dashboard/Login */
-    .floating-action-btn {
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        color: white;
-        padding: 14px 24px;
-        border-radius: 50px;
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-weight: 600;
-        box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
-        transition: all 0.3s ease;
-        backdrop-filter: blur(10px);
-    }
-
-    .floating-action-btn:hover {
-        transform: translateY(-3px) scale(1.05);
-        box-shadow: 0 15px 45px rgba(102, 126, 234, 0.5);
-    }
-
-    /* Botón Carrito Flotante */
-    /* Carrito en el header - Con pulso */
-    .cart-header {
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-decoration: none;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        transition: all 0.3s ease;
-        background: #f1f5f9;
-        color: #667eea;
-        animation: pulse-header 2s infinite;
-    }
-
-    @keyframes pulse-header {
-        0% {
-            box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.4);
-        }
-        70% {
-            box-shadow: 0 0 0 10px rgba(102, 126, 234, 0);
-        }
-        100% {
-            box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
-        }
-    }
-
-    .cart-header:hover {
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        color: white;
-        transform: scale(1.05);
-        animation: none;
-    }
-
-    .cart-header i {
-        font-size: 1.1rem;
-    }
-
-    .cart-count-header {
-        position: absolute;
-        top: -6px;
-        right: -6px;
-        background: #ef4444;
-        color: white;
-        font-size: 0.6rem;
-        font-weight: bold;
-        width: 18px;
-        height: 18px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 2px solid white;
-    }
-
-    /* Responsive para botones flotantes */
-    @media (max-width: 768px) {
-        .floating-buttons {
-            bottom: 20px;
-            right: 20px;
-            gap: 12px;
-        }
-        
-        .floating-action-btn {
-            padding: 10px 18px;
-            font-size: 0.85rem;
-        }
-        
-        .cart-float {
-            width: 48px;
-            height: 48px;
-        }
-        
-        .cart-float i {
-            font-size: 1.2rem;
-        }
-        
-        .cart-count {
-            width: 20px;
-            height: 20px;
-            font-size: 0.65rem;
-            top: -6px;
-            right: -6px;
-        }
-    }
-  
-
-
-</style>
-    <!-- SweetAlert2 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 </head>
+
 <body>
- <!-- ==================== LOADER INLINE (APARECE AL INSTANTE) ==================== -->
-    <div id="loaderScreen" style="
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(135deg, #0f172a, #1e293b);
-        z-index: 10000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        transition: opacity 0.8s ease;
-    ">
-        <div style="margin-bottom: 2rem; animation: bounceLoader 2s ease infinite;">
-            <i class="fas fa-graduation-cap" style="font-size: 4rem; background: linear-gradient(135deg, #667eea, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
+
+    <div id="loaderScreen" class="freelab-loader">
+        <div class="loader-orbit">
+            <div class="loader-logo">
+                <i class="fas fa-layer-group"></i>
+            </div>
         </div>
-        
-        <div style="position: relative; width: 120px; height: 120px; margin-bottom: 2rem;">
-            <div style="position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 4px solid #667eea; border-top-color: transparent; animation: spinLoader 1.5s infinite;"></div>
-            <div style="position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 4px solid #f59e0b; border-right-color: transparent; animation: spinLoader 1.5s infinite -0.5s;"></div>
-            <div style="position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 4px solid #10b981; border-bottom-color: transparent; animation: spinLoader 1.5s infinite -1s;"></div>
-        </div>
-        
-        <div style="text-align: center; color: white;">
-            <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Marketplace Estudiantil</h2>
-            <p style="font-size: 0.9rem; opacity: 0.7;">Preparando tu galería virtual...</p>
-        </div>
-        
-        <div style="width: 300px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 10px; margin-top: 2rem; overflow: hidden;">
-            <div style="width: 0%; height: 100%; background: linear-gradient(90deg, #667eea, #f59e0b, #10b981); border-radius: 10px; animation: progressLoader 2.5s ease forwards;"></div>
-        </div>
-        
-        <div id="quoteText" style="margin-top: 2rem; font-size: 0.8rem; color: rgba(255,255,255,0.5); text-align: center; max-width: 300px;">
-            Conectando estudiantes con oportunidades
+
+        <h2>FreeLab</h2>
+        <p id="quoteText">Conectando talento estudiantil con oportunidades reales</p>
+
+        <div class="loader-bar">
+            <span></span>
         </div>
     </div>
 
-    <style>
-        @keyframes spinLoader {
-            0% { transform: rotate(0deg) scale(1); opacity: 1; }
-            50% { transform: rotate(180deg) scale(1.1); opacity: 0.7; }
-            100% { transform: rotate(360deg) scale(1); opacity: 1; }
-        }
-        @keyframes bounceLoader {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        @keyframes progressLoader {
-            0% { width: 0%; }
-            20% { width: 25%; }
-            40% { width: 45%; }
-            60% { width: 65%; }
-            80% { width: 85%; }
-            100% { width: 100%; }
-        }
-    </style>
+    {% if not ocultar_header %}
+    <header class="fl-header">
+        <nav class="fl-navbar">
+            <a href="{{ url_for('home') }}" class="fl-logo">
+                <i class="fas fa-layer-group"></i>
+                <span>Free<strong>Lab</strong></span>
+            </a>
 
-    <!-- ==================== HEADER (UNO SOLO) ==================== -->
-    <header class="header">
-        <nav class="navbar">
-            <div class="nav-container">
-                <!-- Logo -->
-                <div class="nav-logo">
-                    <a href="{{ url_for('home') }}">
-                        <i class="fas fa-graduation-cap"></i>
-                        <span>Marketplace<span class="logo-highlight">Est</span></span>
-                    </a>
-                </div>
-                
-                <!-- Menú principal CENTRADO -->
-                <ul class="nav-menu">
-                    <li><a href="{{ url_for('home') }}" class="nav-link">Inicio</a></li>
-                    <li><a href="{{ url_for('explorar_productos') }}" class="nav-link">Explorar</a></li>
-                    <li><a href="{{ url_for('como_funciona') }}" class="nav-link">Cómo funciona</a></li>
-                    <li><a href="{{ url_for('contacto') }}" class="nav-link">Contacto</a></li>
-                </ul>
+            <ul class="fl-menu">
+                <li><a href="{{ url_for('home') }}">Inicio</a></li>
 
-                <!-- Acciones derecha (carrito + usuario) -->
-                <div class="nav-actions">
-                    <!-- Carrito - solo compradores -->
-                    {% if session_user and session_user.rol == 'comprador' %}
-                        <a href="{{ url_for('ver_carrito') }}" class="cart-header" id="cartHeader" title="Ver carrito">
-                            <i class="fas fa-shopping-cart"></i>
-                            <span class="cart-count-header" id="cartCount">0</span>
-                        </a>
-                    {% endif %}
+                {% if not session_user or session_user.rol == 'comprador' %}
+                    <li><a href="{{ url_for('servicios.explorar_productos') }}">Explorar</a></li>
+                {% endif %}
 
-                    {% if session_user %}
-                        <!-- Dropdown usuario -->
-                        <div class="user-dropdown">
-                            <div class="user-info-btn">
-                                <img src="{{ session_user.get('avatar', 'https://ui-avatars.com/api/?background=667eea&color=fff&name=' + session_user.get('name', 'U')) }}" 
-                                     alt="Avatar" class="user-avatar">
-                                <span class="user-name">{{ session_user.get('name', 'Usuario').split()[0] }}</span>
-                                <i class="fas fa-chevron-down"></i>
-                            </div>
-                            <div class="dropdown-menu">
-                                <!-- Opciones según rol -->
-                                {% if session_user.rol == 'estudiante' %}
-                                    <a href="{{ url_for('dashboard_estudiante', user_id=session_user.id) }}" class="dropdown-item">
-                                        <i class="fas fa-tachometer-alt"></i> Mi Dashboard
-                                    </a>
-                                    <a href="{{ url_for('mis_productos') }}" class="dropdown-item">
-                                        <i class="fas fa-store"></i> Mis Productos
-                                    </a>
-                                    <a href="{{ url_for('estadisticas') }}" class="dropdown-item">
-                                        <i class="fas fa-chart-line"></i> Mis Ventas
-                                    </a>
-                                    <a href="{{ url_for('publicar_producto') }}" class="dropdown-item">
-                                        <i class="fas fa-plus-circle"></i> Publicar
-                                    </a>
-                                {% elif session_user.rol == 'comprador' %}
-                                    <a href="{{ url_for('dashboard_comprador', user_id=session_user.id) }}" class="dropdown-item">
-                                        <i class="fas fa-tachometer-alt"></i> Mi Dashboard
-                                    </a>
-                                    <a href="{{ url_for('mis_compras') }}" class="dropdown-item">
-                                        <i class="fas fa-shopping-bag"></i> Mis Compras
-                                    </a>
-                                    <a href="{{ url_for('favoritos') }}" class="dropdown-item">
-                                        <i class="fas fa-heart"></i> Favoritos
-                                    </a>
-                                {% elif session_user.rol == 'admin' %}
-                                    <a href="{{ url_for('admin_dashboard') }}" class="dropdown-item">
-                                        <i class="fas fa-shield-alt"></i> Panel Admin
-                                    </a>
-                                    <a href="{{ url_for('admin_categorias') }}" class="dropdown-item">
-                                        <i class="fas fa-tags"></i> Categorías
-                                    </a>
-                                    <a href="{{ url_for('admin_todas_publicaciones') }}" class="dropdown-item">
-                                        <i class="fas fa-boxes"></i> Publicaciones
-                                    </a>
-                                    <a href="{{ url_for('admin_transacciones') }}" class="dropdown-item">
-                                        <i class="fas fa-chart-line"></i> Transacciones
-                                    </a>
-                                {% endif %}
-                                
-                                <div class="dropdown-divider"></div>
-                                <a href="{{ url_for('configuracion') }}" class="dropdown-item">
-                                    <i class="fas fa-user-circle"></i> Mi Perfil
-                                </a>
-                                <a href="{{ url_for('logout') }}" class="dropdown-item logout">
-                                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-                                </a>
-                            </div>
+                <li><a href="{{ url_for('como_funciona') }}">Cómo funciona</a></li>
+                <li><a href="{{ url_for('contacto') }}">Contacto</a></li>
+            </ul>
+
+            <div class="fl-actions">
+                <button class="fl-theme-toggle" type="button" id="themeToggle" aria-label="Cambiar tema claro/oscuro">
+                    <i class="fas fa-sun"></i>
+                    <i class="fas fa-moon"></i>
+                </button>
+
+                {% if session_user %}
+                    <div class="fl-user">
+                        <button class="fl-user-btn" type="button">
+                            <img src="{{ session_user.get('avatar', 'https://ui-avatars.com/api/?background=065f46&color=fff&name=' + session_user.get('name', 'U')) }}" alt="Avatar">
+                            <span>{{ session_user.get('name', 'Usuario').split()[0] }}</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+
+                        <div class="fl-dropdown">
+                            {% if session_user.rol == 'estudiante' %}
+                                <a href="{{ url_for('estudiante.dashboard_estudiante') }}"><i class="fas fa-chart-line"></i> Panel freelance</a>
+                                <a href="{{ url_for('servicios.mis_productos') }}"><i class="fas fa-briefcase"></i> Mis servicios</a>
+                                <a href="{{ url_for('servicios.publicar_producto') }}"><i class="fas fa-plus-circle"></i> Publicar servicio</a>
+                            {% elif session_user.rol == 'comprador' %}
+                                <a href="{{ url_for('servicios.explorar_productos') }}"><i class="fas fa-search"></i> Buscar servicios</a>
+                                <a href="{{ url_for('comprador.mis_compras') }}"><i class="fas fa-shopping-bag"></i> Mis contrataciones</a>
+                                <a href="{{ url_for('comprador.favoritos') }}"><i class="fas fa-heart"></i> Favoritos</a>
+                            {% elif session_user.rol == 'admin' %}
+                                <a href="{{ url_for('admin.admin_dashboard') }}"><i class="fas fa-shield-alt"></i> Panel admin</a>
+                                <a href="{{ url_for('admin.admin_categorias') }}"><i class="fas fa-tags"></i> Categorías</a>
+                                <a href="{{ url_for('admin.admin_todas_publicaciones') }}"><i class="fas fa-boxes"></i> Publicaciones</a>
+                                <a href="{{ url_for('admin.admin_transacciones') }}"><i class="fas fa-chart-line"></i> Transacciones</a>
+                            {% endif %}
+
+                            <div class="fl-divider"></div>
+                            <a href="{{ url_for('auth.logout') }}" class="logout"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a>
                         </div>
-                    {% else %}
-                        <a href="{{ url_for('login') }}" class="btn-login">
-                            <i class="fab fa-google"></i> Ingresar
-                        </a>
-                    {% endif %}
-                </div>
-
-                <!-- Hamburguesa móvil -->
-                <div class="hamburger">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
+                    </div>
+                {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="fl-login">
+                        <i class="fab fa-google"></i> Ingresar
+                    </a>
+                {% endif %}
             </div>
+
+            <button class="fl-burger" type="button">
+                <span></span><span></span><span></span>
+            </button>
         </nav>
     </header>
+    {% endif %}
 
-    <!-- Flash Messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-            <div class="flash-container">
-                {% for category, message in messages %}
-                    <div class="flash-message alert-{{ category }}">
-                        <i class="fas {% if category == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
-                        {{ message }}
-                        <button class="flash-close">&times;</button>
-                    </div>
-                {% endfor %}
+        <div class="flash-container">
+            {% for category, message in messages %}
+            <div class="flash-message alert-{{ category }}">
+                <i class="fas {% if category == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
+                <span>{{ message }}</span>
+                <button class="flash-close">&times;</button>
             </div>
+            {% endfor %}
+        </div>
         {% endif %}
     {% endwith %}
 
@@ -322,207 +123,160 @@
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-main">
-                <div class="footer-brand">
-                    <div class="footer-logo">
-                        <i class="fas fa-graduation-cap"></i>
-                        <span>Marketplace<span class="logo-highlight">Est</span></span>
-                    </div>
-                    <p>Conectando estudiantes con oportunidades. Compra, vende y crece con tu comunidad.</p>
-                    <div class="footer-social">
-                        <a href="https://www.instagram.com/" class="social-link" target="_blank"><i class="fab fa-instagram"></i></a>
-                        <a href="https://web.whatsapp.com/" class="social-link" target="_blank"><i class="fab fa-whatsapp"></i></a>
-                        <a href="https://www.tiktok.com/" class="social-link" target="_blank"><i class="fab fa-tiktok"></i></a>
-                        <a href="https://discord.com/" class="social-link" target="_blank"><i class="fab fa-discord"></i></a>
-                    </div>
+    {% if not ocultar_footer %}
+    <footer class="fl-footer">
+        <div class="fl-footer-main">
+            <div class="fl-footer-brand">
+                <div class="fl-footer-logo">
+                    <i class="fas fa-layer-group"></i>
+                    <span>Free<strong>Lab</strong></span>
                 </div>
-
-                <div class="footer-links">
-                    <div class="footer-column">
-                        <h4>Plataforma</h4>
-                        <ul>
-                            <li><a href="{{ url_for('como_funciona') }}">Cómo funciona</a></li>
-                            <li><a href="{{ url_for('publicar_producto') }}">Publicar servicio</a></li>
-                            <li><a href="{{ url_for('explorar_productos') }}">Comprar</a></li>
-                        </ul>
-                    </div>
-                    <div class="footer-column">
-                        <h4>Soporte</h4>
-                        <ul>
-                            <li><a href="{{ url_for('ayuda') }}">Ayuda</a></li>
-                            <li><a href="{{ url_for('ayuda') }}#faq">Preguntas frecuentes</a></li>
-                            <li><a href="{{ url_for('contacto') }}">Contacto</a></li>
-                        </ul>
-                    </div>
-                    <div class="footer-column">
-                        <h4>Legal</h4>
-                        <ul>
-                            <li><a href="{{ url_for('terminos_uso') }}">Términos de uso</a></li>
-                            <li><a href="{{ url_for('politica_privacidad') }}">Privacidad</a></li>
-                        </ul>
-                    </div>
-                </div>
+                <p>
+                    Plataforma freelance que conecta estudiantes Certus con mypes,
+                    emprendedores y personas naturales que buscan servicios digitales accesibles.
+                </p>
             </div>
 
-            <div class="footer-bottom">
-                <div class="footer-bottom-content">
-                    <div class="footer-left">
-                        <p>&copy; <span id="current-year">2024</span> <strong>Marketplace Estudiantil</strong>. Desarrollado con ❤️ por estudiantes</p>
-                    </div>
-                    <div class="footer-right">
-                        <div class="payment-methods">
-                            <i class="fab fa-cc-visa" title="Visa"></i>
-                            <i class="fab fa-cc-mastercard" title="Mastercard"></i>
-                            <i class="fab fa-cc-paypal" title="PayPal"></i>
-                        </div>
-                    </div>
+            <div class="fl-footer-links">
+                <div>
+                    <h4>Plataforma</h4>
+                    <a href="{{ url_for('servicios.explorar_productos') }}">Explorar servicios</a>
+                    <a href="{{ url_for('como_funciona') }}">Cómo funciona</a>
+                    <a href="{{ url_for('auth.login') }}">Iniciar sesión</a>
+                </div>
+
+                <div>
+                    <h4>Freelancers</h4>
+                    <a href="{{ url_for('servicios.publicar_producto') }}">Publicar servicio</a>
+                    <a href="{{ url_for('auth.login') }}">Crear perfil</a>
+                    <a href="{{ url_for('ayuda') }}">Centro de ayuda</a>
+                </div>
+
+                <div>
+                    <h4>Legal</h4>
+                    <a href="{{ url_for('terminos_uso') }}">Términos de uso</a>
+                    <a href="{{ url_for('politica_privacidad') }}">Privacidad</a>
+                    <a href="{{ url_for('contacto') }}">Contacto</a>
                 </div>
             </div>
         </div>
-    </footer>
 
+        <div class="fl-footer-bottom">
+            <p>© <span id="current-year">2026</span> FreeLab · Proyecto de tesis Certus</p>
+
+            <div class="fl-social">
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-whatsapp"></i></a>
+                <a href="#"><i class="fab fa-tiktok"></i></a>
+            </div>
+        </div>
+    </footer>
+    {% endif %}
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        // Año actual
-        document.getElementById('current-year').innerText = new Date().getFullYear();
-        
-        // DROPDOWN MENU
-        const userInfoBtn = document.querySelector('.user-info-btn');
-        const dropdownMenu = document.querySelector('.dropdown-menu');
-        
-        if (userInfoBtn) {
-            userInfoBtn.addEventListener('click', (e) => {
+        const currentYear = document.getElementById('current-year');
+        if (currentYear) currentYear.innerText = new Date().getFullYear();
+
+        const userBtn = document.querySelector('.fl-user-btn');
+        const dropdown = document.querySelector('.fl-dropdown');
+
+        if (userBtn && dropdown) {
+            userBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                dropdownMenu.classList.toggle('show');
+                dropdown.classList.toggle('show');
             });
-            document.addEventListener('click', (e) => {
-                if (!userInfoBtn.contains(e.target)) {
-                    dropdownMenu.classList.remove('show');
-                }
+
+            document.addEventListener('click', () => {
+                dropdown.classList.remove('show');
             });
         }
-        
-        // Flash messages close
+
         document.querySelectorAll('.flash-close').forEach(btn => {
-            btn.addEventListener('click', () => {
-                btn.parentElement.remove();
-            });
+            btn.addEventListener('click', () => btn.parentElement.remove());
         });
-        
+
         setTimeout(() => {
             document.querySelectorAll('.flash-message').forEach(msg => {
-                msg.style.animation = 'slideOutRight 0.3s ease';
+                msg.classList.add('hide');
                 setTimeout(() => msg.remove(), 300);
             });
         }, 5000);
 
-        // Contador carrito
-        function actualizarContadorCarritoGlobal() {
-            const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-            const totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
-            const contador = document.getElementById('cartCount');
-            if (contador) contador.innerText = totalItems;
-        }
-        document.addEventListener('DOMContentLoaded', actualizarContadorCarritoGlobal);
-        window.addEventListener('storage', function(e) {
-            if (e.key === 'carrito') {
-                actualizarContadorCarritoGlobal();
-            }
+        const quotes = [
+            'Conectando talento estudiantil con oportunidades reales',
+            'Servicios digitales creados por estudiantes Certus',
+            'Mypes y emprendedores encuentran apoyo accesible',
+            'FreeLab prepara tu experiencia freelance'
+        ];
+
+        let quoteIndex = 0;
+        const quoteText = document.getElementById('quoteText');
+
+        setInterval(() => {
+            if (!quoteText) return;
+            quoteIndex = (quoteIndex + 1) % quotes.length;
+            quoteText.style.opacity = '0';
+            setTimeout(() => {
+                quoteText.innerText = quotes[quoteIndex];
+                quoteText.style.opacity = '1';
+            }, 250);
+        }, 1600);
+
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loaderScreen');
+            if (!loader) return;
+
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                }, 500);
+            }, 650);
         });
     </script>
 
-    <!-- LOADER SCRIPT -->
-<script>
-    const quotes = [
-        '<i class="fas fa-wand-magic"></i> Conectando estudiantes con oportunidades',
-        '<i class="fas fa-palette"></i> Descubre el talento estudiantil',
-        '<i class="fas fa-lightbulb"></i> Comparte tus creaciones con el mundo',
-        '<i class="fas fa-rocket"></i> Potencia tu emprendimiento',
-        '<i class="fas fa-book-open"></i> Aprende y enseña en comunidad',
-        '<i class="fas fa-graduation-cap"></i> El talento estudiantil te espera',
-        '<i class="fas fa-star"></i> Califica y ayuda a mejorar',
-        '<i class="fas fa-cart-shopping"></i> Encuentra servicios únicos'
-    ];
-    
-    function createParticles() {
-        const container = document.getElementById('particles');
-        if (!container) return;
-        for (let i = 0; i < 100; i++) {
-            const particle = document.createElement('div');
-            particle.classList.add('particle');
-            particle.style.left = Math.random() * 100 + '%';
-            particle.style.width = Math.random() * 3 + 1 + 'px';
-            particle.style.height = particle.style.width;
-            particle.style.animationDuration = Math.random() * 3 + 2 + 's';
-            particle.style.animationDelay = Math.random() * 5 + 's';
-            particle.style.opacity = Math.random() * 0.5 + 0.1;
-            container.appendChild(particle);
-        }
-    }
-    
-    let quoteIndex = 0;
-    function rotateQuotes() {
-        const quoteEl = document.getElementById('quoteText');
-        if (quoteEl) {
-            quoteIndex = (quoteIndex + 1) % quotes.length;
-            quoteEl.style.opacity = '0';
-            setTimeout(() => {
-                quoteEl.innerHTML = quotes[quoteIndex];
-                quoteEl.style.opacity = '1';
-            }, 300);
-        }
-    }
-    
-    // ==================== LOADER INTELIGENTE ====================
-    // Iniciar partículas y rotación de frases
-    createParticles();
-    setInterval(rotateQuotes, 2000);
+    <script>
+        // Activa las animaciones de entrada (.fl-reveal) cuando el
+        // elemento entra en pantalla al hacer scroll.
+        (function () {
+            const targets = document.querySelectorAll('.fl-reveal');
+            if (!targets.length) return;
 
-    // Mostrar loader inmediatamente
-    const loader = document.getElementById('loaderScreen');
-    if (loader) {
-        loader.style.display = 'flex';
-        loader.style.opacity = '1';
-    }
-
-    // Detectar si es una página lenta
-    const isSlowPage = window.location.pathname.includes('/dashboard') || 
-                    window.location.pathname.includes('/estadisticas') ||
-                    window.location.pathname.includes('/mis-productos') ||
-                    window.location.pathname.includes('/admin');
-
-    // Páginas lentas: 2 segundos, rápidas: 500ms
-    const delayTime = isSlowPage ? 2000 : 500;
-
-    // Esperar a que TODA la página cargue completamente
-    window.addEventListener('load', function() {
-        setTimeout(function() {
-            const loaderEl = document.getElementById('loaderScreen');
-            if (loaderEl) {
-                loaderEl.style.opacity = '0';
-                setTimeout(function() {
-                    loaderEl.style.display = 'none';
-                }, 500);
+            if (!('IntersectionObserver' in window)) {
+                targets.forEach(el => el.classList.add('fl-in'));
+                return;
             }
-        }, delayTime);
-    });
 
-    // Fallback por si la carga falla o es muy lenta
-    setTimeout(function() {
-        const loaderEl = document.getElementById('loaderScreen');
-        if (loaderEl && loaderEl.style.display !== 'none') {
-            loaderEl.style.opacity = '0';
-            setTimeout(function() {
-                loaderEl.style.display = 'none';
-            }, 500);
-        }
-    }, 8000);
-</script>
-    
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            const io = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('fl-in');
+                        io.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+            targets.forEach(el => io.observe(el));
+        })();
+    </script>
+
+    <script>
+        // Botón de modo claro/oscuro, con memoria (localStorage)
+        (function () {
+            const btn = document.getElementById('themeToggle');
+            if (!btn) return;
+
+            btn.addEventListener('click', () => {
+                const current = document.documentElement.getAttribute('data-theme');
+                const next = current === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', next);
+                localStorage.setItem('fl-theme', next);
+            });
+        })();
+    </script>
+
     {% block extra_js %}{% endblock %}
 </body>
 </html>

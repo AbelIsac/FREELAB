@@ -1,0 +1,170 @@
+/* Mis Reseñas - Estilos Modernos */
+
+@keyframes fadeInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Header de exploración */
+.explorar-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    animation: fadeInLeft 0.5s ease;
+}
+
+.explorar-header h1 {
+    font-size: 2rem;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+}
+
+.explorar-header p {
+    color: #64748b;
+}
+
+/* Tarjeta de reseña */
+.resena-card {
+    background: white;
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+    animation: fadeInLeft 0.4s ease backwards;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.resena-card:hover {
+    transform: translateX(8px);
+    border-color: #667eea;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.resena-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.resena-producto h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+    color: #1e293b;
+}
+
+.resena-producto p {
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+.resena-stars {
+    background: #fef3c7;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+}
+
+.resena-stars span {
+    color: #d97706;
+    font-weight: 600;
+}
+
+.resena-comentario {
+    font-style: italic;
+    color: #475569;
+    margin: 1rem 0;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 12px;
+    border-left: 4px solid #f59e0b;
+}
+
+.btn-edit-resena {
+    background: none;
+    border: none;
+    color: #667eea;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+}
+
+.btn-edit-resena:hover {
+    background: #f1f5f9;
+    transform: translateX(5px);
+    color: #764ba2;
+}
+
+/* Empty state */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: #f8fafc;
+    border-radius: 24px;
+    margin: 2rem 0;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    color: #cbd5e1;
+    margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    color: #64748b;
+    margin-bottom: 1.5rem;
+}
+
+.btn-publicar {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.btn-publicar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-link {
+    background: none;
+    border: none;
+    color: #667eea;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-link:hover {
+    background: #f1f5f9;
+    transform: translateX(-5px);
+}

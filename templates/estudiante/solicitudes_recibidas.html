@@ -1,0 +1,357 @@
+{% extends "base_estudiante.html" %}
+
+{% block title %}Solicitudes recibidas - FreeLab{% endblock %}
+
+{% block content %}
+<section class="requests-page">
+    <div class="requests-header">
+        <div>
+            <span>Panel freelance</span>
+            <h1>Solicitudes recibidas</h1>
+            <p>Gestiona clientes interesados, pagos iniciales y estados de trabajo.</p>
+        </div>
+
+        <a href="{{ url_for('estudiante.dashboard_estudiante') }}" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Dashboard
+        </a>
+    </div>
+
+    <div class="request-kpis">
+        <div class="kpi active">
+            <small>Total</small>
+            <strong>{{ stats.total }}</strong>
+        </div>
+        <div class="kpi">
+            <small>Pendientes</small>
+            <strong>{{ stats.pendientes }}</strong>
+        </div>
+        <div class="kpi">
+            <small>En proceso</small>
+            <strong>{{ stats.proceso }}</strong>
+        </div>
+        <div class="kpi">
+            <small>Completadas</small>
+            <strong>{{ stats.completadas }}</strong>
+        </div>
+    </div>
+
+    {% if solicitudes %}
+    <div class="requests-table">
+        <div class="request-row head">
+            <span>Servicio</span>
+            <span>Fecha</span>
+            <span>Monto</span>
+            <span>Estado</span>
+            <span>Acciones</span>
+        </div>
+
+        {% for s in solicitudes %}
+        <div class="request-row">
+            <div class="service-cell">
+                <div class="service-icon">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <div>
+                    <strong>{{ s.producto.titulo if s.producto else 'Servicio eliminado' }}</strong>
+                    <small>Solicitud #{{ s.id }}</small>
+                </div>
+            </div>
+
+            <span>{{ s.fecha_venta[:10] if s.fecha_venta else 'Sin fecha' }}</span>
+
+            <strong class="money">S/ {{ "{:,.2f}".format(s.monto) }}</strong>
+
+            <span class="status {{ s.estado }}">
+                {% if s.estado == 'pendiente_adelanto' %}Pendiente adelanto
+                {% elif s.estado == 'adelanto_enviado' %}Adelanto enviado
+                {% elif s.estado == 'en_proceso' %}En proceso
+                {% elif s.estado == 'pendiente_pago_final' %}Pago final pendiente
+                {% elif s.estado == 'completado' %}Completado
+                {% elif s.estado == 'cancelado' %}Cancelado
+                {% elif s.estado == 'adelanto_confirmado' %}Adelanto confirmado
+                {% elif s.estado == 'entrega_realizada' %}Entrega realizada
+                {% elif s.estado == 'pago_final_enviado' %}Pago final enviado
+                {% else %}{{ s.estado }}{% endif %}
+            </span>
+
+            <div class="actions-cell">
+                {% if s.estado == 'pendiente_adelanto' %}
+                    <form method="POST" action="{{ url_for('estudiante.cambiar_estado_solicitud', venta_id=s.id, nuevo_estado='cancelado') }}">
+                        <button class="btn-action reject" type="submit">Rechazar</button>
+                    </form>
+
+                {% elif s.estado == 'adelanto_enviado' %}
+                    <form method="POST" action="{{ url_for('estudiante.cambiar_estado_solicitud', venta_id=s.id, nuevo_estado='adelanto_confirmado') }}">
+                        <button class="btn-action accept" type="submit">Confirmar adelanto</button>
+                    </form>
+
+                {% elif s.estado == 'en_proceso' %}
+                    <form method="POST" action="{{ url_for('estudiante.cambiar_estado_solicitud', venta_id=s.id, nuevo_estado='entrega_realizada') }}">
+                        <button class="btn-action accept" type="submit">Marcar entrega</button>
+                    </form>
+
+                {% elif s.estado == 'pago_final_enviado' %}
+                <form method="POST" action="{{ url_for('estudiante.cambiar_estado_solicitud', venta_id=s.id, nuevo_estado='completado') }}">
+                    <button class="btn-action accept" type="submit">
+                        Confirmar pago final
+                    </button>
+                </form>
+
+                {% else %}
+                    <span class="no-action">Sin acciones</span>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-requests">
+        <i class="fas fa-inbox"></i>
+        <h2>Aún no tienes solicitudes</h2>
+        <p>Cuando un comprador solicite tus servicios, aparecerá aquí.</p>
+    </div>
+    {% endif %}
+</section>
+
+<style>
+.requests-page {
+    padding: 2rem;
+    background: var(--fl-page-bg);
+    min-height: 100vh;
+}
+
+.requests-header {
+    background:
+        radial-gradient(circle at 85% 10%, rgba(134,239,172,.25), transparent 28%),
+        linear-gradient(135deg, #0b0f0d, #052e22);
+    color: white;
+    border-radius: 34px;
+    padding: 2.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.requests-header span {
+    background: rgba(255,255,255,.12);
+    padding: .4rem .75rem;
+    border-radius: 999px;
+    font-size: .78rem;
+    font-weight: 900;
+}
+
+.requests-header h1 {
+    font-size: clamp(2.5rem, 5vw, 5rem);
+    line-height: .9;
+    letter-spacing: -.07em;
+    margin: 1rem 0;
+}
+
+.requests-header p {
+    color: rgba(255,255,255,.68);
+}
+
+.btn-back {
+    background: var(--fl-surface);
+    color: var(--fl-heading);
+    text-decoration: none;
+    padding: .85rem 1.1rem;
+    border-radius: 999px;
+    font-weight: 900;
+}
+
+.request-kpis {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: .8rem;
+    margin-bottom: 1rem;
+}
+
+.kpi {
+    background: var(--fl-surface);
+    border: 1px solid var(--fl-border);
+    border-radius: 22px;
+    padding: 1rem;
+}
+
+.kpi.active {
+    background: var(--fl-brand);
+    color: white;
+}
+
+.kpi small {
+    display: block;
+    color: inherit;
+    opacity: .7;
+    font-weight: 800;
+}
+
+.kpi strong {
+    font-size: 2rem;
+}
+
+.requests-table {
+    background: var(--fl-surface);
+    border: 1px solid var(--fl-border);
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(15,23,42,.06);
+}
+
+.request-row {
+    display: grid;
+    grid-template-columns: 1.6fr .7fr .7fr .9fr 1.2fr;
+    gap: 1rem;
+    align-items: center;
+    padding: .9rem 1rem;
+    border-bottom: 1px solid #eef2f0;
+}
+
+.request-row.head {
+    background: var(--fl-soft-bg);
+    color: var(--fl-text-muted);
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    font-weight: 900;
+}
+
+.service-cell {
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+}
+
+.service-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    background: #dcfce7;
+    color: var(--fl-brand);
+    display: grid;
+    place-items: center;
+}
+
+.service-cell strong {
+    display: block;
+    color: var(--fl-heading);
+}
+
+.service-cell small {
+    color: var(--fl-text-faint);
+}
+
+.money {
+    color: var(--fl-brand);
+}
+
+.status {
+    width: fit-content;
+    padding: .38rem .7rem;
+    border-radius: 999px;
+    font-size: .75rem;
+    font-weight: 900;
+}
+
+.status.pendiente_adelanto {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+.status.adelanto_enviado,
+.status.en_proceso {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.status.pendiente_pago_final {
+    background: #fae8ff;
+    color: #a21caf;
+}
+
+.status.completado {
+    background: #dcfce7;
+    color: var(--fl-brand-accent);
+}
+
+.status.cancelado {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.actions-cell {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .45rem;
+}
+
+.actions-cell form {
+    margin: 0;
+}
+
+.btn-action {
+    border: none;
+    padding: .55rem .75rem;
+    border-radius: 999px;
+    font-weight: 900;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.btn-action.accept {
+    background: #dcfce7;
+    color: var(--fl-brand);
+}
+
+.btn-action.reject {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.no-action {
+    color: var(--fl-text-faint);
+    font-size: .85rem;
+}
+
+.empty-requests {
+    background: var(--fl-surface);
+    border-radius: 30px;
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.empty-requests i {
+    width: 82px;
+    height: 82px;
+    margin: 0 auto 1rem;
+    display: grid;
+    place-items: center;
+    border-radius: 28px;
+    background: #dcfce7;
+    color: var(--fl-brand);
+    font-size: 2rem;
+}
+
+@media (max-width: 1000px) {
+    .request-row {
+        grid-template-columns: 1fr;
+        gap: .5rem;
+    }
+
+    .request-row.head {
+        display: none;
+    }
+
+    .request-kpis {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .requests-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+</style>
+{% endblock %}

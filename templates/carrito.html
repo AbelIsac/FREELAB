@@ -26,14 +26,14 @@
     }
     
     .carrito-header p {
-        color: #64748b;
+        color: var(--fl-text-muted);
     }
     
     /* Carrito vacío */
     .carrito-vacio {
         text-align: center;
         padding: 4rem 2rem;
-        background: white;
+        background: var(--fl-surface);
         border-radius: 24px;
         box-shadow: 0 5px 15px rgba(0,0,0,0.05);
     }
@@ -46,7 +46,7 @@
     
     .carrito-vacio p {
         font-size: 1.1rem;
-        color: #64748b;
+        color: var(--fl-text-muted);
         margin-bottom: 1.5rem;
     }
     
@@ -70,7 +70,7 @@
     
     /* Items del carrito */
     .carrito-items {
-        background: white;
+        background: var(--fl-surface);
         border-radius: 20px;
         overflow: hidden;
         box-shadow: 0 5px 15px rgba(0,0,0,0.05);
@@ -82,12 +82,12 @@
         align-items: center;
         gap: 1rem;
         padding: 1.2rem;
-        border-bottom: 1px solid #e2e8f0;
+        border-bottom: 1px solid var(--fl-border);
         transition: all 0.3s ease;
     }
     
     .carrito-item:hover {
-        background: #f8fafc;
+        background: var(--fl-soft-bg);
     }
     
     .item-imagen img {
@@ -124,7 +124,7 @@
         width: 32px;
         height: 32px;
         border: 1px solid #cbd5e1;
-        background: white;
+        background: var(--fl-surface);
         border-radius: 8px;
         cursor: pointer;
         transition: all 0.2s;
@@ -139,7 +139,7 @@
     .item-subtotal {
         font-weight: bold;
         font-size: 1.1rem;
-        color: #0f172a;
+        color: var(--fl-heading);
         min-width: 100px;
         text-align: right;
     }
@@ -168,7 +168,7 @@
     }
     
     .resumen-card {
-        background: white;
+        background: var(--fl-surface);
         border-radius: 20px;
         padding: 1.5rem;
         width: 100%;
@@ -189,12 +189,12 @@
         display: flex;
         justify-content: space-between;
         margin-bottom: 0.8rem;
-        color: #64748b;
+        color: var(--fl-text-muted);
     }
     
     .resumen-line.total {
         font-size: 1.2rem;
-        border-top: 1px solid #e2e8f0;
+        border-top: 1px solid var(--fl-border);
         padding-top: 0.8rem;
         margin-top: 0.8rem;
         color: #1e293b;

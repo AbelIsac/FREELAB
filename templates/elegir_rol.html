@@ -1,370 +1,512 @@
 {% extends "base.html" %}
 
-{% block title %}Elegir Rol - Marketplace Estudiantil{% endblock %}
-
-{% block extra_css %}
-<style>
-    /* Fondo con imagen y gradiente */
-    .rol-selector-modern {
-        min-height: 100vh;
-        background: linear-gradient(135deg, rgba(102, 126, 234, 0.9), rgba(118, 75, 162, 0.9)), 
-                    url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1920&h=1080&fit=crop');
-        background-size: cover;
-        background-position: center;
-        background-attachment: fixed;
-        padding: 120px 2rem 4rem;
-        text-align: center;
-    }
-
-    .rol-header {
-        margin-bottom: 3rem;
-        animation: fadeInDown 0.8s ease;
-    }
-
-    .rol-header h1 {
-        font-size: 2.5rem;
-        color: white;
-        margin-bottom: 1rem;
-        text-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    }
-
-    .rol-header h1 i {
-        margin-right: 0.5rem;
-    }
-
-    .rol-header p {
-        font-size: 1.1rem;
-        color: rgba(255,255,255,0.9);
-    }
-
-    /* Tarjetas de roles */
-    .rol-cards-modern {
-        display: flex;
-        justify-content: center;
-        gap: 2rem;
-        flex-wrap: wrap;
-        max-width: 1000px;
-        margin: 0 auto;
-        animation: fadeInUp 0.8s ease;
-    }
-
-    .rol-card-modern {
-        flex: 1;
-        min-width: 280px;
-        background: white;
-        border-radius: 24px;
-        padding: 2rem;
-        text-decoration: none;
-        transition: all 0.3s ease;
-        cursor: pointer;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        position: relative;
-        overflow: hidden;
-    }
-
-    .rol-card-modern::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 5px;
-        transition: all 0.3s ease;
-    }
-
-    .rol-card-modern:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-    }
-
-    .rol-card-modern.estudiante::before {
-        background: linear-gradient(90deg, #10b981, #059669);
-    }
-
-    .rol-card-modern.comprador::before {
-        background: linear-gradient(90deg, #3b82f6, #2563eb);
-    }
-
-    .rol-card-modern.admin::before {
-        background: linear-gradient(90deg, #ef4444, #dc2626);
-    }
-
-    .rol-icon {
-        font-size: 3.5rem;
-        margin-bottom: 1rem;
-    }
-
-    .rol-card-modern.estudiante .rol-icon {
-        color: #10b981;
-    }
-
-    .rol-card-modern.comprador .rol-icon {
-        color: #3b82f6;
-    }
-
-    .rol-card-modern.admin .rol-icon {
-        color: #ef4444;
-    }
-
-    .rol-card-modern h3 {
-        font-size: 1.5rem;
-        margin-bottom: 0.5rem;
-    }
-
-    .rol-card-modern.estudiante h3 {
-        color: #10b981;
-    }
-
-    .rol-card-modern.comprador h3 {
-        color: #3b82f6;
-    }
-
-    .rol-card-modern.admin h3 {
-        color: #ef4444;
-    }
-
-    .rol-card-modern p {
-        color: #64748b;
-        font-size: 0.9rem;
-        line-height: 1.5;
-    }
-
-    /* Botón secreto admin */
-    .admin-secret {
-        margin-top: 2rem;
-        text-align: center;
-    }
-
-    .admin-secret-btn {
-        background: none;
-        border: none;
-        color: rgba(255,255,255,0.3);
-        font-size: 0.7rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .admin-secret-btn:hover {
-        color: rgba(255,255,255,0.7);
-    }
-
-    .admin-form {
-        background: rgba(255,255,255,0.95);
-        border-radius: 20px;
-        padding: 1.5rem;
-        margin-top: 1rem;
-        display: inline-block;
-        animation: fadeInUp 0.3s ease;
-    }
-
-    .admin-form input {
-        padding: 0.8rem 1rem;
-        border: 2px solid #e2e8f0;
-        border-radius: 12px;
-        font-size: 0.9rem;
-        width: 200px;
-        margin-right: 0.5rem;
-    }
-
-    .admin-form input:focus {
-        outline: none;
-        border-color: #ef4444;
-    }
-
-    .admin-form button {
-        background: linear-gradient(135deg, #ef4444, #dc2626);
-        color: white;
-        border: none;
-        padding: 0.8rem 1.5rem;
-        border-radius: 12px;
-        cursor: pointer;
-        font-weight: 600;
-        transition: all 0.3s ease;
-    }
-
-    .admin-form button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
-    }
-
-    .admin-link {
-        margin-top: 1rem;
-    }
-
-    /* Animaciones */
-    @keyframes fadeInDown {
-        from {
-            opacity: 0;
-            transform: translateY(-30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-        .rol-selector-modern {
-            padding: 100px 1rem 3rem;
-        }
-
-        .rol-header h1 {
-            font-size: 1.8rem;
-        }
-
-        .rol-card-modern {
-            min-width: 260px;
-        }
-
-        .admin-form input {
-            width: 100%;
-            margin-bottom: 0.5rem;
-        }
-    }
-</style>
-{% endblock %}
+{% block title %}Elegir rol - FreeLab{% endblock %}
 
 {% block content %}
-<div class="rol-selector-modern">
-    <div class="rol-header">
-        <h1><i class="fa-solid fa-bullseye"></i> Completa tu perfil</h1>
-        <p>Elige tu rol en el marketplace y comienza tu experiencia</p>
-    </div>
+<section class="role-auth-page">
+    <div class="role-bg-word">FREELAB</div>
 
-    <div class="rol-cards-modern">
-        <!-- Rol Estudiante/Vendedor -->
-        <div class="rol-card-modern estudiante" onclick="confirmarRol('estudiante', '{{ user_id }}')">
-            <div class="rol-icon">
-                <i class="fa-solid fa-user-graduate"></i>
+    <div class="role-auth-card">
+        <div class="role-visual">
+            <div class="role-brand">
+                <i class="fas fa-layer-group"></i>
+                <span>Free<strong>Lab</strong></span>
             </div>
-            <h3>Vendedor (Estudiante)</h3>
-            <p><i class="fas fa-check-circle" style="color: #10b981; font-size: 0.8rem;"></i> Publica tus productos y servicios</p>
-            <p><i class="fas fa-check-circle" style="color: #10b981; font-size: 0.8rem;"></i> Gestiona tus ventas y estadísticas</p>
-            <p><i class="fas fa-check-circle" style="color: #10b981; font-size: 0.8rem;"></i> Llega a más estudiantes</p>
+
+            <div class="visual-glass-card">
+                <span>Tu perfil define tu experiencia</span>
+                <h2>Elige cómo quieres usar FreeLab.</h2>
+                <p>
+                    Puedes vender servicios como estudiante o contratar talento joven
+                    para tu negocio.
+                </p>
+            </div>
+
+            <div class="visual-dots">
+                <span></span>
+                <span></span>
+                <span class="active"></span>
+            </div>
         </div>
 
-        <!-- Rol Comprador -->
-        <div class="rol-card-modern comprador" onclick="confirmarRol('comprador', '{{ user_id }}')">
-            <div class="rol-icon">
-                <i class="fas fa-shopping-cart"></i>
-            </div>
-            <h3>Comprador</h3>
-            <p><i class="fas fa-check-circle" style="color: #3b82f6; font-size: 0.8rem;"></i> Explora productos y servicios</p>
-            <p><i class="fas fa-check-circle" style="color: #3b82f6; font-size: 0.8rem;"></i> Compra de forma segura</p>
-            <p><i class="fas fa-check-circle" style="color: #3b82f6; font-size: 0.8rem;"></i> Califica a los vendedores</p>
-        </div>
-    </div>
+        <div class="role-panel">
+            <span class="role-pill">Configuración inicial</span>
+            <h1>Completa tu perfil</h1>
+            <p class="role-subtitle">
+                Selecciona el rol que usarás dentro de FreeLab.
+            </p>
 
-    <!-- Zona secreta admin -->
-    <div class="admin-secret">
-        <button class="admin-secret-btn" onclick="mostrarAdmin()">
-            <i class="fas fa-tools"></i>
-        </button>
-        <div id="adminForm" style="display: none;">
-            <div class="admin-form">
-                <input type="password" id="claveAdmin" placeholder="Contraseña de administrador">
-                <button onclick="verificarAdmin()">Validar</button>
-                <div id="adminLink" style="display: none; margin-top: 1rem;">
-                    <div class="rol-card-modern admin" onclick="confirmarRol('admin', '{{ user_id }}')">
-                        <div class="rol-icon">
-                            <i class="fa-solid fa-crown"></i>
-                        </div>
-                        <h3>Administrador</h3>
-                        <p><i class="fas fa-check-circle"></i> Gestionar todo el sistema</p>
-                        <p><i class="fas fa-check-circle"></i> Moderar publicaciones</p>
-                        <p><i class="fas fa-check-circle"></i> Administrar usuarios</p>
+            <div class="role-options">
+                <button type="button" class="role-option student" onclick="confirmarRol('estudiante', '{{ user_id }}')">
+                    <div class="role-icon">
+                        <i class="fas fa-user-graduate"></i>
                     </div>
+
+                    <div class="role-text">
+                        <h3>Quiero vender servicios</h3>
+                        <p>Publica servicios, gestiona solicitudes y construye tu portafolio profesional.</p>
+                    </div>
+
+                    <i class="fas fa-arrow-right role-arrow"></i>
+                </button>
+
+                <button type="button" class="role-option buyer" onclick="confirmarRol('comprador', '{{ user_id }}')">
+                    <div class="role-icon">
+                        <i class="fas fa-store"></i>
+                    </div>
+
+                    <div class="role-text">
+                        <h3>Quiero contratar talento</h3>
+                        <p>Encuentra estudiantes para diseño, desarrollo web, marketing y soporte técnico.</p>
+                    </div>
+
+                    <i class="fas fa-arrow-right role-arrow"></i>
+                </button>
+            </div>
+
+            <div class="role-note">
+                <i class="fas fa-shield-heart"></i>
+                <span>
+                    Esta configuración permite personalizar tu panel y las funciones disponibles.
+                </span>
+            </div>
+
+            <div class="admin-minimal">
+                <button type="button" onclick="mostrarAdmin()">
+                    <i class="fas fa-lock"></i> Acceso administrativo
+                </button>
+
+                <div id="adminForm" class="admin-box" style="display:none;">
+                    <input type="password" id="claveAdmin" placeholder="Clave de administrador">
+                    <button type="button" onclick="verificarAdmin()">Validar</button>
+
+                    <button id="adminLink" type="button" class="admin-role-btn" style="display:none;" onclick="confirmarRol('admin', '{{ user_id }}')">
+                        <i class="fas fa-crown"></i> Continuar como administrador
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
 
 <script>
-    function mostrarAdmin() {
-        document.getElementById('adminForm').style.display = 'block';
-    }
+function mostrarAdmin() {
+    const box = document.getElementById('adminForm');
+    box.style.display = box.style.display === 'none' ? 'grid' : 'none';
+}
 
-    function verificarAdmin() {
-        const clave = document.getElementById('claveAdmin').value;
-        // Cambia la clave secreta por la que quieras
-        if (clave === 'MarketAdmin2025') {
-            document.getElementById('adminLink').style.display = 'block';
-            document.getElementById('claveAdmin').style.display = 'none';
-            Swal.fire({
-                title: 'Acceso concedido',
-                text: 'Bienvenido administrador. Selecciona tu rol para continuar.',
-                icon: 'success',
-                confirmButtonColor: '#ef4444',
-                timer: 2000,
-                showConfirmButton: false
-            });
-        } else {
-            Swal.fire({
-                title: 'Clave incorrecta',
-                text: 'No tienes permisos para acceder al panel de administración.',
-                icon: 'error',
-                confirmButtonColor: '#ef4444'
-            });
-        }
-    }
+function verificarAdmin() {
+    const clave = document.getElementById('claveAdmin').value;
 
-    function confirmarRol(rol, userId) {
-        let titulo = '';
-        let mensaje = '';
-        let icono = '';
-
-        if (rol === 'estudiante') {
-            titulo = '¿Quieres ser Vendedor?';
-            mensaje = 'Podrás publicar tus productos, gestionar ventas y conectar con compradores. ¿Estás seguro?';
-            icono = 'question';
-        } else if (rol === 'comprador') {
-            titulo = '¿Quieres ser Comprador?';
-            mensaje = 'Podrás explorar productos, comprar de forma segura y calificar vendedores. ¿Estás seguro?';
-            icono = 'question';
-        } else if (rol === 'admin') {
-            titulo = '⚠️ Acceso de Administrador';
-            mensaje = 'Tendrás control total del sistema. ¿Estás seguro de continuar?';
-            icono = 'warning';
-        }
+    if (clave === 'MarketAdmin2025') {
+        document.getElementById('adminLink').style.display = 'inline-flex';
 
         Swal.fire({
-            title: titulo,
-            text: mensaje,
-            icon: icono,
-            showCancelButton: true,
-            confirmButtonColor: rol === 'admin' ? '#ef4444' : '#667eea',
-            cancelButtonColor: '#64748b',
-            confirmButtonText: '<i class="fas fa-check"></i> Sí, continuar',
-            cancelButtonText: '<i class="fas fa-times"></i> Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Mostrar loading
-                Swal.fire({
-                    title: 'Creando tu perfil...',
-                    text: 'Por favor espera un momento',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-
-                // Redirigir a guardar rol
-                window.location.href = `/guardar-rol?rol=${rol}&user_id=${userId}`;
-            }
+            title: 'Acceso concedido',
+            text: 'Ya puedes continuar como administrador.',
+            icon: 'success',
+            confirmButtonColor: '#065f46',
+            timer: 1800,
+            showConfirmButton: false
+        });
+    } else {
+        Swal.fire({
+            title: 'Clave incorrecta',
+            text: 'No tienes permisos para acceder como administrador.',
+            icon: 'error',
+            confirmButtonColor: '#dc2626'
         });
     }
+}
+
+function confirmarRol(rol, userId) {
+    let titulo = '';
+    let mensaje = '';
+    let confirmColor = '#065f46';
+
+    if (rol === 'estudiante') {
+        titulo = '¿Crear perfil freelance?';
+        mensaje = 'Podrás publicar servicios, gestionar tu panel y crear tu portafolio.';
+    }
+
+    if (rol === 'comprador') {
+        titulo = '¿Crear perfil comprador?';
+        mensaje = 'Podrás explorar servicios, contratar estudiantes y gestionar tus solicitudes.';
+    }
+
+    if (rol === 'admin') {
+        titulo = 'Acceso administrativo';
+        mensaje = 'Tendrás acceso al panel de control de FreeLab.';
+        confirmColor = '#dc2626';
+    }
+
+    Swal.fire({
+        title: titulo,
+        text: mensaje,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: confirmColor,
+        cancelButtonColor: '#64748b',
+        confirmButtonText: 'Sí, continuar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: 'Configurando perfil...',
+                text: 'Estamos preparando tu experiencia en FreeLab.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            window.location.href = `/guardar-rol?rol=${rol}&user_id=${userId}`;
+        }
+    });
+}
 </script>
+
+<style>
+.role-auth-page {
+    min-height: 100vh;
+    padding: 120px 6vw 70px;
+    background:
+        radial-gradient(circle at 8% 20%, rgba(134,239,172,.32), transparent 28%),
+        radial-gradient(circle at 88% 70%, rgba(249,115,22,.18), transparent 28%),
+        linear-gradient(135deg, #0b0f0d, #111827 55%, #052e22);
+    display: grid;
+    place-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.role-bg-word {
+    position: absolute;
+    top: 70px;
+    left: 5vw;
+    font-size: 13vw;
+    font-weight: 900;
+    letter-spacing: -.08em;
+    color: rgba(255,255,255,.045);
+    pointer-events: none;
+}
+
+.role-auth-card {
+    width: min(1120px, 100%);
+    min-height: 680px;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 38px;
+    overflow: hidden;
+    backdrop-filter: blur(22px);
+    box-shadow: 0 40px 120px rgba(0,0,0,.34);
+    display: grid;
+    grid-template-columns: .95fr 1.05fr;
+    position: relative;
+    z-index: 2;
+    animation: roleCardIn .65s ease both;
+}
+
+.role-visual {
+    background:
+        linear-gradient(rgba(5,46,34,.16), rgba(5,46,34,.72)),
+        url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200&h=900&fit=crop');
+    background-size: cover;
+    background-position: center;
+    padding: 2rem;
+    position: relative;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.role-brand {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    font-weight: 900;
+    font-size: 1.2rem;
+}
+
+.role-brand i {
+    width: 44px;
+    height: 44px;
+    border-radius: 15px;
+    background: #dcfce7;
+    color: var(--fl-brand);
+    display: grid;
+    place-items: center;
+}
+
+.role-brand strong {
+    color: #86efac;
+}
+
+.visual-glass-card {
+    width: min(390px, 100%);
+    background: rgba(255,255,255,.14);
+    border: 1px solid rgba(255,255,255,.18);
+    border-radius: 28px;
+    padding: 1.5rem;
+    backdrop-filter: blur(16px);
+    animation: floatVisual 3.8s ease-in-out infinite;
+}
+
+.visual-glass-card span {
+    display: inline-flex;
+    background: rgba(255,255,255,.16);
+    border-radius: 999px;
+    padding: .35rem .7rem;
+    font-size: .75rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+}
+
+.visual-glass-card h2 {
+    font-size: 2.1rem;
+    line-height: 1;
+    letter-spacing: -.04em;
+    margin-bottom: .8rem;
+}
+
+.visual-glass-card p {
+    color: rgba(255,255,255,.76);
+    line-height: 1.6;
+}
+
+.visual-dots {
+    display: flex;
+    gap: .6rem;
+    justify-content: center;
+}
+
+.visual-dots span {
+    width: 34px;
+    height: 5px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.35);
+}
+
+.visual-dots span.active {
+    background: var(--fl-surface);
+}
+
+.role-panel {
+    background: #fbfdfc;
+    padding: 3.2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.role-pill {
+    width: fit-content;
+    background: #dcfce7;
+    color: var(--fl-brand-accent);
+    padding: .4rem .8rem;
+    border-radius: 999px;
+    font-size: .78rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+}
+
+.role-panel h1 {
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    line-height: .9;
+    color: var(--fl-heading);
+    letter-spacing: -.07em;
+    margin-bottom: 1rem;
+}
+
+.role-subtitle {
+    color: var(--fl-text-muted);
+    margin-bottom: 2rem;
+}
+
+.role-options {
+    display: grid;
+    gap: 1rem;
+}
+
+.role-option {
+    width: 100%;
+    border: 1px solid var(--fl-border);
+    background: var(--fl-surface);
+    border-radius: 24px;
+    padding: 1.1rem;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1rem;
+    align-items: center;
+    text-align: left;
+    cursor: pointer;
+    transition: .25s ease;
+}
+
+.role-option:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 55px rgba(15,23,42,.1);
+    border-color: rgba(6,95,70,.25);
+}
+
+.role-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 18px;
+    display: grid;
+    place-items: center;
+    font-size: 1.35rem;
+}
+
+.role-option.student .role-icon {
+    background: #dcfce7;
+    color: var(--fl-brand);
+}
+
+.role-option.buyer .role-icon {
+    background: #fff7ed;
+    color: #f97316;
+}
+
+.role-text h3 {
+    color: var(--fl-heading);
+    font-size: 1.05rem;
+    margin-bottom: .3rem;
+}
+
+.role-text p {
+    color: var(--fl-text-muted);
+    font-size: .88rem;
+    line-height: 1.5;
+}
+
+.role-arrow {
+    color: var(--fl-text-faint);
+    transition: .25s ease;
+}
+
+.role-option:hover .role-arrow {
+    transform: translateX(5px);
+    color: var(--fl-brand);
+}
+
+.role-note {
+    margin: 1.2rem 0;
+    padding: .9rem;
+    border-radius: 18px;
+    background: #f0fdf4;
+    color: var(--fl-brand-accent);
+    display: flex;
+    align-items: flex-start;
+    gap: .7rem;
+    font-size: .85rem;
+    line-height: 1.5;
+}
+
+.admin-minimal {
+    margin-top: .4rem;
+}
+
+.admin-minimal > button {
+    border: none;
+    background: transparent;
+    color: var(--fl-text-faint);
+    font-weight: 700;
+    cursor: pointer;
+    font-size: .82rem;
+}
+
+.admin-box {
+    margin-top: .8rem;
+    grid-template-columns: 1fr auto;
+    gap: .7rem;
+    background: var(--fl-soft-bg);
+    border: 1px solid var(--fl-border);
+    padding: .8rem;
+    border-radius: 18px;
+}
+
+.admin-box input {
+    border: 1px solid var(--fl-border);
+    border-radius: 14px;
+    padding: .8rem;
+    outline: none;
+}
+
+.admin-box button {
+    border: none;
+    border-radius: 14px;
+    padding: .8rem 1rem;
+    background: var(--fl-brand);
+    color: white;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.admin-role-btn {
+    grid-column: 1 / -1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    background: #dc2626 !important;
+}
+
+@keyframes roleCardIn {
+    from {
+        opacity: 0;
+        transform: translateY(28px) scale(.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes floatVisual {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-12px);
+    }
+}
+
+@media (max-width: 900px) {
+    .role-auth-card {
+        grid-template-columns: 1fr;
+    }
+
+    .role-visual {
+        min-height: 360px;
+    }
+
+    .role-panel {
+        padding: 2rem;
+    }
+}
+
+@media (max-width: 560px) {
+    .role-auth-page {
+        padding: 100px 1rem 50px;
+    }
+
+    .role-auth-card {
+        border-radius: 28px;
+    }
+
+    .role-option {
+        grid-template-columns: 1fr;
+    }
+
+    .role-arrow {
+        display: none;
+    }
+
+    .admin-box {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
 {% endblock %}

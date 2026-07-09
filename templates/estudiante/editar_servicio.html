@@ -1,0 +1,325 @@
+{% extends "base_estudiante.html" %}
+
+{% block title %}Editar Servicio - FreeLab{% endblock %}
+
+{% block content %}
+<div class="edit-shell">
+    <aside class="edit-sidebar">
+        <div class="brand-box">
+            <i class="fas fa-layer-group"></i>
+            <span>FreeLab</span>
+        </div>
+
+        <a href="{{ url_for('servicios.detalle_mi_servicio', producto_id=servicio.id) }}" class="side-link">
+            <i class="fas fa-arrow-left"></i> Volver al servicio
+        </a>
+
+        <div class="edit-tip">
+            <span>Edición</span>
+            <h3>Actualiza con cuidado</h3>
+            <p>Al editar tu servicio, volverá a revisión para mantener la calidad de la plataforma.</p>
+        </div>
+    </aside>
+
+    <main class="edit-main">
+        <div class="edit-header">
+            <span class="eyebrow">Editar servicio freelance</span>
+            <h1>Mejora tu publicación</h1>
+            <p>Actualiza la información que verán los compradores.</p>
+        </div>
+
+        <form method="POST" action="{{ url_for('servicios.editar_mi_servicio', producto_id=servicio.id) }}" enctype="multipart/form-data" class="edit-form">
+            <section class="form-panel">
+                <div class="form-group">
+                    <label>Título del servicio</label>
+                    <input type="text" name="titulo" value="{{ servicio.titulo }}" required>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Categoría</label>
+                        <select name="categoria">
+                            <option value="1" {% if servicio.categoria_id == 1 %}selected{% endif %}>Diseño gráfico</option>
+                            <option value="2" {% if servicio.categoria_id == 2 %}selected{% endif %}>Desarrollo web</option>
+                            <option value="3" {% if servicio.categoria_id == 3 %}selected{% endif %}>Marketing digital</option>
+                            <option value="4" {% if servicio.categoria_id == 4 %}selected{% endif %}>Edición de video</option>
+                            <option value="5" {% if servicio.categoria_id == 5 %}selected{% endif %}>Soporte técnico</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Precio base (S/)</label>
+                        <input type="number" name="precio" step="0.01" value="{{ servicio.precio }}" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea name="descripcion" rows="6">{{ servicio.descripcion or '' }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Cambiar imagen del servicio</label>
+                    <input type="file" name="imagen" accept="image/*">
+                    <small>Opcional. Si no subes una nueva imagen, se conserva la actual.</small>
+                </div>
+
+                <div class="warning-box">
+                    <i class="fas fa-circle-info"></i>
+                    <span>Después de guardar, el servicio quedará en estado pendiente hasta que el administrador lo revise.</span>
+                </div>
+
+                <button type="submit" class="btn-save">
+                    <i class="fas fa-save"></i> Guardar cambios
+                </button>
+            </section>
+
+            <aside class="preview-panel">
+                <div class="preview-card">
+                    {% if servicio.imagen_url %}
+                        <img src="{{ servicio.imagen_url }}" alt="{{ servicio.titulo }}">
+                    {% else %}
+                        <div class="preview-empty">
+                            <i class="fas fa-image"></i>
+                            <span>Sin imagen</span>
+                        </div>
+                    {% endif %}
+
+                    <div class="preview-body">
+                        <span>{{ servicio.estado|capitalize }}</span>
+                        <h3>{{ servicio.titulo }}</h3>
+                        <p>{{ servicio.descripcion[:120] if servicio.descripcion else 'Sin descripción' }}...</p>
+                        <strong>S/ {{ "{:,.2f}".format(servicio.precio) }}</strong>
+                    </div>
+                </div>
+            </aside>
+        </form>
+    </main>
+</div>
+
+<style>
+.edit-shell {
+    min-height: auto;
+    background: var(--fl-page-bg);
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 1.5rem;
+    padding: 2rem;
+    font-family: var(--font-ui);
+}
+
+.edit-sidebar,
+.edit-main {
+    background: rgba(255,255,255,.9);
+    border: 1px solid rgba(15,76,58,.08);
+    border-radius: 30px;
+    padding: 1.5rem;
+    box-shadow: 0 20px 60px rgba(15,23,42,.08);
+}
+
+.brand-box {
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--fl-brand);
+    margin-bottom: 2rem;
+}
+
+.brand-box i {
+    background: #dcfce7;
+    padding: .7rem;
+    border-radius: 14px;
+}
+
+.side-link {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+    text-decoration: none;
+    color: var(--fl-text-muted);
+    background: var(--fl-soft-bg);
+    padding: .9rem 1rem;
+    border-radius: 16px;
+    font-weight: 700;
+}
+
+.edit-tip {
+    margin-top: 2rem;
+    background: linear-gradient(145deg, #065f46, #052e22);
+    color: white;
+    padding: 1.4rem;
+    border-radius: 24px;
+}
+
+.edit-tip span,
+.eyebrow {
+    background: #edfdf5;
+    color: var(--fl-brand-accent);
+    padding: .35rem .75rem;
+    border-radius: 999px;
+    font-size: .75rem;
+    font-weight: 800;
+}
+
+.edit-tip span {
+    background: rgba(255,255,255,.16);
+    color: white;
+}
+
+.edit-tip h3 {
+    margin: 1rem 0 .5rem;
+}
+
+.edit-tip p {
+    color: rgba(255,255,255,.75);
+    line-height: 1.6;
+}
+
+.edit-header h1 {
+    color: var(--fl-heading);
+    font-size: 2.4rem;
+    margin-top: .8rem;
+}
+
+.edit-header p {
+    color: var(--fl-text-muted);
+    margin-bottom: 1.5rem;
+}
+
+.edit-form {
+    display: grid;
+    grid-template-columns: 1.2fr .8fr;
+    gap: 1rem;
+}
+
+.form-panel,
+.preview-panel {
+    background: var(--fl-surface);
+    border: 1px solid #edf2ef;
+    border-radius: 26px;
+    padding: 1.4rem;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    color: #334155;
+    font-weight: 800;
+    font-size: .88rem;
+    margin-bottom: .45rem;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    border: 1px solid var(--fl-border);
+    background-color: var(--fl-soft-bg);
+    border-radius: 16px;
+    padding: .95rem 1rem;
+    font-family: inherit;
+    outline: none;
+}
+
+.form-group select {
+    padding-right: 2.75rem;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    border-color: var(--fl-brand);
+    background-color: var(--fl-surface);
+    box-shadow: 0 0 0 4px rgba(6,95,70,.08);
+}
+
+.warning-box {
+    background: #fffbeb;
+    color: #92400e;
+    border-radius: 16px;
+    padding: .9rem;
+    display: flex;
+    gap: .7rem;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.btn-save {
+    width: 100%;
+    border: none;
+    background: var(--fl-brand);
+    color: white;
+    padding: 1rem;
+    border-radius: 999px;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.preview-card {
+    overflow: hidden;
+    border-radius: 24px;
+    border: 1px solid #edf2ef;
+}
+
+.preview-card img,
+.preview-empty {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    background: var(--fl-soft-bg);
+}
+
+.preview-empty {
+    display: grid;
+    place-items: center;
+    color: var(--fl-text-faint);
+}
+
+.preview-body {
+    padding: 1.2rem;
+}
+
+.preview-body span {
+    background: #edfdf5;
+    color: var(--fl-brand-accent);
+    padding: .3rem .7rem;
+    border-radius: 999px;
+    font-size: .72rem;
+    font-weight: 800;
+}
+
+.preview-body h3 {
+    margin: 1rem 0 .5rem;
+    color: var(--fl-heading);
+}
+
+.preview-body p {
+    color: var(--fl-text-muted);
+}
+
+.preview-body strong {
+    display: block;
+    margin-top: 1rem;
+    color: var(--fl-brand);
+    font-size: 1.3rem;
+}
+
+@media (max-width: 1000px) {
+    .edit-shell,
+    .edit-form {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

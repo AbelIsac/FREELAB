@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base_estudiante.html" %}
 
 {% block title %}Estadísticas - Marketplace Estudiantil{% endblock %}
 
@@ -61,7 +61,7 @@
         </div>
 
         <div style="text-align: center; margin-top: 2rem;">
-            <a href="{{ url_for('dashboard_estudiante', user_id=session['user']['id']) }}" class="btn-link">
+            <a href="{{ url_for('estudiante.dashboard_estudiante', user_id=session['user']['id']) }}" class="btn-link">
                 <i class="fas fa-arrow-left"></i> Volver al dashboard
             </a>
         </div>

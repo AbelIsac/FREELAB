@@ -1,299 +1,353 @@
 {% extends "base.html" %}
 
-{% block title %}Marketplace Estudiantil - Encuentra y ofrece servicios entre estudiantes{% endblock %}
+{% block title %}FreeLab - Servicios freelance de estudiantes Certus{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
 {% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<section class="hero">
-    <div class="hero-content">
-        <h1><i class="fa-solid fa-graduation-cap"></i> Marketplace <span class="highlight">Estudiantil</span></h1>
-        <p class="hero-subtitle">
-            Compra y vende servicios entre estudiantes.
-            <strong>¡Precios diseñados para tu bolsillo!</strong>
+
+<section class="freelab-hero">
+    <div class="hero-bg-text">FREELAB</div>
+
+    <div class="hero-left">
+        <span class="hero-pill">
+            <i class="fas fa-bolt"></i> Talento estudiantil para negocios reales
+        </span>
+
+        <h1>
+            Conecta con estudiantes freelance para impulsar tu negocio.
+        </h1>
+
+        <p>
+            Encuentra servicios accesibles de diseño, desarrollo web, marketing digital,
+            edición multimedia y soporte técnico realizados por estudiantes Certus.
         </p>
-        <div class="hero-buttons">
-            {% if session_user %}
-                <a href="{{ url_for('dashboard') }}" class="btn-hero btn-hero-primary">
-                    <i class="fas fa-chart-line"></i> Mi Dashboard
-                    <span class="btn-hero-glow"></span>
+
+        <div class="hero-actions">
+            {% if not session_user %}
+                <a href="{{ url_for('auth.login') }}" class="btn-main">
+                    Empezar ahora
+                    <i class="fas fa-arrow-right"></i>
                 </a>
-                <a href="{{ url_for('explorar_productos') }}" class="btn-hero btn-hero-secondary">
-                    <i class="fas fa-store"></i> Ver Productos
-                    <span class="btn-hero-glow"></span>
+
+                <a href="{{ url_for('servicios.explorar_productos') }}" class="btn-outline">
+                    Explorar servicios
                 </a>
-            {% else %}
-                <a href="{{ url_for('login') }}" class="btn-hero btn-hero-primary">
-                    <i class="fab fa-google"></i> Empezar Ahora
-                    <span class="btn-hero-glow"></span>
+
+            {% elif session_user.rol == 'estudiante' %}
+                <a href="{{ url_for('estudiante.dashboard_estudiante') }}" class="btn-main">
+                    Ir a mi panel freelance
+                    <i class="fas fa-arrow-right"></i>
                 </a>
-                <a href="{{ url_for('explorar_productos') }}" class="btn-hero btn-hero-secondary">
-                    <i class="fas fa-store"></i> Ver Productos
-                    <span class="btn-hero-glow"></span>
+
+                <a href="{{ url_for('servicios.publicar_producto') }}" class="btn-outline">
+                    Publicar servicio
+                </a>
+
+            {% elif session_user.rol == 'comprador' %}
+                <a href="{{ url_for('servicios.explorar_productos') }}" class="btn-main">
+                    Explorar servicios
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+
+                <a href="{{ url_for('comprador.mis_compras') }}" class="btn-outline">
+                    Mis contrataciones
+                </a>
+
+            {% elif session_user.rol == 'admin' %}
+                <a href="{{ url_for('admin.admin_dashboard') }}" class="btn-main">
+                    Panel administrativo
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+
+                <a href="{{ url_for('home') }}" class="btn-outline">
+                    Ver sitio público
                 </a>
             {% endif %}
         </div>
-    </div>
-    <div class="hero-stats" id="stats">
-        <div class="stat" data-target="1200">
-            <span class="stat-number">0</span>
-            <span>Estudiantes</span>
-        </div>
-        <div class="stat" data-target="500">
-            <span class="stat-number">0</span>
-            <span>Productos</span>
-        </div>
-        <div class="stat" data-target="98">
-            <span class="stat-number">0</span>
-            <span>Satisfacción</span>
-        </div>
-    </div>
-</section>
 
-<!-- Products Section - Productos Destacados Reales -->
-<section id="productos" class="productos-section">
-    <div class="container">
-        <h2 class="section-title">✨ Productos Destacados</h2>
-        <p class="section-subtitle">Lo que están vendiendo otros estudiantes</p>
-
-        <div class="productos-grid" id="productos-destacados">
-            <div class="loading-spinner">
-                <i class="fas fa-spinner fa-pulse"></i> Cargando productos...
+        <div class="hero-metrics">
+            <div>
+                <strong>+300</strong>
+                <span>usuarios MVP</span>
+            </div>
+            <div>
+                <strong>50/50</strong>
+                <span>flujo seguro</span>
+            </div>
+            <div>
+                <strong>Certus</strong>
+                <span>talento verificado</span>
             </div>
         </div>
-
-        <div class="section-cta">
-            {% if session_user %}
-                <!-- Usuario logueado -->
-                <a href="{{ url_for('explorar_productos') }}" class="btn-cta">
-                    <i class="fas fa-arrow-right"></i> Ver todos los productos
-                    <span class="btn-cta-glow"></span>
-                </a>
-                
-                {% if session_user.rol == 'estudiante' %}
-                    <a href="{{ url_for('publicar_producto') }}" class="btn-cta btn-cta-secondary">
-                        <i class="fas fa-plus-circle"></i> Publicar mi servicio
-                        <span class="btn-cta-glow"></span>
-                    </a>
-                {% elif session_user.rol == 'comprador' %}
-                    <a href="{{ url_for('mis_compras') }}" class="btn-cta btn-cta-secondary">
-                        <i class="fas fa-shopping-bag"></i> Mis compras
-                        <span class="btn-cta-glow"></span>
-                    </a>
-                {% elif session_user.rol == 'admin' %}
-                    <a href="{{ url_for('admin_dashboard') }}" class="btn-cta btn-cta-secondary">
-                        <i class="fas fa-shield-alt"></i> Panel Administrativo
-                        <span class="btn-cta-glow"></span>
-                    </a>
-                {% else %}
-                    <a href="{{ url_for('elegir_rol', user_id=session_user.id) }}" class="btn-cta btn-cta-secondary">
-                        <i class="fas fa-user-plus"></i> Completar mi perfil
-                        <span class="btn-cta-glow"></span>
-                    </a>
-                {% endif %}
-                
-            {% else %}
-                <!-- Usuario NO logueado -->
-                <a href="{{ url_for('explorar_productos') }}" class="btn-cta">
-                    <i class="fas fa-arrow-right"></i> Ver todos los productos
-                    <span class="btn-cta-glow"></span>
-                </a>
-                <a href="{{ url_for('login') }}" class="btn-cta btn-cta-secondary">
-                    <i class="fab fa-google"></i> Regístrate y Publica
-                    <span class="btn-cta-glow"></span>
-                </a>
-            {% endif %}
-        </div>
     </div>
-</section>
 
-<!-- Newsletter -->
-<section class="newsletter">
-    <div class="container">
-        <div class="newsletter-content">
-            <div class="newsletter-text">
-                <h2>📬 Recibe ofertas exclusivas</h2>
-                <p>Suscríbete y sé el primero en conocer las mejores ofertas</p>
+    <div class="hero-right">
+        <div class="floating-card card-dark">
+            <span>Servicio destacado</span>
+            <h3>Landing page para mypes</h3>
+            <p>Diseño web moderno para emprendedores locales.</p>
+            <strong>S/ 150</strong>
+        </div>
+
+        <div class="screen-card">
+            <div class="screen-top">
+                <span></span><span></span><span></span>
             </div>
-            <form class="newsletter-form" id="newsletterForm">
-                <input type="email" id="newsletterEmail" placeholder="tu@email.com" required>
-                <button type="submit" class="btn-newsletter">
-                    <i class="fas fa-paper-plane"></i> Suscribirme
-                </button>
-            </form>
+            <div class="screen-content">
+                <div class="profile-chip">
+                    <div class="avatar-dot"></div>
+                    <div>
+                        <strong>Estudiante Certus</strong>
+                        <small>Desarrollo de Software</small>
+                    </div>
+                </div>
+
+                <div class="service-preview">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+
+                <div class="status-line">
+                    <span>Pago 50%</span>
+                    <b>Voucher pendiente</b>
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
+{% if not session_user or session_user.rol == 'comprador' %}
+
+<section class="services-section">
+    <div class="section-header">
+        <span class="section-pill">Servicios destacados</span>
+        <h2>Explora servicios creados por estudiantes</h2>
+        <p>Servicios económicos para mypes, emprendedores y personas naturales.</p>
+    </div>
+
+    <div class="productos-grid" id="productos-destacados">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-pulse"></i> Cargando servicios...
+        </div>
+    </div>
+
+    <div class="section-cta">
+        <a href="{{ url_for('servicios.explorar_productos') }}" class="btn-main">
+            Ver todos los servicios
+            <i class="fas fa-arrow-right"></i>
+        </a>
+
+        {% if not session_user %}
+        <a href="{{ url_for('auth.login') }}" class="btn-outline dark">
+            Empezar en FreeLab
+        </a>
+        {% elif session_user.rol == 'comprador' %}
+        <a href="{{ url_for('comprador.mis_compras') }}" class="btn-outline dark">
+            Mis contrataciones
+        </a>
+        {% endif %}
+    </div>
+</section>
+
+<section class="audience-section fl-stagger">
+    <div class="audience-card dark fl-reveal">
+        <span>Para mypes y emprendedores</span>
+        <h2>Encuentra talento joven para resolver necesidades digitales.</h2>
+        <p>
+            Contrata servicios accesibles en diseño gráfico, desarrollo web,
+            marketing digital, edición de video y soporte técnico.
+        </p>
+        <a href="{{ url_for('servicios.explorar_productos') }}">
+            Explorar servicios <i class="fas fa-arrow-right"></i>
+        </a>
+    </div>
+
+    <div class="audience-card light fl-reveal">
+        <span>Para estudiantes Certus</span>
+        <h2>Convierte tus habilidades en experiencia real.</h2>
+        <p>
+            Publica servicios, construye reputación y trabaja con clientes reales.
+        </p>
+        <a href="{{ url_for('auth.login') }}">
+            Crear perfil freelance <i class="fas fa-arrow-right"></i>
+        </a>
+    </div>
+</section>
+
+<section class="how-section improved fl-stagger">
+    <div class="how-card fl-reveal">
+        <span>01</span>
+        <h3>Explora</h3>
+        <p>Encuentra servicios publicados por estudiantes Certus.</p>
+    </div>
+
+    <div class="how-card featured fl-reveal">
+        <span>02</span>
+        <h3>Coordina pago 50/50</h3>
+        <p>Usa Yape o Plin para trabajar con mayor confianza en el MVP.</p>
+    </div>
+
+    <div class="how-card fl-reveal">
+        <span>03</span>
+        <h3>Recibe avances</h3>
+        <p>El estudiante entrega evidencias y archivos finales.</p>
+    </div>
+</section>
+
+<section class="trust-section">
+    <div class="trust-copy">
+        <span class="section-pill">Proyecto FreeLab</span>
+        <h2>Educación, empleo y negocios locales conectados.</h2>
+        <p>
+            FreeLab impulsa la empleabilidad temprana de estudiantes Certus,
+            conectándolos con mypes y personas naturales que necesitan servicios digitales accesibles.
+        </p>
+    </div>
+
+    <div class="trust-grid fl-stagger">
+        <div class="fl-reveal">
+            <i class="fas fa-user-check"></i>
+            <h3>Talento validado</h3>
+            <p>Estudiantes con perfil académico y servicios revisados.</p>
+        </div>
+
+        <div class="fl-reveal">
+            <i class="fas fa-wallet"></i>
+            <h3>Pago 50/50</h3>
+            <p>Modelo inicial por Yape/Plin para reducir riesgos.</p>
+        </div>
+
+        <div class="fl-reveal">
+            <i class="fas fa-briefcase"></i>
+            <h3>Portafolio real</h3>
+            <p>Cada proyecto fortalece la experiencia profesional.</p>
+        </div>
+
+        <div class="fl-reveal">
+            <i class="fas fa-store"></i>
+            <h3>Enfoque local</h3>
+            <p>Diseñado para mypes y negocios de Arequipa.</p>
+        </div>
+    </div>
+</section>
+
+{% elif session_user.rol == 'estudiante' %}
+
+<section class="student-home-section">
+    <div class="student-home-card">
+        <span class="section-pill">Modo estudiante freelance</span>
+        <h2>Tu espacio de trabajo está listo.</h2>
+        <p>
+            Administra tus servicios, mejora tu perfil y construye experiencia real
+            desde tu panel privado de FreeLab.
+        </p>
+
+        <div class="student-home-actions">
+            <a href="{{ url_for('estudiante.dashboard_estudiante') }}" class="btn-main">
+                Ir a mi panel freelance
+                <i class="fas fa-arrow-right"></i>
+            </a>
+
+            <a href="{{ url_for('servicios.publicar_producto') }}" class="btn-outline dark">
+                Publicar servicio
+            </a>
+        </div>
+    </div>
+</section>
+
+{% elif session_user.rol == 'admin' %}
+
+<section class="student-home-section">
+    <div class="student-home-card">
+        <span class="section-pill">Modo administrador</span>
+        <h2>Supervisa FreeLab desde tu panel.</h2>
+        <p>
+            Revisa publicaciones, categorías, usuarios y transacciones desde el panel administrativo.
+        </p>
+
+        <div class="student-home-actions">
+            <a href="{{ url_for('admin.admin_dashboard') }}" class="btn-main">
+                Ir al panel admin
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+{% endif %}
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    // Contadores animados
-    const statsSection = document.getElementById('stats');
-    let animated = false;
+function getCategoriaNombre(categoriaId) {
+    const categorias = {
+        1: 'Diseño gráfico',
+        2: 'Desarrollo web',
+        3: 'Marketing digital',
+        4: 'Edición multimedia',
+        5: 'Soporte técnico'
+    };
+    return categorias[categoriaId] || 'Servicio';
+}
 
-    function animateNumbers() {
-        if (animated) return;
-        const stats = document.querySelectorAll('.stat');
-        stats.forEach(stat => {
-            const target = parseInt(stat.getAttribute('data-target'));
-            const numberSpan = stat.querySelector('.stat-number');
-            let current = 0;
-            const increment = target / 50;
-            const updateNumber = () => {
-                current += increment;
-                if (current < target) {
-                    numberSpan.innerText = Math.ceil(current);
-                    requestAnimationFrame(updateNumber);
-                } else {
-                    numberSpan.innerText = target;
-                }
-            };
-            updateNumber();
-        });
-        animated = true;
-    }
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
 
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting && !animated) {
-                animateNumbers();
-            }
-        });
-    }, { threshold: 0.5 });
-    
-    if (statsSection) observer.observe(statsSection);
-
-    // Newsletter
-    const newsletterForm = document.getElementById('newsletterForm');
-    if (newsletterForm) {
-        newsletterForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const email = document.getElementById('newsletterEmail').value;
-            if(email) {
-                Swal.fire({
-                    title: '¡Gracias por suscribirte!',
-                    text: email + ' recibirá nuestras mejores ofertas',
-                    icon: 'success',
-                    confirmButtonColor: '#667eea',
-                    timer: 3000,
-                    showConfirmButton: false
-                });
-                newsletterForm.reset();
-            }
-        });
-    }
-
-    // Función para obtener nombre de categoría
-    function getCategoriaNombre(categoriaId) {
-        const categorias = {
-            1: '<i class="fa-solid fa-book-open"></i> Clases',
-            2: '<i class="fa-solid fa-laptop-code"></i> Tecnología',
-            3: '<i class="fa-solid fa-palette"></i> Diseño',
-            4: '<i class="fa-solid fa-music"></i> Arte',
-            5: '<i class="fas fa-box"></i> Otros'
-        };
-        return categorias[categoriaId] || '<i class="fas fa-box"></i> Producto';
-    }
-
-    // Función para comprar producto (redirige al checkout)
-    function comprarProducto(productoId) {
-        window.location.href = '/checkout/' + productoId;
-    }
-
-// Cargar productos destacados desde la base de datos
 function cargarProductosDestacados() {
     const container = document.getElementById('productos-destacados');
-    container.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner fa-pulse"></i> Cargando productos...</div>';
-    
-    // Obtener rol del usuario desde una variable global
-    const userRole = '{{ session_user.rol if session_user else "" }}';
     const isLoggedIn = {{ 'true' if session_user else 'false' }};
-    
+
     fetch('/productos-destacados')
-        .then(response => {
-            if (!response.ok) throw new Error('Error al cargar productos');
-            return response.json();
-        })
+        .then(response => response.json())
         .then(data => {
-            if (data.productos && data.productos.length > 0) {
-                container.innerHTML = '';
-                data.productos.forEach(prod => {
-                    const imagenUrl = prod.imagen_url || 'https://images.unsplash.com/photo-1516321310764-9f3c9619d7d4?w=400&h=300&fit=crop';
-                    const categoriaNombre = getCategoriaNombre(prod.categoria_id);
-                    const precioFormateado = parseInt(prod.precio).toLocaleString();
-                    const descripcionCorta = prod.descripcion ? escapeHtml(prod.descripcion.substring(0, 80)) + '...' : 'Sin descripción';
-                    
-                    let accionesHTML = '';
-                    
-                    // ADMIN: solo puede ver, no comprar
-                    if (userRole === 'admin') {
-                        accionesHTML = `
-                            <div class="admin-view-badge">
-                                <i class="fas fa-shield-alt"></i> Modo supervisión
-                            </div>
-                        `;
-                    } 
-                    
-                    // Usuarios logueados (compradores y estudiantes) pueden ver detalles
-                    else if (isLoggedIn) {
-                        accionesHTML = `
-                            <a href="/producto/${prod.id}" class="btn-ver-detalle-home">
-                                <i class="fas fa-eye"></i> Ver detalles
-                            </a>
-                        `;
-                    }
-                    // Visitantes no logueados
-                    else {
-                        accionesHTML = `
-                            <button onclick="window.location.href='/login'" class="btn-buy-home">
-                                <i class="fas fa-lock"></i> Inicia sesión
-                            </button>
-                        `;
-                    }
-                    
-                    const productoHTML = `
-                        <article class="producto-card">
-                            <div class="producto-imagen">
-                                <img src="${imagenUrl}" alt="${prod.titulo}" loading="lazy">
-                                <span class="producto-badge">${categoriaNombre}</span>
-                            </div>
-                            <div class="producto-info">
-                                <h3>${escapeHtml(prod.titulo)}</h3>
-                                <p class="producto-descripcion-corta">${descripcionCorta}</p>
-                                <div class="producto-precio">$${precioFormateado} <span>CLP</span></div>
-                                <div class="producto-actions-home">
-                                    ${accionesHTML}
-                                </div>
-                            </div>
-                        </article>
-                    `;
-                    container.innerHTML += productoHTML;
-                });
-            } else {
-                container.innerHTML = '<p class="no-productos">No hay productos destacados por el momento.</p>';
+            if (!data.productos || data.productos.length === 0) {
+                container.innerHTML = '<p class="no-productos">Aún no hay servicios destacados.</p>';
+                return;
             }
+
+            container.innerHTML = '';
+
+            data.productos.forEach(prod => {
+                const imagenUrl = prod.imagen_url || 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=600&h=400&fit=crop';
+                const categoria = getCategoriaNombre(prod.categoria_id);
+                const precio = parseFloat(prod.precio || 0).toFixed(2);
+                const descripcion = prod.descripcion ? escapeHtml(prod.descripcion.substring(0, 90)) + '...' : 'Servicio freelance disponible.';
+
+                const action = isLoggedIn
+                    ? `<a href="/producto/${prod.id}" class="btn-card">Ver servicio</a>`
+                    : `<a href="{{ url_for('auth.login') }}" class="btn-card">Inicia sesión</a>`;
+
+                container.innerHTML += `
+                    <article class="service-card-home">
+                        <div class="service-img">
+                            <img src="${imagenUrl}" alt="${escapeHtml(prod.titulo)}">
+                            <span>${categoria}</span>
+                        </div>
+                        <div class="service-body">
+                            <h3>${escapeHtml(prod.titulo)}</h3>
+                            <p>${descripcion}</p>
+                            <div class="service-bottom">
+                                <strong>S/ ${precio}</strong>
+                                ${action}
+                            </div>
+                        </div>
+                    </article>
+                `;
+            });
         })
-        .catch(error => {
-            console.error('Error:', error);
-            container.innerHTML = '<p class="no-productos">Error al cargar productos destacados.</p>';
+        .catch(() => {
+            container.innerHTML = '<p class="no-productos">No se pudieron cargar los servicios.</p>';
         });
 }
 
-    // Función para escapar HTML (seguridad)
-    function escapeHtml(text) {
-        if (!text) return '';
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-
-    // Cargar productos al iniciar
-    cargarProductosDestacados();
+cargarProductosDestacados();
 </script>
-
 {% endblock %}

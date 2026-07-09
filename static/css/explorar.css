@@ -23,7 +23,7 @@
 }
 
 .explorar-header p {
-    color: #64748b;
+    color: var(--fl-text-muted);
 }
 
 /* Grid mejorado */
@@ -34,7 +34,7 @@
 }
 
 .producto-card-explorar {
-    background: white;
+    background: var(--fl-surface);
     border-radius: 20px;
     overflow: hidden;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
@@ -84,7 +84,7 @@
 }
 
 .btn-overlay {
-    background: white;
+    background: var(--fl-surface);
     color: #667eea;
     border: none;
     padding: 8px 20px;
@@ -110,7 +110,7 @@
 }
 
 .producto-descripcion {
-    color: #64748b;
+    color: var(--fl-text-muted);
     font-size: 0.8rem;
     margin-bottom: 1rem;
     line-height: 1.5;
@@ -129,7 +129,7 @@
     padding: 4px 12px;
     border-radius: 50px;
     font-size: 0.7rem;
-    color: #475569;
+    color: var(--fl-text-body);
     margin-bottom: 1rem;
 }
 

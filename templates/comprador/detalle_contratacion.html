@@ -1,0 +1,593 @@
+{% extends "base.html" %}
+
+{% block title %}Contratación #{{ venta.id }}{% endblock %}
+
+{% block content %}
+<section class="contract-detail">
+
+    <div class="contract-hero">
+
+        <div>
+            <span class="hero-pill">
+                Contratación #{{ venta.id }}
+            </span>
+
+            <h1>{{ venta.producto.titulo }}</h1>
+
+            <p>
+                Gestiona el adelanto, seguimiento y pago final
+                de tu contratación.
+            </p>
+        </div>
+
+        <a href="{{ url_for('comprador.mis_compras') }}"
+           class="btn-back">
+            Volver
+        </a>
+
+    </div>
+
+
+    <div class="contract-grid">
+
+        <div class="contract-main fl-stagger">
+
+            <div class="card fl-reveal">
+
+                <h2>Estado actual</h2>
+
+                <div class="status-badge {{ venta.estado }}">
+                    {{ venta.estado.replace('_',' ').title() }}
+                </div>
+
+            </div>
+
+
+            <div class="card fl-reveal">
+
+                <h2>Progreso de contratación</h2>
+
+                <div class="timeline">
+
+                    <div class="step {% if venta.estado in ['pendiente_adelanto','adelanto_enviado','adelanto_confirmado','en_proceso','entrega_realizada','pendiente_pago_final','pago_final_enviado','completado'] %}active{% endif %}">
+                        <span>1</span>
+                        <p>Solicitud creada</p>
+                    </div>
+
+                    <div class="step {% if venta.estado in ['adelanto_enviado','adelanto_confirmado','en_proceso','entrega_realizada','pendiente_pago_final','pago_final_enviado','completado'] %}active{% endif %}">
+                        <span>2</span>
+                        <p>Adelanto enviado</p>
+                    </div>
+
+                    <div class="step {% if venta.estado in ['en_proceso','entrega_realizada','pendiente_pago_final','pago_final_enviado','completado'] %}active{% endif %}">
+                        <span>3</span>
+                        <p>Trabajo en proceso</p>
+                    </div>
+
+                    <div class="step {% if venta.estado in ['entrega_realizada','pendiente_pago_final','pago_final_enviado','completado'] %}active{% endif %}">
+                        <span>4</span>
+                        <p>Entrega realizada</p>
+                    </div>
+
+                    <div class="step {% if venta.estado in ['completado'] %}active{% endif %}">
+                        <span>5</span>
+                        <p>Completado</p>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="card fl-reveal">
+
+                <h2>Comprobantes</h2>
+
+                {% if comprobantes %}
+
+                    <div class="proof-grid">
+
+                        {% for c in comprobantes %}
+
+                        <a href="{{ c.imagen_url }}"
+                           target="_blank"
+                           class="proof-card">
+
+                            <img src="{{ c.imagen_url }}">
+
+                            <div>
+                                <strong>{{ c.tipo_pago }}</strong>
+                                <small>{{ c.etapa }}</small>
+                            </div>
+
+                        </a>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% else %}
+
+                    <div class="empty-box">
+
+                        <i class="fas fa-receipt"></i>
+
+                        <p>
+                            Aún no existen comprobantes registrados.
+                        </p>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+            {% if venta.estado == 'completado' %}
+            <div class="card fl-reveal">
+                <h2>Valoración del servicio</h2>
+
+                {% if valoracion %}
+                    <div class="review-done">
+                        <div class="stars-done">
+                            {% for i in range(valoracion.calificacion) %}
+                                ★
+                            {% endfor %}
+                        </div>
+
+                        <strong>{{ valoracion.calificacion }} de 5 estrellas</strong>
+
+                        {% if valoracion.comentario %}
+                            <p>"{{ valoracion.comentario }}"</p>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <form method="POST"
+                        action="{{ url_for('comprador.dejar_resena', venta_id=venta.id) }}"
+                        class="review-form">
+
+                        <label>Calificación</label>
+                        <select name="calificacion" required>
+                            <option value="">Selecciona una calificación</option>
+                            <option value="5">★★★★★ Excelente</option>
+                            <option value="4">★★★★ Muy bueno</option>
+                            <option value="3">★★★ Bueno</option>
+                            <option value="2">★★ Regular</option>
+                            <option value="1">★ Malo</option>
+                        </select>
+
+                        <label>Comentario</label>
+                        <textarea name="comentario"
+                                placeholder="Cuenta cómo fue tu experiencia con este freelancer..."></textarea>
+
+                        <button type="submit">
+                            <i class="fas fa-star"></i>
+                            Enviar valoración
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+
+        <aside class="contract-sidebar fl-stagger">
+
+            <div class="sidebar-card fl-reveal">
+
+                <h3>Resumen financiero</h3>
+
+                <div class="money-row">
+                    <span>Total</span>
+                    <strong>
+                        S/ {{ "%.2f"|format(venta.monto) }}
+                    </strong>
+                </div>
+
+                <div class="money-row">
+                    <span>Adelanto (50%)</span>
+                    <strong>
+                        S/ {{ "%.2f"|format(venta.monto_adelanto or 0) }}
+                    </strong>
+                </div>
+
+                <div class="money-row">
+                    <span>Pago final (50%)</span>
+                    <strong>
+                        S/ {{ "%.2f"|format(venta.monto_restante or 0) }}
+                    </strong>
+                </div>
+
+            </div>
+            {% if venta.estado == 'pendiente_adelanto' %}
+        <div class="sidebar-card fl-reveal">
+            <h3>Subir adelanto 50%</h3>
+
+            <p class="payment-help">
+                Sube el comprobante del adelanto de
+                <strong>S/ {{ "%.2f"|format(venta.monto_adelanto or 0) }}</strong>.
+            </p>
+
+            <form method="POST"
+                action="{{ url_for('comprador.subir_comprobante', venta_id=venta.id) }}"
+                enctype="multipart/form-data"
+                class="proof-form">
+
+                <input type="hidden" name="etapa" value="adelanto">
+
+                <label>Tipo de pago</label>
+                <select name="tipo_pago" required>
+                    <option value="">Selecciona</option>
+                    <option value="Yape">Yape</option>
+                    <option value="Plin">Plin</option>
+                    <option value="Transferencia">Transferencia</option>
+                </select>
+
+                <label>Comprobante</label>
+                <input type="file" name="comprobante" accept="image/*" required>
+
+                <button type="submit">
+                    <i class="fas fa-upload"></i>
+                    Subir comprobante
+                </button>
+            </form>
+        </div>
+        {% endif %}
+
+        {% if venta.estado == 'entrega_realizada' %}
+        <div class="sidebar-card fl-reveal">
+            <h3>Subir pago final</h3>
+
+            <p class="payment-help">
+                Sube el comprobante del pago final de
+                <strong>S/ {{ "%.2f"|format(venta.monto_restante or 0) }}</strong>.
+            </p>
+
+            <form method="POST"
+                action="{{ url_for('comprador.subir_comprobante', venta_id=venta.id) }}"
+                enctype="multipart/form-data"
+                class="proof-form">
+
+                <input type="hidden" name="etapa" value="pago_final">
+
+                <label>Tipo de pago</label>
+                <select name="tipo_pago" required>
+                    <option value="">Selecciona</option>
+                    <option value="Yape">Yape</option>
+                    <option value="Plin">Plin</option>
+                    <option value="Transferencia">Transferencia</option>
+                </select>
+
+                <label>Comprobante</label>
+                <input type="file" name="comprobante" accept="image/*" required>
+
+                <button type="submit">
+                    <i class="fas fa-upload"></i>
+                    Subir pago final
+                </button>
+            </form>
+        </div>
+        {% endif %}
+
+
+            <div class="sidebar-card fl-reveal">
+
+                <h3>Freelancer</h3>
+
+                <p>
+                    {{ venta.vendedor.nombre if venta.vendedor else 'Freelancer Certus' }}
+                </p>
+
+                {% if venta.vendedor %}
+                <small>
+                    {{ venta.vendedor.carrera }}
+                </small>
+                {% endif %}
+
+            </div>
+
+        </aside>
+
+    </div>
+
+</section>
+
+<style>
+
+.contract-detail{
+    padding:120px 6vw 60px;
+    background: var(--fl-page-bg);
+    min-height:100vh;
+}
+
+.contract-hero{
+    background:
+    radial-gradient(circle at 85% 10%,rgba(134,239,172,.25),transparent 30%),
+    linear-gradient(135deg,#0b0f0d,#052e22);
+
+    color:white;
+
+    border-radius:32px;
+
+    padding:2.5rem;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+
+    margin-bottom:1.5rem;
+}
+
+.hero-pill{
+    background:rgba(255,255,255,.12);
+    padding:.45rem .8rem;
+    border-radius:999px;
+    font-size:.8rem;
+    font-weight:900;
+}
+
+.contract-hero h1{
+    margin-top:1rem;
+    font-size:clamp(2.5rem,5vw,5rem);
+    line-height:.9;
+    letter-spacing:-.06em;
+}
+
+.btn-back{
+    background: var(--fl-surface);
+    color: var(--fl-heading);
+    text-decoration:none;
+    padding:.9rem 1.2rem;
+    border-radius:999px;
+    font-weight:900;
+}
+
+.contract-grid{
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:1rem;
+}
+
+.card,
+.sidebar-card{
+    background: var(--fl-surface);
+    border-radius:28px;
+    padding:1.5rem;
+    border:1px solid var(--fl-border);
+    margin-bottom:1rem;
+}
+
+.timeline{
+    display:flex;
+    justify-content:space-between;
+    gap:1rem;
+    margin-top:1rem;
+}
+
+.step{
+    flex:1;
+    text-align:center;
+    opacity:.35;
+}
+
+.step.active{
+    opacity:1;
+}
+
+.step span{
+    width:42px;
+    height:42px;
+    display:grid;
+    place-items:center;
+    margin:auto;
+    border-radius:999px;
+    background:var(--fl-border);
+    font-weight:900;
+}
+
+.step.active span{
+    background: var(--fl-brand);
+    color:white;
+}
+
+.status-badge{
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .5rem .9rem;
+    border-radius: 999px;
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .01em;
+    font-family: var(--font-ui);
+}
+
+.status-badge::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+}
+
+.status-badge.completado {
+    background: #dcfce7;
+    color: var(--fl-brand-accent);
+}
+
+.status-badge.pago_final_enviado,
+.status-badge.adelanto_enviado,
+.status-badge.en_proceso,
+.status-badge.entrega_realizada {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.status-badge.pendiente_adelanto {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+.status-badge.cancelado {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.money-row{
+    display:flex;
+    justify-content:space-between;
+    padding:.8rem 0;
+    border-bottom:1px solid #f1f5f9;
+}
+
+.proof-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+    gap:1rem;
+}
+
+.proof-card{
+    text-decoration:none;
+    color:inherit;
+    border:1px solid var(--fl-border);
+    border-radius:18px;
+    overflow:hidden;
+}
+
+.proof-card img{
+    width:100%;
+    height:160px;
+    object-fit:cover;
+}
+
+.proof-card div{
+    padding:.8rem;
+}
+
+.empty-box{
+    text-align:center;
+    padding:2rem;
+    color: var(--fl-text-muted);
+}
+
+.payment-help {
+    color: var(--fl-text-muted);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.proof-form {
+    display: grid;
+    gap: .75rem;
+}
+
+.proof-form label {
+    font-size: .82rem;
+    font-weight: 900;
+    color: var(--fl-heading);
+}
+
+.proof-form select,
+.proof-form input {
+    width: 100%;
+    border: 1px solid var(--fl-border);
+    border-radius: 16px;
+    padding: .85rem;
+    padding-right: 2.75rem;
+    font-family: inherit;
+    background-color: var(--fl-soft-bg);
+}
+
+.proof-form button {
+    border: none;
+    background: var(--fl-brand);
+    color: white;
+    padding: .9rem 1rem;
+    border-radius: 999px;
+    font-weight: 900;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.review-form {
+    display: grid;
+    gap: .8rem;
+}
+
+.review-form label {
+    font-size: .82rem;
+    font-weight: 900;
+    color: var(--fl-heading);
+}
+
+.review-form select,
+.review-form textarea {
+    width: 100%;
+    border: 1px solid var(--fl-border);
+    border-radius: 16px;
+    padding: .9rem;
+    font-family: inherit;
+    background-color: var(--fl-soft-bg);
+}
+
+.review-form select {
+    padding-right: 2.75rem;
+}
+
+.review-form textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.review-form button {
+    border: none;
+    background: var(--fl-brand);
+    color: white;
+    padding: .9rem 1rem;
+    border-radius: 999px;
+    font-weight: 900;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.review-done {
+    background: var(--fl-soft-bg);
+    border: 1px solid var(--fl-border);
+    border-radius: 22px;
+    padding: 1rem;
+}
+
+.stars-done {
+    color: #f59e0b;
+    font-size: 1.8rem;
+    letter-spacing: .08em;
+    margin-bottom: .5rem;
+}
+
+.review-done p {
+    margin-top: .7rem;
+    color: var(--fl-text-muted);
+    line-height: 1.6;
+}
+
+@media(max-width:900px){
+
+    .contract-grid{
+        grid-template-columns:1fr;
+    }
+
+    .timeline{
+        flex-direction:column;
+    }
+
+    .contract-hero{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:1rem;
+    }
+
+}
+
+</style>
+
+{% endblock %}

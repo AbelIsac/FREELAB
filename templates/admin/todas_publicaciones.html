@@ -264,7 +264,7 @@
 }
 
 .admin-header p {
-    color: #64748b;
+    color: var(--fl-text-muted);
 }
 
 /* Filtros */
@@ -286,13 +286,13 @@
     left: 1rem;
     top: 50%;
     transform: translateY(-50%);
-    color: #94a3b8;
+    color: var(--fl-text-faint);
 }
 
 .search-box input {
     width: 100%;
     padding: 0.8rem 1rem 0.8rem 2.5rem;
-    border: 2px solid #e2e8f0;
+    border: 2px solid var(--fl-border);
     border-radius: 12px;
     font-size: 0.9rem;
     transition: all 0.3s ease;
@@ -306,16 +306,16 @@
 
 .filtro-estado {
     padding: 0.8rem 1rem;
-    border: 2px solid #e2e8f0;
+    border: 2px solid var(--fl-border);
     border-radius: 12px;
-    background: white;
+    background: var(--fl-surface);
     cursor: pointer;
     font-family: 'Poppins', sans-serif;
 }
 
 .btn-refresh {
     background: #f1f5f9;
-    color: #475569;
+    color: var(--fl-text-body);
     border: none;
     padding: 0.8rem 1.5rem;
     border-radius: 12px;
@@ -327,7 +327,7 @@
 }
 
 .btn-refresh:hover {
-    background: #e2e8f0;
+    background: var(--fl-border);
     transform: translateY(-2px);
 }
 
@@ -340,7 +340,7 @@
 }
 
 .stat-card-admin {
-    background: white;
+    background: var(--fl-surface);
     border-radius: 16px;
     padding: 1rem;
     display: flex;
@@ -358,7 +358,7 @@
 
 .stat-card-admin i {
     font-size: 1.8rem;
-    color: #64748b;
+    color: var(--fl-text-muted);
     background: #f1f5f9;
     width: 50px;
     height: 50px;
@@ -377,7 +377,7 @@
     font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 1px;
-    color: #64748b;
+    color: var(--fl-text-muted);
     margin-bottom: 0.3rem;
 }
 
@@ -389,7 +389,7 @@
 
 /* Tabla */
 .table-container-admin {
-    background: white;
+    background: var(--fl-surface);
     border-radius: 20px;
     overflow-x: auto;
     box-shadow: 0 5px 25px rgba(0,0,0,0.05);
@@ -404,12 +404,12 @@
 
 .table-admin-publicaciones th {
     padding: 1rem;
-    background: #f8fafc;
+    background: var(--fl-soft-bg);
     color: #1e293b;
     font-weight: 600;
     font-size: 0.85rem;
     text-align: left;
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--fl-border);
 }
 
 .table-admin-publicaciones td {
@@ -419,7 +419,7 @@
 }
 
 .table-admin-publicaciones tr:hover {
-    background: #f8fafc;
+    background: var(--fl-soft-bg);
 }
 
 .mini-img {
@@ -448,7 +448,7 @@
 
 .producto-desc-corta {
     font-size: 0.75rem;
-    color: #64748b;
+    color: var(--fl-text-muted);
     margin-top: 0.3rem;
 }
 
@@ -456,7 +456,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: #475569;
+    color: var(--fl-text-body);
 }
 
 .vendedor-info i {
@@ -496,7 +496,7 @@
 
 .badge-default {
     background: #f1f5f9;
-    color: #64748b;
+    color: var(--fl-text-muted);
 }
 
 /* Botones acción animados */
@@ -551,7 +551,7 @@
 .no-data-admin {
     text-align: center;
     padding: 3rem !important;
-    color: #64748b;
+    color: var(--fl-text-muted);
 }
 
 .no-data-admin i {
