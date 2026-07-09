@@ -9,7 +9,7 @@ def login():
     res = supabase.auth.sign_in_with_oauth({
         "provider": "google",
         "options": {
-            "redirect_to": "http://127.0.0.1:5000/callback"
+            "redirect_to": "https://freelab-szln.onrender.com/callback"
         }
     })
     return redirect(res.url)
