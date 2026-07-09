@@ -1,118 +1,275 @@
 {% extends "base.html" %}
-{% block title %}Ayuda - Marketplace Estudiantil{% endblock %}
+
+{% block title %}Centro de Ayuda | FreeLab{% endblock %}
+
 {% block extra_css %}
 <style>
-    .ayuda-container {
-        max-width: 1000px;
-        margin: 120px auto 4rem;
-        padding: 0 2rem;
-    }
-    .ayuda-header {
-        text-align: center;
-        margin-bottom: 2rem;
-    }
-    .ayuda-header h1 {
-        font-size: 2rem;
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 0.5rem;
-    }
-    .faq-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-        gap: 1.5rem;
-    }
-    .faq-card {
-        background: var(--fl-surface);
-        border-radius: 20px;
-        padding: 1.5rem;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
-        transition: all 0.3s ease;
-        cursor: pointer;
-    }
-    .faq-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    }
-    .faq-card h3 {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-bottom: 0.5rem;
-        color: #1e293b;
-    }
-    .faq-card h3 i {
-        color: #667eea;
-    }
-    .faq-card p {
-        color: var(--fl-text-muted);
-        font-size: 0.9rem;
-        line-height: 1.5;
-    }
-    .contact-support {
-        margin-top: 3rem;
-        text-align: center;
-        padding: 2rem;
-        background: var(--fl-soft-bg);
-        border-radius: 24px;
-    }
-    .btn-soporte {
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        color: white;
-        border: none;
-        padding: 0.8rem 2rem;
-        border-radius: 50px;
-        font-weight: 600;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-top: 1rem;
-    }
+.fl-help{
+    max-width:1200px;
+    margin:130px auto 5rem;
+    padding:0 1.5rem;
+}
+
+.fl-help-hero{
+    text-align:center;
+    margin-bottom:3.5rem;
+}
+
+.fl-help-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:.6rem;
+    padding:.55rem 1rem;
+    border-radius:999px;
+    background:rgba(6,95,70,.08);
+    color:#065f46;
+    font-weight:700;
+    margin-bottom:1.2rem;
+}
+
+[data-theme="dark"] .fl-help-badge{
+    background:rgba(16,185,129,.15);
+    color:#34d399;
+}
+
+.fl-help-hero h1{
+    font-size:clamp(2.2rem,5vw,3.4rem);
+    margin-bottom:1rem;
+    color:var(--fl-text-body);
+}
+
+.fl-help-hero p{
+    max-width:760px;
+    margin:auto;
+    color:var(--fl-text-muted);
+    line-height:1.8;
+    font-size:1.05rem;
+}
+
+.fl-faq-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    gap:1.6rem;
+}
+
+.fl-faq-card{
+    background:var(--fl-surface);
+    border:1px solid var(--fl-border);
+    border-radius:24px;
+    padding:2rem;
+    transition:.35s;
+    box-shadow:0 10px 30px rgba(0,0,0,.05);
+}
+
+.fl-faq-card:hover{
+    transform:translateY(-8px);
+    border-color:#10b981;
+    box-shadow:0 20px 45px rgba(16,185,129,.18);
+}
+
+.fl-faq-icon{
+    width:65px;
+    height:65px;
+    border-radius:18px;
+    background:linear-gradient(135deg,#059669,#10b981);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    font-size:1.4rem;
+    margin-bottom:1.2rem;
+}
+
+.fl-faq-card h3{
+    margin-bottom:.8rem;
+    color:var(--fl-text-body);
+}
+
+.fl-faq-card p{
+    color:var(--fl-text-muted);
+    line-height:1.7;
+}
+
+.fl-contact-box{
+    margin-top:4rem;
+    background:linear-gradient(135deg,#065f46,#047857);
+    color:#fff;
+    border-radius:28px;
+    padding:3rem;
+    text-align:center;
+    overflow:hidden;
+    position:relative;
+}
+
+.fl-contact-box::before{
+    content:"";
+    position:absolute;
+    width:280px;
+    height:280px;
+    background:rgba(255,255,255,.08);
+    border-radius:50%;
+    top:-120px;
+    right:-90px;
+}
+
+.fl-contact-box i{
+    font-size:3rem;
+    margin-bottom:1rem;
+}
+
+.fl-contact-box h2{
+    margin-bottom:.8rem;
+}
+
+.fl-contact-box p{
+    opacity:.9;
+    max-width:650px;
+    margin:auto;
+}
+
+.fl-contact-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:.7rem;
+    margin-top:2rem;
+    padding:.9rem 2rem;
+    border-radius:999px;
+    background:#fff;
+    color:#065f46;
+    text-decoration:none;
+    font-weight:700;
+    transition:.3s;
+}
+
+.fl-contact-btn:hover{
+    transform:translateY(-3px);
+    background:#ecfdf5;
+}
+
+@media(max-width:768px){
+
+.fl-help{
+margin-top:110px;
+}
+
+.fl-contact-box{
+padding:2rem 1.5rem;
+}
+
+}
 </style>
 {% endblock %}
+
 {% block content %}
-<div class="ayuda-container">
-    <div class="ayuda-header">
-        <h1><i class="fas fa-question-circle"></i> Centro de Ayuda</h1>
-        <p>Encuentra respuestas a tus preguntas frecuentes</p>
-    </div>
 
-    <div class="faq-grid">
-        <div class="faq-card">
-            <h3><i class="fas fa-user-plus"></i> ¿Cómo me registro?</h3>
-            <p>Haz clic en "Iniciar Sesión" y usa tu cuenta de Google. Luego elige tu rol: Vendedor o Comprador.</p>
-        </div>
-        <div class="faq-card">
-            <h3><i class="fas fa-store"></i> ¿Cómo publico un producto?</h3>
-            <p>Regístrate como Vendedor, ve a tu Dashboard y haz clic en "Publicar Producto". Completa el formulario.</p>
-        </div>
-        <div class="faq-card">
-            <h3><i class="fas fa-shopping-cart"></i> ¿Cómo compro un servicio?</h3>
-            <p>Explora productos, agrega al carrito y procede al pago. Puedes pagar con tarjeta de crédito/débito.</p>
-        </div>
-        <div class="faq-card">
-            <h3><i class="fas fa-credit-card"></i> ¿Es seguro pagar aquí?</h3>
-            <p>Sí, utilizamos encriptación SSL y procesamiento seguro de pagos. Tus datos están protegidos.</p>
-        </div>
-        <div class="faq-card">
-            <h3><i class="fas fa-undo-alt"></i> ¿Puedo cancelar una compra?</h3>
-            <p>Contacta al vendedor directamente. Las políticas de reembolso son establecidas por cada vendedor.</p>
-        </div>
-        <div class="faq-card">
-            <h3><i class="fas fa-star"></i> ¿Cómo califico un producto?</h3>
-            <p>Después de comprar, ve a "Mis Compras" y podrás dejar una reseña y calificación.</p>
-        </div>
-    </div>
+<section class="fl-help">
 
-    <div class="contact-support">
-        <i class="fas fa-headset" style="font-size: 3rem; color: #667eea;"></i>
-        <h3>¿No encontraste lo que buscabas?</h3>
-        <p>Nuestro equipo de soporte está disponible para ayudarte</p>
-        <a href="{{ url_for('contacto') }}" class="btn-soporte">
-            <i class="fas fa-envelope"></i> Contactar soporte
-        </a>
-    </div>
+<div class="fl-help-hero fl-reveal">
+
+<div class="fl-help-badge">
+<i class="fas fa-life-ring"></i>
+Centro de Ayuda
 </div>
+
+<h1>¿Cómo podemos ayudarte?</h1>
+
+<p>
+Encuentra respuestas rápidas sobre el funcionamiento de FreeLab.
+Nuestro objetivo es que puedas publicar, contratar y gestionar servicios
+de forma sencilla y segura.
+</p>
+
+</div>
+
+<div class="fl-faq-grid">
+
+<div class="fl-faq-card fl-reveal">
+<div class="fl-faq-icon">
+<i class="fas fa-user-plus"></i>
+</div>
+<h3>¿Cómo creo una cuenta?</h3>
+<p>
+Haz clic en <strong>Ingresar</strong>, inicia sesión con Google y completa tu perfil.
+Podrás registrarte como estudiante freelancer o como cliente.
+</p>
+</div>
+
+<div class="fl-faq-card fl-reveal">
+<div class="fl-faq-icon">
+<i class="fas fa-briefcase"></i>
+</div>
+<h3>¿Cómo publico un servicio?</h3>
+<p>
+Desde tu panel freelancer selecciona
+<strong>Publicar servicio</strong>,
+completa la información y agrega imágenes para hacerlo más atractivo.
+</p>
+</div>
+
+<div class="fl-faq-card fl-reveal">
+<div class="fl-faq-icon">
+<i class="fas fa-search"></i>
+</div>
+<h3>¿Cómo contrato un freelancer?</h3>
+<p>
+Explora los servicios disponibles, revisa el perfil del estudiante,
+agrega el servicio al carrito y completa el proceso de contratación.
+</p>
+</div>
+
+<div class="fl-faq-card fl-reveal">
+<div class="fl-faq-icon">
+<i class="fas fa-lock"></i>
+</div>
+<h3>¿Mi información está protegida?</h3>
+<p>
+Sí. FreeLab utiliza autenticación segura y protege la información
+almacenada para ofrecer una experiencia confiable.
+</p>
+</div>
+
+<div class="fl-faq-card fl-reveal">
+<div class="fl-faq-icon">
+<i class="fas fa-credit-card"></i>
+</div>
+<h3>¿Cómo funcionan los pagos?</h3>
+<p>
+Los compradores realizan la contratación desde la plataforma.
+Cada servicio muestra claramente el precio antes de confirmar la compra.
+</p>
+</div>
+
+<div class="fl-faq-card fl-reveal">
+<div class="fl-faq-icon">
+<i class="fas fa-star"></i>
+</div>
+<h3>¿Puedo calificar un servicio?</h3>
+<p>
+Sí. Después de finalizar una contratación podrás dejar una valoración
+que ayudará a otros usuarios a elegir mejores servicios.
+</p>
+</div>
+
+</div>
+
+<div class="fl-contact-box fl-reveal">
+
+<i class="fas fa-headset"></i>
+
+<h2>¿Aún tienes dudas?</h2>
+
+<p>
+Nuestro equipo está disponible para ayudarte con cualquier consulta sobre
+FreeLab, el funcionamiento de la plataforma o el proceso de contratación.
+</p>
+
+<a href="{{ url_for('contacto') }}" class="fl-contact-btn">
+<i class="fas fa-envelope"></i>
+Contactar soporte
+</a>
+
+</div>
+
+</section>
+
 {% endblock %}

@@ -1,202 +1,555 @@
 {% extends "base.html" %}
-{% block title %}Contacto - Marketplace Estudiantil{% endblock %}
+
+{% block title %}Contáctanos | FreeLab{% endblock %}
+
 {% block extra_css %}
 <style>
-    .contacto-container {
-        max-width: 1200px;
-        margin: 120px auto 4rem;
-        padding: 0 2rem;
-    }
-    .contacto-header {
-        text-align: center;
-        margin-bottom: 3rem;
-    }
-    .contacto-header h1 {
-        font-size: 2.5rem;
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 1rem;
-    }
-    .contacto-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 3rem;
-    }
-    .info-card {
-        background: var(--fl-surface);
-        border-radius: 24px;
-        padding: 2rem;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-    }
-    .info-card h2 {
-        margin-bottom: 1.5rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    .info-item {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-        padding: 1rem;
-        background: var(--fl-soft-bg);
-        border-radius: 16px;
-        transition: all 0.3s ease;
-    }
-    .info-item:hover {
-        transform: translateX(5px);
-        background: #f1f5f9;
-    }
-    .info-item i {
-        width: 45px;
-        height: 45px;
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 1.2rem;
-    }
-    .info-item div h4 { margin-bottom: 0.2rem; }
-    .info-item div p { color: var(--fl-text-muted); font-size: 0.9rem; }
-    .form-card {
-        background: var(--fl-surface);
-        border-radius: 24px;
-        padding: 2rem;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-    }
-    .form-group {
-        margin-bottom: 1.2rem;
-    }
-    .form-group label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 500;
-    }
-    .form-control {
-        width: 100%;
-        padding: 0.8rem 1rem;
-        border: 2px solid var(--fl-border);
-        border-radius: 12px;
-        font-family: inherit;
-        transition: all 0.3s ease;
-    }
-    .form-control:focus {
-        outline: none;
-        border-color: #667eea;
-        box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
-    }
-    textarea.form-control {
-        resize: vertical;
-        min-height: 120px;
-    }
-    .btn-enviar {
-        width: 100%;
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        color: white;
-        border: none;
-        padding: 1rem;
-        border-radius: 12px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-    .btn-enviar:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 20px rgba(102,126,234,0.4);
-    }
-    @media (max-width: 768px) {
-        .contacto-grid {
-            grid-template-columns: 1fr;
-            gap: 2rem;
-        }
-        .contacto-container {
-            margin: 100px auto 2rem;
-            padding: 0 1rem;
-        }
-    }
+
+.fl-contact{
+
+    max-width:1250px;
+    margin:130px auto 5rem;
+    padding:0 1.5rem;
+
+}
+
+.fl-contact-hero{
+
+    text-align:center;
+    margin-bottom:4rem;
+
+}
+
+.fl-contact-badge{
+
+    display:inline-flex;
+    align-items:center;
+    gap:.6rem;
+    padding:.55rem 1rem;
+    border-radius:999px;
+    background:rgba(6,95,70,.08);
+    color:#065f46;
+    font-weight:700;
+    margin-bottom:1.2rem;
+
+}
+
+[data-theme="dark"] .fl-contact-badge{
+
+background:rgba(16,185,129,.14);
+color:#34d399;
+
+}
+
+.fl-contact-hero h1{
+
+font-size:clamp(2.3rem,5vw,3.7rem);
+margin-bottom:1rem;
+color:var(--fl-text-body);
+
+}
+
+.fl-contact-hero p{
+
+max-width:720px;
+margin:auto;
+line-height:1.8;
+color:var(--fl-text-muted);
+
+}
+
+.fl-contact-grid{
+
+display:grid;
+grid-template-columns:390px 1fr;
+gap:2rem;
+align-items:start;
+
+}
+
+.fl-info{
+
+background:var(--fl-surface);
+border:1px solid var(--fl-border);
+border-radius:28px;
+padding:2rem;
+box-shadow:0 12px 35px rgba(0,0,0,.05);
+
+}
+
+.fl-info h2{
+
+margin-bottom:2rem;
+color:var(--fl-text-body);
+
+}
+
+.fl-info-item{
+
+display:flex;
+gap:1rem;
+margin-bottom:1.4rem;
+align-items:flex-start;
+
+}
+
+.fl-info-icon{
+
+width:58px;
+height:58px;
+border-radius:18px;
+background:linear-gradient(135deg,#059669,#10b981);
+display:flex;
+align-items:center;
+justify-content:center;
+color:white;
+font-size:1.25rem;
+flex-shrink:0;
+
+}
+
+.fl-info-item h4{
+
+margin-bottom:.25rem;
+color:var(--fl-text-body);
+
+}
+
+.fl-info-item p{
+
+color:var(--fl-text-muted);
+line-height:1.6;
+
+}
+
+.fl-social{
+
+margin-top:2rem;
+padding-top:2rem;
+border-top:1px solid var(--fl-border);
+
+}
+
+.fl-social h3{
+
+margin-bottom:1rem;
+
+}
+
+.fl-social-links{
+
+display:flex;
+gap:.8rem;
+
+}
+
+.fl-social-links a{
+
+width:48px;
+height:48px;
+border-radius:16px;
+display:flex;
+align-items:center;
+justify-content:center;
+background:var(--fl-soft-bg);
+color:#059669;
+font-size:1.1rem;
+transition:.3s;
+text-decoration:none;
+
+}
+
+.fl-social-links a:hover{
+
+background:#059669;
+color:white;
+transform:translateY(-4px);
+
+}
+
+.fl-form{
+
+background:var(--fl-surface);
+border:1px solid var(--fl-border);
+border-radius:30px;
+padding:2.5rem;
+box-shadow:0 12px 35px rgba(0,0,0,.05);
+
+}
+
+.fl-form h2{
+
+margin-bottom:.5rem;
+color:var(--fl-text-body);
+
+}
+
+.fl-form p{
+
+color:var(--fl-text-muted);
+margin-bottom:2rem;
+
+}
+
+.form-row{
+
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:1rem;
+
+}
+
+.form-group{
+
+margin-bottom:1.3rem;
+
+}
+
+.form-group label{
+
+display:block;
+margin-bottom:.55rem;
+font-weight:700;
+color:var(--fl-text-body);
+
+}
+
+.form-control{
+
+width:100%;
+padding:1rem 1.1rem;
+border-radius:16px;
+border:1px solid var(--fl-border);
+background:var(--fl-soft-bg);
+color:var(--fl-text-body);
+transition:.3s;
+font-size:.95rem;
+
+}
+
+.form-control:focus{
+
+outline:none;
+border-color:#10b981;
+box-shadow:0 0 0 4px rgba(16,185,129,.12);
+
+}
+
+textarea.form-control{
+
+min-height:180px;
+resize:vertical;
+
+}
+
+@media(max-width:900px){
+
+.fl-contact-grid{
+
+grid-template-columns:1fr;
+
+}
+
+.form-row{
+
+grid-template-columns:1fr;
+
+}
+
+}
+
+@media(max-width:768px){
+
+.fl-contact{
+
+margin-top:110px;
+
+}
+
+}
+
 </style>
 {% endblock %}
+
 {% block content %}
-<div class="contacto-container">
-    <div class="contacto-header">
-        <h1><i class="fas fa-envelope"></i> Contáctanos</h1>
-        <p>¿Tienes preguntas? Estamos aquí para ayudarte</p>
-    </div>
 
-    <div class="contacto-grid">
-        <div class="info-card">
-            <h2><i class="fas fa-info-circle"></i> Información de contacto</h2>
-            <div class="info-item">
-                <i class="fas fa-envelope"></i>
-                <div>
-                    <h4>Email</h4>
-                    <p>soporte@marketplaceest.cl</p>
-                </div>
-            </div>
-            <div class="info-item">
-                <i class="fas fa-phone-alt"></i>
-                <div>
-                    <h4>Teléfono</h4>
-                    <p>+56 2 1234 5678</p>
-                </div>
-            </div>
-            <div class="info-item">
-                <i class="fas fa-map-marker-alt"></i>
-                <div>
-                    <h4>Dirección</h4>
-                    <p>Santiago, Chile</p>
-                </div>
-            </div>
-            <div class="info-item">
-                <i class="fas fa-clock"></i>
-                <div>
-                    <h4>Horario de atención</h4>
-                    <p>Lunes a Viernes: 9:00 - 18:00 hrs</p>
-                </div>
-            </div>
-        </div>
+<section class="fl-contact">
 
-        <div class="form-card">
-            <h2><i class="fas fa-paper-plane"></i> Envíanos un mensaje</h2>
-            <form id="contactoForm">
-                <div class="form-group">
-                    <label>Nombre completo</label>
-                    <input type="text" class="form-control" placeholder="Tu nombre" required>
-                </div>
-                <div class="form-group">
-                    <label>Correo electrónico</label>
-                    <input type="email" class="form-control" placeholder="tu@email.com" required>
-                </div>
-                <div class="form-group">
-                    <label>Asunto</label>
-                    <input type="text" class="form-control" placeholder="Motivo de tu mensaje" required>
-                </div>
-                <div class="form-group">
-                    <label>Mensaje</label>
-                    <textarea class="form-control" placeholder="Escribe tu mensaje aquí..."></textarea>
-                </div>
-                <button type="submit" class="btn-enviar">
-                    <i class="fas fa-paper-plane"></i> Enviar mensaje
-                </button>
-            </form>
-        </div>
-    </div>
+<div class="fl-contact-hero fl-reveal">
+
+<div class="fl-contact-badge">
+<i class="fas fa-envelope-open-text"></i>
+Contacto
 </div>
 
+<h1>Estamos listos para ayudarte</h1>
+
+<p>
+
+Si tienes preguntas sobre FreeLab, necesitas soporte o deseas comunicarte con
+nosotros, estaremos encantados de responderte lo antes posible.
+
+</p>
+
+</div>
+
+<div class="fl-contact-grid">
+
+<div class="fl-info fl-reveal">
+
+<h2>Información de contacto</h2>
+
+<div class="fl-info-item">
+
+<div class="fl-info-icon">
+<i class="fas fa-envelope"></i>
+</div>
+
+<div>
+
+<h4>Correo electrónico</h4>
+
+<p>
+soporte@freelab.pe
+</p>
+
+</div>
+
+</div>
+
+<div class="fl-info-item">
+
+<div class="fl-info-icon">
+<i class="fas fa-phone-alt"></i>
+</div>
+
+<div>
+
+<h4>Teléfono</h4>
+
+<p>
++51 917 247 175
+</p>
+
+</div>
+
+</div>
+
+<div class="fl-info-item">
+
+<div class="fl-info-icon">
+<i class="fas fa-location-dot"></i>
+</div>
+
+<div>
+
+<h4>Ubicación</h4>
+
+<p>
+Arequipa, Perú
+</p>
+
+</div>
+
+</div>
+
+<div class="fl-info-item">
+
+<div class="fl-info-icon">
+<i class="fas fa-clock"></i>
+</div>
+
+<div>
+
+<h4>Horario de atención</h4>
+
+<p>
+Lunes a Viernes
+<br>
+9:00 AM - 6:00 PM
+
+</p>
+
+</div>
+
+</div>
+
+<div class="fl-social">
+
+<h3>Síguenos</h3>
+
+<div class="fl-social-links">
+
+<a href="https://www.facebook.com/profile.php?id=61560680206734">
+<i class="fab fa-facebook-f"></i>
+</a>
+
+<a href="https://www.instagram.com/freelab.oficial/">
+<i class="fab fa-instagram"></i>
+</a>
+
+<a href="#">
+<i class="fab fa-linkedin-in"></i>
+</a>
+
+<a href="https://github.com/freelab">
+<i class="fab fa-github"></i>
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="fl-form fl-reveal">
+
+<h2>Envíanos un mensaje</h2>
+
+<p>
+
+Completa el formulario y nos pondremos en contacto contigo lo antes posible.
+
+</p>
+
+<form id="contactoForm">
+
+<div class="form-row">
+
+<div class="form-group">
+
+<label>Nombre completo</label>
+
+<input
+type="text"
+class="form-control"
+placeholder="Ingresa tu nombre"
+required>
+
+</div>
+
+<div class="form-group">
+
+<label>Correo electrónico</label>
+
+<input
+type="email"
+class="form-control"
+placeholder="correo@ejemplo.com"
+required>
+
+</div>
+
+</div>
+<div class="form-group">
+
+<label>Asunto</label>
+
+<input
+type="text"
+class="form-control"
+placeholder="¿Sobre qué deseas comunicarte?"
+required>
+
+</div>
+
+<div class="form-group">
+
+<label>Mensaje</label>
+
+<textarea
+class="form-control"
+placeholder="Escribe aquí tu mensaje..."
+required></textarea>
+
+</div>
+
+<button
+type="submit"
+class="fl-submit">
+
+<i class="fas fa-paper-plane"></i>
+
+<span>Enviar mensaje</span>
+
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+</section>
+
+<style>
+
+.fl-submit{
+
+width:100%;
+margin-top:.5rem;
+padding:1rem 1.4rem;
+border:none;
+border-radius:18px;
+background:linear-gradient(135deg,#059669,#10b981);
+color:white;
+font-size:1rem;
+font-weight:700;
+display:flex;
+justify-content:center;
+align-items:center;
+gap:.7rem;
+cursor:pointer;
+transition:.35s;
+
+}
+
+.fl-submit:hover{
+
+transform:translateY(-4px);
+
+box-shadow:0 20px 35px rgba(16,185,129,.28);
+
+}
+
+.fl-submit:active{
+
+transform:scale(.98);
+
+}
+
+</style>
+
 <script>
-    document.getElementById('contactoForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        Swal.fire({
-            title: '¡Mensaje enviado!',
-            text: 'Nos pondremos en contacto contigo pronto.',
-            icon: 'success',
-            confirmButtonColor: '#667eea'
-        });
-        this.reset();
-    });
+
+document
+.getElementById("contactoForm")
+.addEventListener("submit",function(e){
+
+e.preventDefault();
+
+Swal.fire({
+
+icon:"success",
+
+title:"¡Mensaje enviado!",
+
+text:"Gracias por comunicarte con FreeLab. Te responderemos lo antes posible.",
+
+confirmButtonColor:"#059669",
+
+background:getComputedStyle(document.documentElement)
+.getPropertyValue('--fl-surface'),
+
+color:getComputedStyle(document.documentElement)
+.getPropertyValue('--fl-text-body')
+
+});
+
+this.reset();
+
+});
+
 </script>
+
 {% endblock %}

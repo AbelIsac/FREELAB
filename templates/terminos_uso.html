@@ -1,109 +1,638 @@
 {% extends "base.html" %}
-{% block title %}Términos de Uso - Marketplace Estudiantil{% endblock %}
+
+{% block title %}Términos de Uso | FreeLab{% endblock %}
+
 {% block extra_css %}
 <style>
-    .legal-container {
-        max-width: 900px;
-        margin: 120px auto 4rem;
-        padding: 0 2rem;
-    }
-    .legal-header {
-        text-align: center;
-        margin-bottom: 2rem;
-    }
-    .legal-header h1 {
-        font-size: 2rem;
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 0.5rem;
-    }
-    .legal-content {
-        background: var(--fl-surface);
-        border-radius: 24px;
-        padding: 2rem;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-    }
-    .legal-content h2 {
-        font-size: 1.3rem;
-        margin: 1.5rem 0 1rem;
-        color: #1e293b;
-    }
-    .legal-content h2:first-of-type {
-        margin-top: 0;
-    }
-    .legal-content p {
-        color: var(--fl-text-body);
-        line-height: 1.6;
-        margin-bottom: 1rem;
-    }
-    .legal-content ul {
-        margin: 1rem 0 1rem 2rem;
-        color: var(--fl-text-body);
-    }
-    .legal-content li {
-        margin-bottom: 0.5rem;
-    }
-    .last-update {
-        text-align: right;
-        font-size: 0.8rem;
-        color: var(--fl-text-faint);
-        margin-top: 2rem;
-        padding-top: 1rem;
-        border-top: 1px solid var(--fl-border);
-    }
-    @media (max-width: 768px) {
-        .legal-container {
-            margin: 100px auto 2rem;
-            padding: 0 1rem;
-        }
-    }
+
+.fl-terms{
+
+max-width:1250px;
+margin:130px auto 5rem;
+padding:0 1.5rem;
+
+}
+
+.fl-terms-hero{
+
+text-align:center;
+margin-bottom:4rem;
+
+}
+
+.fl-terms-badge{
+
+display:inline-flex;
+align-items:center;
+gap:.7rem;
+padding:.6rem 1rem;
+border-radius:999px;
+background:rgba(6,95,70,.08);
+color:#065f46;
+font-weight:700;
+margin-bottom:1rem;
+
+}
+
+[data-theme="dark"] .fl-terms-badge{
+
+background:rgba(16,185,129,.15);
+color:#34d399;
+
+}
+
+.fl-terms-hero h1{
+
+font-size:clamp(2.5rem,5vw,4rem);
+margin-bottom:1rem;
+color:var(--fl-text-body);
+
+}
+
+.fl-terms-hero p{
+
+max-width:760px;
+margin:auto;
+line-height:1.8;
+color:var(--fl-text-muted);
+
+}
+
+.timeline{
+
+position:relative;
+margin-top:4rem;
+
+}
+
+.timeline::before{
+
+content:"";
+position:absolute;
+left:42px;
+top:0;
+bottom:0;
+width:4px;
+background:linear-gradient(#059669,#10b981);
+border-radius:999px;
+
+}
+
+.term-card{
+
+position:relative;
+margin-left:110px;
+margin-bottom:2rem;
+background:var(--fl-surface);
+border:1px solid var(--fl-border);
+border-radius:28px;
+padding:2rem;
+transition:.35s;
+
+}
+
+.term-card:hover{
+
+transform:translateY(-6px);
+box-shadow:0 18px 40px rgba(16,185,129,.10);
+
+}
+
+.term-number{
+
+position:absolute;
+left:-95px;
+top:30px;
+
+width:70px;
+height:70px;
+border-radius:50%;
+background:linear-gradient(135deg,#059669,#10b981);
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+font-size:1.3rem;
+font-weight:700;
+color:white;
+
+box-shadow:0 12px 30px rgba(16,185,129,.35);
+
+}
+
+.term-header{
+
+display:flex;
+align-items:center;
+gap:1rem;
+margin-bottom:1rem;
+
+}
+
+.term-icon{
+
+width:58px;
+height:58px;
+border-radius:18px;
+
+background:rgba(16,185,129,.12);
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+font-size:1.3rem;
+color:#059669;
+
+}
+
+.term-header h2{
+
+margin:0;
+color:var(--fl-text-body);
+
+}
+
+.term-card p{
+
+line-height:1.8;
+color:var(--fl-text-muted);
+
+}
+
+.term-card ul{
+
+margin-top:1rem;
+padding-left:1.2rem;
+
+}
+
+.term-card li{
+
+margin-bottom:.7rem;
+
+}
+
+@media(max-width:850px){
+
+.timeline::before{
+
+display:none;
+
+}
+
+.term-card{
+
+margin-left:0;
+
+}
+
+.term-number{
+
+position:relative;
+left:0;
+top:0;
+margin-bottom:1rem;
+
+}
+
+}
+
 </style>
+
 {% endblock %}
+
 {% block content %}
-<div class="legal-container">
-    <div class="legal-header">
-        <h1><i class="fas fa-file-contract"></i> Términos de Uso</h1>
-        <p>Lee nuestros términos y condiciones antes de usar la plataforma</p>
-    </div>
-    <div class="legal-content">
-        <h2>1. Aceptación de los términos</h2>
-        <p>Al acceder y utilizar Marketplace Estudiantil, aceptas cumplir con estos términos de uso. Si no estás de acuerdo, por favor no utilices nuestra plataforma.</p>
 
-        <h2>2. Registro de cuenta</h2>
-        <p>Para publicar o comprar productos, debes registrarte con tu cuenta de Google. Eres responsable de mantener la confidencialidad de tu cuenta y de todas las actividades que ocurran bajo ella.</p>
+<section class="fl-terms">
 
-        <h2>3. Publicación de productos</h2>
-        <p>Los estudiantes/vendedores son responsables del contenido que publican. Los productos deben ser legales, no fraudulentos y respetar los derechos de propiedad intelectual.</p>
-        <ul>
-            <li>No se permiten productos ilegales o prohibidos</li>
-            <li>No se permite la publicación de contenido ofensivo o discriminatorio</li>
-            <li>Los precios deben ser claros y verdaderos</li>
-        </ul>
+<div class="fl-terms-hero fl-reveal">
 
-        <h2>4. Compras y pagos</h2>
-        <p>Las transacciones son entre compradores y vendedores. Marketplace Estudiantil actúa como intermediario y no se hace responsable por la calidad de los servicios prestados.</p>
+<div class="fl-terms-badge">
 
-        <h2>5. Cancelaciones y reembolsos</h2>
-        <p>Las políticas de reembolso son establecidas por cada vendedor. En caso de disputas, recomendamos contactar al vendedor directamente.</p>
+<i class="fas fa-file-contract"></i>
 
-        <h2>6. Conducta del usuario</h2>
-        <p>Los usuarios deben comportarse de manera respetuosa. No se permite:</p>
-        <ul>
-            <li>Acoso o intimidación a otros usuarios</li>
-            <li>Publicación de información falsa o engañosa</li>
-            <li>Intento de hackear o dañar la plataforma</li>
-        </ul>
+Términos y condiciones
 
-        <h2>7. Modificaciones</h2>
-        <p>Nos reservamos el derecho de modificar estos términos en cualquier momento. Los cambios serán notificados a través de la plataforma.</p>
-
-        <h2>8. Contacto</h2>
-        <p>Si tienes preguntas sobre estos términos, contáctanos a: <strong>legal@marketplaceest.cl</strong></p>
-
-        <div class="last-update">
-            <i class="fas fa-calendar-alt"></i> Última actualización: Mayo 2026
-        </div>
-    </div>
 </div>
+
+<h1>Condiciones para utilizar FreeLab</h1>
+
+<p>
+
+Al acceder y utilizar nuestra plataforma aceptas estos términos de uso,
+diseñados para garantizar una experiencia segura, transparente y justa
+para todos los miembros de la comunidad.
+
+</p>
+
+</div>
+
+<div class="timeline">
+
+<div class="term-card fl-reveal">
+
+<div class="term-number">
+01
+</div>
+
+<div class="term-header">
+
+<div class="term-icon">
+<i class="fas fa-circle-check"></i>
+</div>
+
+<h2>Aceptación de los términos</h2>
+
+</div>
+
+<p>
+
+Al registrarte o utilizar FreeLab aceptas cumplir estos términos,
+así como las políticas de privacidad y normas de convivencia de la
+plataforma.
+
+</p>
+
+</div>
+
+<div class="term-card fl-reveal">
+
+<div class="term-number">
+02
+</div>
+
+<div class="term-header">
+
+<div class="term-icon">
+<i class="fas fa-user-plus"></i>
+</div>
+
+<h2>Registro de usuarios</h2>
+
+</div>
+
+<p>
+
+Cada usuario debe proporcionar información verídica y mantener la
+seguridad de su cuenta.
+
+</p>
+
+<ul>
+
+<li>No compartir credenciales.</li>
+
+<li>Mantener actualizados los datos.</li>
+
+<li>Utilizar únicamente cuentas personales.</li>
+
+</ul>
+
+</div>
+
+<div class="term-card fl-reveal">
+
+<div class="term-number">
+03
+</div>
+
+<div class="term-header">
+
+<div class="term-icon">
+<i class="fas fa-briefcase"></i>
+</div>
+
+<h2>Publicación de servicios</h2>
+
+</div>
+
+<p>
+
+Los freelancers son responsables del contenido publicado y garantizan
+que los servicios ofrecidos cumplen con la normativa vigente.
+
+</p>
+
+<ul>
+
+<li>Información clara.</li>
+
+<li>Precios transparentes.</li>
+
+<li>Contenido original.</li>
+
+<li>Respeto por la propiedad intelectual.</li>
+
+</ul>
+
+</div>
+
+<div class="term-card fl-reveal">
+
+<div class="term-number">
+04
+</div>
+
+<div class="term-header">
+
+<div class="term-icon">
+<i class="fas fa-credit-card"></i>
+</div>
+
+<h2>Contrataciones y pagos</h2>
+
+</div>
+
+<p>
+
+FreeLab actúa como una plataforma que conecta clientes y freelancers.
+Cada contratación representa un acuerdo entre ambas partes, quienes son
+responsables de cumplir con las condiciones establecidas para el servicio.
+
+</p>
+
+<ul>
+
+<li>Los precios deben mostrarse claramente.</li>
+
+<li>Los pagos deben realizarse únicamente mediante los métodos autorizados.</li>
+
+<li>Los comprobantes quedarán registrados dentro de la plataforma.</li>
+
+<li>El cliente podrá valorar el servicio al finalizar la contratación.</li>
+
+</ul>
+
+</div>
+
+<div class="term-card fl-reveal">
+
+<div class="term-number">
+05
+</div>
+
+<div class="term-header">
+
+<div class="term-icon">
+<i class="fas fa-users"></i>
+</div>
+
+<h2>Conducta de los usuarios</h2>
+
+</div>
+
+<p>
+
+Buscamos mantener una comunidad segura y profesional. Por ello todos los
+usuarios deben interactuar con respeto y responsabilidad.
+
+</p>
+
+<ul>
+
+<li>Está prohibido publicar contenido ofensivo.</li>
+
+<li>No se permite el fraude o la suplantación de identidad.</li>
+
+<li>Debe respetarse la propiedad intelectual de terceros.</li>
+
+<li>No se podrá utilizar la plataforma para actividades ilícitas.</li>
+
+<li>Se espera un trato respetuoso entre clientes y freelancers.</li>
+
+</ul>
+
+</div>
+
+<div class="term-card fl-reveal">
+
+<div class="term-number">
+06
+</div>
+
+<div class="term-header">
+
+<div class="term-icon">
+<i class="fas fa-user-lock"></i>
+</div>
+
+<h2>Suspensión de cuentas</h2>
+
+</div>
+
+<p>
+
+FreeLab podrá suspender temporal o permanentemente una cuenta cuando se
+detecten incumplimientos de estos términos o actividades que afecten la
+seguridad de la plataforma o de sus usuarios.
+
+</p>
+
+<ul>
+
+<li>Incumplimiento de las políticas.</li>
+
+<li>Uso indebido del sistema.</li>
+
+<li>Intentos de fraude.</li>
+
+<li>Publicaciones engañosas o falsas.</li>
+
+</ul>
+
+</div>
+
+<div class="term-card fl-reveal">
+
+<div class="term-number">
+07
+</div>
+
+<div class="term-header">
+
+<div class="term-icon">
+<i class="fas fa-rotate"></i>
+</div>
+
+<h2>Actualizaciones de los términos</h2>
+
+</div>
+
+<p>
+
+Estos términos podrán modificarse cuando la plataforma incorpore nuevas
+funcionalidades o cuando existan cambios legales que así lo requieran.
+
+Siempre mostraremos la versión más reciente para mantener informados a
+todos los usuarios.
+
+</p>
+
+<div style="margin-top:1.5rem;
+padding:1rem 1.3rem;
+border-radius:16px;
+background:rgba(16,185,129,.08);
+font-weight:600;
+color:#059669;">
+
+<i class="fas fa-calendar-check"></i>
+
+Última actualización: Julio 2026
+
+</div>
+
+</div>
+
+</div>
+
+<section
+class="fl-reveal"
+style="margin-top:4.5rem;">
+
+<div
+style="
+
+background:
+linear-gradient(135deg,#065f46,#047857);
+
+border-radius:34px;
+
+padding:3.5rem;
+
+position:relative;
+
+overflow:hidden;
+
+text-align:center;
+
+color:white;
+
+">
+
+<div
+style="
+
+position:absolute;
+
+width:340px;
+
+height:340px;
+
+background:rgba(255,255,255,.08);
+
+border-radius:50%;
+
+right:-120px;
+
+top:-160px;
+
+"></div>
+
+<div
+style="
+
+position:absolute;
+
+width:220px;
+
+height:220px;
+
+background:rgba(255,255,255,.05);
+
+border-radius:50%;
+
+left:-70px;
+
+bottom:-100px;
+
+"></div>
+
+<h2
+style="
+
+font-size:2.2rem;
+
+margin-bottom:1rem;
+
+position:relative;
+
+z-index:2;
+
+">
+
+Construyamos una comunidad profesional
+
+</h2>
+
+<p
+style="
+
+max-width:760px;
+
+margin:auto;
+
+line-height:1.9;
+
+opacity:.92;
+
+position:relative;
+
+z-index:2;
+
+">
+
+FreeLab promueve un entorno donde estudiantes, freelancers y clientes
+puedan colaborar con confianza, transparencia y respeto. Cumplir estos
+términos nos permite ofrecer una plataforma segura para todos.
+
+</p>
+
+<a
+
+href="{{ url_for('contacto') }}"
+
+style="
+
+margin-top:2rem;
+
+display:inline-flex;
+
+align-items:center;
+
+gap:.8rem;
+
+padding:1rem 2.2rem;
+
+border-radius:999px;
+
+background:white;
+
+color:#065f46;
+
+font-weight:700;
+
+text-decoration:none;
+
+position:relative;
+
+z-index:2;
+
+transition:.3s;
+
+">
+
+<i class="fas fa-headset"></i>
+
+Contactar soporte
+
+</a>
+
+</div>
+
+</section>
+
+</section>
+
 {% endblock %}

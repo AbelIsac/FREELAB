@@ -719,13 +719,25 @@
     transform: translateY(-6px);
 }
 
-.how-section.improved .how-card.featured {
-    background: #dcfce7;
-    color: var(--fl-heading);
+.how-section.improved .how-card.featured{
+
+    background: rgba(255,255,255,.06);
+    color: white;
+    border: 1px solid rgba(16,185,129,.35);
+    box-shadow: 0 15px 35px rgba(16,185,129,.12);
+
 }
 
-.how-section.improved .how-card.featured p {
-    color: var(--fl-text-body);
+.how-section.improved .how-card.featured p{
+
+    color: rgba(255,255,255,.62);
+
+}
+
+.how-section.improved .how-card.featured span{
+
+    color:#86efac;
+
 }
 
 .audience-card {

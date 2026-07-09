@@ -1,133 +1,475 @@
 {% extends "base.html" %}
-{% block title %}Cómo funciona - Marketplace Estudiantil{% endblock %}
+
+{% block title %}¿Cómo funciona? | FreeLab{% endblock %}
+
 {% block extra_css %}
 <style>
-    .como-funciona-container {
-        max-width: 1200px;
-        margin: 120px auto 4rem;
-        padding: 0 2rem;
-    }
-    .hero-funciona {
-        text-align: center;
-        margin-bottom: 3rem;
-    }
-    .hero-funciona h1 {
-        font-size: 2.5rem;
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 1rem;
-    }
-    .steps-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 2rem;
-        margin: 3rem 0;
-    }
-    .step-card {
-        background: var(--fl-surface);
-        border-radius: 24px;
-        padding: 2rem;
-        text-align: center;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-        transition: all 0.3s ease;
-    }
-    .step-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.12);
-    }
-    .step-icon {
-        width: 80px;
-        height: 80px;
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 1.5rem;
-    }
-    .step-icon i {
-        font-size: 2.5rem;
-        color: white;
-    }
-    .step-card h3 {
-        font-size: 1.3rem;
-        margin-bottom: 1rem;
-    }
-    .step-card p {
-        color: var(--fl-text-muted);
-        line-height: 1.6;
-    }
-    .roles-section {
-        background: var(--fl-soft-bg);
-        border-radius: 24px;
-        padding: 2rem;
-        margin-top: 3rem;
-    }
-    .roles-section h2 {
-        text-align: center;
-        margin-bottom: 2rem;
-    }
-    .roles-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1.5rem;
-    }
-    .role-card {
-        background: var(--fl-surface);
-        border-radius: 16px;
-        padding: 1.5rem;
-        text-align: center;
-    }
-    .role-card i {
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
-    }
-    .role-card.estudiante i { color: #10b981; }
-    .role-card.comprador i { color: #3b82f6; }
-    .role-card h4 { margin-bottom: 0.5rem; }
-    .role-card p { color: var(--fl-text-muted); font-size: 0.9rem; }
+
+.fl-workflow{
+    max-width:1200px;
+    margin:130px auto 5rem;
+    padding:0 1.5rem;
+}
+
+.fl-hero{
+    text-align:center;
+    margin-bottom:5rem;
+}
+
+.fl-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:.6rem;
+    padding:.55rem 1rem;
+    border-radius:999px;
+    background:rgba(6,95,70,.08);
+    color:#065f46;
+    font-weight:700;
+    margin-bottom:1.3rem;
+}
+
+[data-theme="dark"] .fl-badge{
+    background:rgba(16,185,129,.12);
+    color:#34d399;
+}
+
+.fl-hero h1{
+    font-size:clamp(2.3rem,5vw,3.7rem);
+    color:var(--fl-text-body);
+    margin-bottom:1rem;
+}
+
+.fl-hero p{
+    max-width:760px;
+    margin:auto;
+    color:var(--fl-text-muted);
+    line-height:1.8;
+}
+
+.timeline{
+
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:1.5rem;
+    margin-bottom:5rem;
+
+}
+
+.step{
+
+    position:relative;
+    background:var(--fl-surface);
+    border:1px solid var(--fl-border);
+    border-radius:26px;
+    padding:2rem;
+    transition:.35s;
+    overflow:hidden;
+
+}
+
+.step:hover{
+
+    transform:translateY(-8px);
+    border-color:#10b981;
+    box-shadow:0 20px 45px rgba(16,185,129,.15);
+
+}
+
+.number{
+
+    width:65px;
+    height:65px;
+    border-radius:18px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:linear-gradient(135deg,#059669,#10b981);
+    color:white;
+    font-size:1.5rem;
+    font-weight:bold;
+    margin-bottom:1.2rem;
+
+}
+
+.step h3{
+
+    margin-bottom:.8rem;
+    color:var(--fl-text-body);
+
+}
+
+.step p{
+
+    color:var(--fl-text-muted);
+    line-height:1.7;
+
+}
+
+.roles{
+
+    margin-top:3rem;
+
+}
+
+.roles-title{
+
+    text-align:center;
+    margin-bottom:2.5rem;
+
+}
+
+.roles-title h2{
+
+    color:var(--fl-text-body);
+    margin-bottom:.7rem;
+
+}
+
+.roles-title p{
+
+    color:var(--fl-text-muted);
+
+}
+
+.roles-grid{
+
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:2rem;
+
+}
+
+.role{
+
+background:var(--fl-surface);
+border:1px solid var(--fl-border);
+border-radius:28px;
+padding:2.5rem;
+transition:.35s;
+
+}
+
+.role:hover{
+
+transform:translateY(-8px);
+
+box-shadow:0 18px 40px rgba(16,185,129,.15);
+
+}
+
+.role-icon{
+
+width:75px;
+height:75px;
+border-radius:22px;
+display:flex;
+align-items:center;
+justify-content:center;
+background:linear-gradient(135deg,#059669,#10b981);
+color:white;
+font-size:2rem;
+margin-bottom:1.4rem;
+
+}
+
+.role h3{
+
+margin-bottom:1rem;
+color:var(--fl-text-body);
+
+}
+
+.role p{
+
+color:var(--fl-text-muted);
+line-height:1.8;
+margin-bottom:1.4rem;
+
+}
+
+.role ul{
+
+padding-left:1rem;
+
+}
+
+.role li{
+
+margin-bottom:.8rem;
+color:var(--fl-text-body);
+
+}
+
+.cta{
+
+margin-top:5rem;
+background:linear-gradient(135deg,#065f46,#047857);
+border-radius:30px;
+padding:3rem;
+text-align:center;
+color:white;
+overflow:hidden;
+position:relative;
+
+}
+
+.cta::before{
+
+content:"";
+position:absolute;
+width:260px;
+height:260px;
+border-radius:50%;
+background:rgba(255,255,255,.08);
+top:-120px;
+right:-90px;
+
+}
+
+.cta h2{
+
+margin-bottom:1rem;
+
+}
+
+.cta p{
+
+max-width:650px;
+margin:auto;
+opacity:.9;
+
+}
+
+.cta a{
+
+margin-top:2rem;
+display:inline-flex;
+align-items:center;
+gap:.7rem;
+padding:1rem 2rem;
+background:white;
+color:#065f46;
+text-decoration:none;
+font-weight:700;
+border-radius:999px;
+transition:.3s;
+
+}
+
+.cta a:hover{
+
+background:#ecfdf5;
+transform:translateY(-3px);
+
+}
+
+@media(max-width:1000px){
+
+.timeline{
+
+grid-template-columns:1fr 1fr;
+
+}
+
+.roles-grid{
+
+grid-template-columns:1fr;
+
+}
+
+}
+
+@media(max-width:700px){
+
+.timeline{
+
+grid-template-columns:1fr;
+
+}
+
+.fl-workflow{
+
+margin-top:110px;
+
+}
+
+}
+
 </style>
 {% endblock %}
+
 {% block content %}
-<div class="como-funciona-container">
-    <div class="hero-funciona">
-        <h1>¿Cómo funciona MarketplaceEst?</h1>
-        <p>Una plataforma diseñada para conectar estudiantes y facilitar el intercambio de servicios</p>
-    </div>
 
-    <div class="steps-grid">
-        <div class="step-card">
-            <div class="step-icon"><i class="fas fa-user-plus"></i></div>
-            <h3>1. Regístrate</h3>
-            <p>Crea tu cuenta gratis con Google. Elige tu rol: Vendedor o Comprador.</p>
-        </div>
-        <div class="step-card">
-            <div class="step-icon"><i class="fas fa-store"></i></div>
-            <h3>2. Publica o Explora</h3>
-            <p>Los vendedores publican sus servicios. Los compradores exploran el catálogo.</p>
-        </div>
-        <div class="step-card">
-            <div class="step-icon"><i class="fas fa-shopping-cart"></i></div>
-            <h3>3. Compra y Vende</h3>
-            <p>Agrega productos al carrito, paga de forma segura y recibe tu servicio.</p>
-        </div>
-    </div>
+<section class="fl-workflow">
 
-    <div class="roles-section">
-        <h2><i class="fas fa-users"></i> ¿Qué rol te conviene?</h2>
-        <div class="roles-grid">
-            <div class="role-card estudiante">
-                <i class="fas fa-graduation-cap"></i>
-                <h4>Estudiante / Vendedor</h4>
-                <p>Publica tus trabajos, ofrece tus servicios y gana dinero extra mientras estudias.</p>
-            </div>
-            <div class="role-card comprador">
-                <i class="fas fa-shopping-bag"></i>
-                <h4>Comprador</h4>
-                <p>Encuentra servicios de calidad a precios estudiantiles y apoya a tu comunidad.</p>
-            </div>
-        </div>
-    </div>
+<div class="fl-hero fl-reveal">
+
+<div class="fl-badge">
+<i class="fas fa-rocket"></i>
+¿Cómo funciona FreeLab?
 </div>
+
+<h1>Conectamos talento universitario con personas que necesitan soluciones.</h1>
+
+<p>
+Publicar un servicio o contratar un freelancer nunca había sido tan sencillo.
+En pocos pasos podrás formar parte de nuestra comunidad.
+</p>
+
+</div>
+
+<div class="timeline">
+
+<div class="step fl-reveal">
+
+<div class="number">1</div>
+
+<h3>Regístrate</h3>
+
+<p>
+Accede utilizando tu cuenta de Google y crea tu perfil en cuestión de segundos.
+</p>
+
+</div>
+
+<div class="step fl-reveal">
+
+<div class="number">2</div>
+
+<h3>Completa tu perfil</h3>
+
+<p>
+Elige si deseas ofrecer servicios como freelancer o contratar profesionales para tus proyectos.
+</p>
+
+</div>
+
+<div class="step fl-reveal">
+
+<div class="number">3</div>
+
+<h3>Publica o contrata</h3>
+
+<p>
+Explora cientos de servicios o publica el tuyo para empezar a generar ingresos.
+</p>
+
+</div>
+
+<div class="step fl-reveal">
+
+<div class="number">4</div>
+
+<h3>Califica la experiencia</h3>
+
+<p>
+Después del trabajo ambas partes pueden dejar valoraciones que fortalecen la confianza de la comunidad.
+</p>
+
+</div>
+
+</div>
+
+<section class="roles">
+
+<div class="roles-title fl-reveal">
+
+<h2>Dos formas de utilizar FreeLab</h2>
+
+<p>Escoge el rol que mejor se adapte a tus necesidades.</p>
+
+</div>
+
+<div class="roles-grid">
+
+<div class="role fl-reveal">
+
+<div class="role-icon">
+
+<i class="fas fa-laptop-code"></i>
+
+</div>
+
+<h3>Freelancer</h3>
+
+<p>
+
+Publica tus habilidades y ofrece servicios profesionales mientras desarrollas experiencia y generas ingresos.
+
+</p>
+
+<ul>
+
+<li>✔ Publicar servicios</li>
+
+<li>✔ Gestionar clientes</li>
+
+<li>✔ Crear portafolio</li>
+
+<li>✔ Recibir valoraciones</li>
+
+<li>✔ Generar ingresos</li>
+
+</ul>
+
+</div>
+
+<div class="role fl-reveal">
+
+<div class="role-icon">
+
+<i class="fas fa-user-tie"></i>
+
+</div>
+
+<h3>Cliente</h3>
+
+<p>
+
+Encuentra rápidamente estudiantes talentosos para desarrollar tus proyectos con total confianza.
+
+</p>
+
+<ul>
+
+<li>✔ Buscar freelancers</li>
+
+<li>✔ Comparar servicios</li>
+
+<li>✔ Contratar fácilmente</li>
+
+<li>✔ Gestionar pedidos</li>
+
+<li>✔ Calificar resultados</li>
+
+</ul>
+
+</div>
+
+</div>
+
+</section>
+
+<div class="cta fl-reveal">
+
+<h2>¿Listo para comenzar?</h2>
+
+<p>
+
+Únete a FreeLab y forma parte de una comunidad donde el talento universitario encuentra oportunidades reales.
+
+</p>
+
+<a href="{{ url_for('home') }}">
+
+<i class="fas fa-arrow-right"></i>
+
+Explorar plataforma
+
+</a>
+
+</div>
+
+</section>
+
 {% endblock %}

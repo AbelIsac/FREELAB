@@ -1,90 +1,581 @@
 {% extends "base.html" %}
-{% block title %}Política de Privacidad - Marketplace Estudiantil{% endblock %}
+
+{% block title %}Política de Privacidad | FreeLab{% endblock %}
+
 {% block extra_css %}
 <style>
-    .legal-container {
-        max-width: 900px;
-        margin: 120px auto 4rem;
-        padding: 0 2rem;
-    }
-    .legal-header {
-        text-align: center;
-        margin-bottom: 2rem;
-    }
-    .legal-header h1 {
-        font-size: 2rem;
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 0.5rem;
-    }
-    .legal-content {
-        background: var(--fl-surface);
-        border-radius: 24px;
-        padding: 2rem;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-    }
-    .legal-content h2 {
-        font-size: 1.3rem;
-        margin: 1.5rem 0 1rem;
-        color: #1e293b;
-    }
-    .legal-content p {
-        color: var(--fl-text-body);
-        line-height: 1.6;
-        margin-bottom: 1rem;
-    }
-    .legal-content ul {
-        margin: 1rem 0 1rem 2rem;
-        color: var(--fl-text-body);
-    }
-    .last-update {
-        text-align: right;
-        font-size: 0.8rem;
-        color: var(--fl-text-faint);
-        margin-top: 2rem;
-        padding-top: 1rem;
-        border-top: 1px solid var(--fl-border);
-    }
+
+.fl-legal{
+
+max-width:1250px;
+margin:130px auto 5rem;
+padding:0 1.5rem;
+
+}
+
+.fl-legal-hero{
+
+text-align:center;
+margin-bottom:4rem;
+
+}
+
+.fl-legal-badge{
+
+display:inline-flex;
+align-items:center;
+gap:.6rem;
+padding:.6rem 1rem;
+border-radius:999px;
+background:rgba(6,95,70,.08);
+color:#065f46;
+font-weight:700;
+margin-bottom:1.2rem;
+
+}
+
+[data-theme="dark"] .fl-legal-badge{
+
+background:rgba(16,185,129,.14);
+color:#34d399;
+
+}
+
+.fl-legal-hero h1{
+
+font-size:clamp(2.4rem,5vw,3.8rem);
+margin-bottom:1rem;
+color:var(--fl-text-body);
+
+}
+
+.fl-legal-hero p{
+
+max-width:760px;
+margin:auto;
+line-height:1.8;
+color:var(--fl-text-muted);
+
+}
+
+.fl-layout{
+
+display:grid;
+grid-template-columns:270px 1fr;
+gap:2rem;
+
+}
+
+.sidebar{
+
+position:sticky;
+top:110px;
+height:max-content;
+background:var(--fl-surface);
+border:1px solid var(--fl-border);
+border-radius:24px;
+padding:1.5rem;
+
+}
+
+.sidebar h3{
+
+margin-bottom:1rem;
+
+}
+
+.sidebar a{
+
+display:flex;
+align-items:center;
+gap:.7rem;
+padding:.85rem 1rem;
+margin-bottom:.6rem;
+border-radius:14px;
+text-decoration:none;
+color:var(--fl-text-body);
+transition:.3s;
+
+}
+
+.sidebar a:hover{
+
+background:var(--fl-soft-bg);
+color:#059669;
+
+}
+
+.content{
+
+display:flex;
+flex-direction:column;
+gap:1.7rem;
+
+}
+
+.card{
+
+background:var(--fl-surface);
+border:1px solid var(--fl-border);
+border-radius:26px;
+padding:2rem;
+transition:.35s;
+
+}
+
+.card:hover{
+
+transform:translateY(-5px);
+box-shadow:0 18px 40px rgba(16,185,129,.10);
+
+}
+
+.card-header{
+
+display:flex;
+align-items:center;
+gap:1rem;
+margin-bottom:1.2rem;
+
+}
+
+.icon{
+
+width:62px;
+height:62px;
+border-radius:18px;
+background:linear-gradient(135deg,#059669,#10b981);
+display:flex;
+align-items:center;
+justify-content:center;
+color:white;
+font-size:1.4rem;
+
+}
+
+.card h2{
+
+color:var(--fl-text-body);
+
+}
+
+.card p{
+
+line-height:1.8;
+color:var(--fl-text-muted);
+
+}
+
+.card ul{
+
+margin-top:1rem;
+padding-left:1.2rem;
+
+}
+
+.card li{
+
+margin-bottom:.7rem;
+color:var(--fl-text-body);
+
+}
+
+@media(max-width:950px){
+
+.fl-layout{
+
+grid-template-columns:1fr;
+
+}
+
+.sidebar{
+
+position:relative;
+top:0;
+
+}
+
+}
+
+@media(max-width:768px){
+
+.fl-legal{
+
+margin-top:110px;
+
+}
+
+}
+
 </style>
+
 {% endblock %}
+
 {% block content %}
-<div class="legal-container">
-    <div class="legal-header">
-        <h1><i class="fas fa-shield-alt"></i> Política de Privacidad</h1>
-        <p>Cómo protegemos y utilizamos tu información</p>
-    </div>
-    <div class="legal-content">
-        <h2>1. Información que recopilamos</h2>
-        <p>Recopilamos la información que nos proporcionas al registrarte, incluyendo nombre, correo electrónico e imagen de perfil a través de Google. También recopilamos información sobre tus transacciones y actividad en la plataforma.</p>
 
-        <h2>2. Uso de la información</h2>
-        <p>Utilizamos tu información para:</p>
-        <ul>
-            <li>Operar y mantener la plataforma</li>
-            <li>Procesar tus transacciones</li>
-            <li>Comunicarnos contigo sobre actualizaciones</li>
-            <li>Mejorar nuestros servicios</li>
-        </ul>
+<section class="fl-legal">
 
-        <h2>3. Compartición de datos</h2>
-        <p>No vendemos ni alquilamos tu información personal. Compartimos información solo cuando es necesario para procesar transacciones (entre comprador y vendedor) o cuando la ley lo requiera.</p>
+<div class="fl-legal-hero fl-reveal">
 
-        <h2>4. Seguridad</h2>
-        <p>Implementamos medidas de seguridad para proteger tu información, incluyendo encriptación SSL y autenticación con Google.</p>
+<div class="fl-legal-badge">
 
-        <h2>5. Tus derechos</h2>
-        <p>Tienes derecho a acceder, corregir o eliminar tu información personal. Puedes hacerlo desde la sección de configuración de tu perfil.</p>
+<i class="fas fa-shield-halved"></i>
 
-        <h2>6. Cookies</h2>
-        <p>Utilizamos cookies para mejorar tu experiencia y recordar tus preferencias. Puedes deshabilitarlas desde tu navegador.</p>
+Privacidad
 
-        <h2>7. Cambios a esta política</h2>
-        <p>Notificaremos cualquier cambio significativo a través de la plataforma o por correo electrónico.</p>
-
-        <div class="last-update">
-            <i class="fas fa-calendar-alt"></i> Última actualización: Mayo 2026
-        </div>
-    </div>
 </div>
+
+<h1>Tu información está protegida.</h1>
+
+<p>
+
+En FreeLab creemos que la privacidad es un derecho.
+Por ello tratamos tus datos personales con transparencia,
+responsabilidad y altos estándares de seguridad.
+
+</p>
+
+</div>
+
+<div class="fl-layout">
+
+<aside class="sidebar fl-reveal">
+
+<h3>Contenido</h3>
+
+<a href="#info">
+
+<i class="fas fa-user"></i>
+
+Información recopilada
+
+</a>
+
+<a href="#uso">
+
+<i class="fas fa-database"></i>
+
+Uso de datos
+
+</a>
+
+<a href="#seguridad">
+
+<i class="fas fa-lock"></i>
+
+Seguridad
+
+</a>
+
+<a href="#cookies">
+
+<i class="fas fa-cookie-bite"></i>
+
+Cookies
+
+</a>
+
+<a href="#derechos">
+
+<i class="fas fa-scale-balanced"></i>
+
+Tus derechos
+
+</a>
+
+</aside>
+
+<div class="content">
+
+<section class="card fl-reveal" id="info">
+
+<div class="card-header">
+
+<div class="icon">
+
+<i class="fas fa-user"></i>
+
+</div>
+
+<div>
+
+<h2>Información que recopilamos</h2>
+
+</div>
+
+</div>
+
+<p>
+
+Al utilizar FreeLab recopilamos únicamente la información necesaria
+para brindarte una experiencia segura dentro de la plataforma.
+
+</p>
+
+<ul>
+
+<li>Nombre del usuario.</li>
+
+<li>Correo electrónico.</li>
+
+<li>Fotografía de perfil.</li>
+
+<li>Información relacionada con tus publicaciones.</li>
+
+<li>Historial de contrataciones.</li>
+
+</ul>
+
+</section>
+
+<section class="card fl-reveal" id="uso">
+
+<div class="card-header">
+
+<div class="icon">
+
+<i class="fas fa-database"></i>
+
+</div>
+
+<div>
+
+<h2>¿Cómo utilizamos tu información?</h2>
+
+</div>
+
+</div>
+
+<p>
+
+Toda la información recopilada tiene como finalidad mejorar
+la experiencia de uso dentro de FreeLab y facilitar la comunicación
+entre freelancers y clientes.
+
+</p>
+
+<ul>
+
+<li>Gestionar tu cuenta.</li>
+
+<li>Procesar contrataciones.</li>
+
+<li>Mostrar tu perfil profesional.</li>
+
+<li>Enviar notificaciones importantes.</li>
+
+<li>Mejorar continuamente la plataforma.</li>
+
+</ul>
+
+</section>
+
+<section class="card fl-reveal" id="seguridad">
+
+<div class="card-header">
+
+<div class="icon">
+<i class="fas fa-lock"></i>
+</div>
+
+<div>
+<h2>Seguridad de la información</h2>
+</div>
+
+</div>
+
+<p>
+
+En FreeLab implementamos medidas de seguridad para proteger la
+información de nuestros usuarios frente a accesos no autorizados,
+alteraciones o pérdidas de datos.
+
+</p>
+
+<ul>
+
+<li>Conexiones cifradas mediante HTTPS.</li>
+
+<li>Autenticación segura con Google.</li>
+
+<li>Protección de archivos almacenados.</li>
+
+<li>Accesos restringidos a información sensible.</li>
+
+<li>Actualizaciones constantes para mantener la seguridad.</li>
+
+</ul>
+
+</section>
+
+<section class="card fl-reveal" id="cookies">
+
+<div class="card-header">
+
+<div class="icon">
+<i class="fas fa-cookie-bite"></i>
+</div>
+
+<div>
+<h2>Uso de Cookies</h2>
+</div>
+
+</div>
+
+<p>
+
+Utilizamos cookies únicamente para mejorar tu experiencia dentro de
+FreeLab. Estas permiten recordar preferencias de navegación, mantener
+la sesión iniciada y optimizar el rendimiento general de la plataforma.
+
+</p>
+
+<ul>
+
+<li>Recordar preferencias del usuario.</li>
+
+<li>Mantener sesiones activas.</li>
+
+<li>Mejorar el rendimiento del sitio.</li>
+
+<li>Analizar estadísticas de uso.</li>
+
+</ul>
+
+</section>
+
+<section class="card fl-reveal" id="derechos">
+
+<div class="card-header">
+
+<div class="icon">
+<i class="fas fa-scale-balanced"></i>
+</div>
+
+<div>
+<h2>Tus derechos</h2>
+</div>
+
+</div>
+
+<p>
+
+Como usuario de FreeLab tienes el control sobre tu información personal.
+Puedes solicitar modificaciones o eliminación de tus datos cuando sea
+necesario.
+
+</p>
+
+<ul>
+
+<li>Consultar tus datos personales.</li>
+
+<li>Actualizar información de tu perfil.</li>
+
+<li>Solicitar la eliminación de tu cuenta.</li>
+
+<li>Conocer cómo utilizamos tu información.</li>
+
+<li>Contactarnos para cualquier consulta relacionada con privacidad.</li>
+
+</ul>
+
+</section>
+
+<div class="card fl-reveal">
+
+<div class="card-header">
+
+<div class="icon">
+<i class="fas fa-calendar-check"></i>
+</div>
+
+<div>
+<h2>Actualizaciones de esta política</h2>
+</div>
+
+</div>
+
+<p>
+
+Esta política puede actualizarse cuando existan mejoras en la
+plataforma o cambios legales. Siempre mostraremos la versión más
+reciente para mantenerte informado.
+
+</p>
+
+<p style="margin-top:1rem;font-weight:700;color:#059669;">
+
+Última actualización: Julio 2026
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+<section style="margin-top:4rem;" class="fl-reveal">
+
+<div style="background:linear-gradient(135deg,#065f46,#047857);
+padding:3.2rem;
+border-radius:30px;
+text-align:center;
+color:white;
+position:relative;
+overflow:hidden;">
+
+<div style="
+position:absolute;
+width:280px;
+height:280px;
+border-radius:50%;
+background:rgba(255,255,255,.08);
+right:-100px;
+top:-120px;"></div>
+
+<h2 style="font-size:2rem;margin-bottom:1rem;position:relative;z-index:2;">
+
+¿Tienes alguna duda sobre tu privacidad?
+
+</h2>
+
+<p style="max-width:700px;margin:auto;line-height:1.8;opacity:.92;position:relative;z-index:2;">
+
+Nuestro equipo está disponible para responder cualquier consulta
+relacionada con el tratamiento de tus datos personales y el uso de
+la plataforma.
+
+</p>
+
+<a href="{{ url_for('contacto') }}"
+
+style="
+margin-top:2rem;
+display:inline-flex;
+align-items:center;
+gap:.8rem;
+background:white;
+color:#065f46;
+padding:1rem 2rem;
+border-radius:999px;
+text-decoration:none;
+font-weight:700;
+position:relative;
+z-index:2;
+transition:.3s;">
+
+<i class="fas fa-envelope"></i>
+
+Contactar soporte
+
+</a>
+
+</div>
+
+</section>
+
+</section>
+
 {% endblock %}
