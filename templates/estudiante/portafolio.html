@@ -210,7 +210,7 @@ function closeProjectModal(id) {
     color: white;
     background:
         radial-gradient(circle at 85% 12%, rgba(134,239,172,.28), transparent 30%),
-        linear-gradient(135deg, #0b0f0d, #052e22);
+        linear-gradient(135deg, #0b0f0d, var(--fl-heading));
     display: flex;
     justify-content: space-between;
     align-items: end;
@@ -286,7 +286,7 @@ function closeProjectModal(id) {
 }
 
 .btn-new-work {
-    background: #dcfce7;
+    background: var(--fl-accent-soft);
     color: var(--fl-brand);
 }
 
@@ -370,7 +370,7 @@ function closeProjectModal(id) {
 .masonry-empty {
     display: grid;
     place-items: center;
-    color: #cbd5e1;
+    color: var(--fl-text-faint);
     font-size: 2.2rem;
     background: var(--fl-soft-bg);
 }
@@ -483,7 +483,7 @@ function closeProjectModal(id) {
     top: 1.2rem;
     right: 1.2rem;
     background: var(--fl-surface);
-    color: #111827;
+    color: var(--fl-heading);
     border: none;
     border-radius: 999px;
     padding: .55rem .9rem;
@@ -519,7 +519,7 @@ function closeProjectModal(id) {
     width: fit-content;
     margin-top: 1.4rem;
     background: var(--fl-surface);
-    color: #111827;
+    color: var(--fl-heading);
     text-decoration: none;
     padding: .85rem 1.1rem;
     border-radius: 999px;
@@ -571,12 +571,12 @@ function closeProjectModal(id) {
     height: 42px;
     border: none;
     border-radius: 50%;
-    background: #f1f5f9;
+    background: var(--fl-border);
     cursor: pointer;
 }
 
 .drawer-panel .form-pill {
-    background: #dcfce7;
+    background: var(--fl-accent-soft);
     color: var(--fl-brand-accent);
     border: none;
 }
@@ -596,7 +596,7 @@ function closeProjectModal(id) {
 .drawer-panel label {
     display: block;
     margin: .9rem 0 .35rem;
-    color: #334155;
+    color: var(--fl-text-body);
     font-weight: 900;
     font-size: .82rem;
 }
@@ -649,7 +649,7 @@ function closeProjectModal(id) {
     height: 86px;
     margin: 0 auto 1rem;
     border-radius: 28px;
-    background: #dcfce7;
+    background: var(--fl-accent-soft);
     color: var(--fl-brand);
     display: grid;
     place-items: center;

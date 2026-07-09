@@ -75,6 +75,10 @@
             </span>
 
             <div class="actions-cell">
+                <a href="{{ url_for('chat.ver_chat', venta_id=s.id) }}" class="btn-action" style="background:var(--fl-accent-soft); color:var(--fl-brand); text-decoration:none; display:inline-flex; align-items:center; gap:.35rem;">
+                    <i class="fas fa-comment-dots"></i> Chat
+                </a>
+
                 {% if s.estado == 'pendiente_adelanto' %}
                     <form method="POST" action="{{ url_for('estudiante.cambiar_estado_solicitud', venta_id=s.id, nuevo_estado='cancelado') }}">
                         <button class="btn-action reject" type="submit">Rechazar</button>
@@ -123,7 +127,7 @@
 .requests-header {
     background:
         radial-gradient(circle at 85% 10%, rgba(134,239,172,.25), transparent 28%),
-        linear-gradient(135deg, #0b0f0d, #052e22);
+        linear-gradient(135deg, #0b0f0d, var(--fl-heading));
     color: white;
     border-radius: 34px;
     padding: 2.5rem;
@@ -206,7 +210,7 @@
     gap: 1rem;
     align-items: center;
     padding: .9rem 1rem;
-    border-bottom: 1px solid #eef2f0;
+    border-bottom: 1px solid var(--fl-border);
 }
 
 .request-row.head {
@@ -228,7 +232,7 @@
     width: 42px;
     height: 42px;
     border-radius: 14px;
-    background: #dcfce7;
+    background: var(--fl-accent-soft);
     color: var(--fl-brand);
     display: grid;
     place-items: center;
@@ -256,29 +260,29 @@
 }
 
 .status.pendiente_adelanto {
-    background: #fef3c7;
-    color: #b45309;
+    background: var(--fl-warning-soft);
+    color: var(--fl-warning-text);
 }
 
 .status.adelanto_enviado,
 .status.en_proceso {
-    background: #dbeafe;
-    color: #2563eb;
+    background: var(--fl-info-soft);
+    color: var(--fl-info-text);
 }
 
 .status.pendiente_pago_final {
-    background: #fae8ff;
-    color: #a21caf;
+    background: var(--fl-purple-soft);
+    color: var(--fl-purple-text);
 }
 
 .status.completado {
-    background: #dcfce7;
+    background: var(--fl-accent-soft);
     color: var(--fl-brand-accent);
 }
 
 .status.cancelado {
-    background: #fee2e2;
-    color: #dc2626;
+    background: var(--fl-danger-soft);
+    color: var(--fl-danger-solid);
 }
 
 .actions-cell {
@@ -301,13 +305,13 @@
 }
 
 .btn-action.accept {
-    background: #dcfce7;
+    background: var(--fl-accent-soft);
     color: var(--fl-brand);
 }
 
 .btn-action.reject {
-    background: #fee2e2;
-    color: #dc2626;
+    background: var(--fl-danger-soft);
+    color: var(--fl-danger-solid);
 }
 
 .no-action {
@@ -329,7 +333,7 @@
     display: grid;
     place-items: center;
     border-radius: 28px;
-    background: #dcfce7;
+    background: var(--fl-accent-soft);
     color: var(--fl-brand);
     font-size: 2rem;
 }

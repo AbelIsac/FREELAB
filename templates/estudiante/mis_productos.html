@@ -151,8 +151,8 @@ function eliminarServicio(servicioId, servicioNombre) {
         html: `¿Seguro que deseas eliminar <strong>${servicioNombre}</strong>?`,
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#dc2626',
-        cancelButtonColor: '#64748b',
+        confirmButtonColor: 'var(--fl-danger-solid)',
+        cancelButtonColor: 'var(--fl-text-muted)',
         confirmButtonText: 'Sí, eliminar',
         cancelButtonText: 'Cancelar'
     }).then((result) => {
@@ -206,7 +206,7 @@ function eliminarServicio(servicioId, servicioNombre) {
 }
 
 .brand-box i {
-    background: #dcfce7;
+    background: var(--fl-accent-soft);
     padding: .7rem;
     border-radius: 14px;
 }
@@ -225,13 +225,13 @@ function eliminarServicio(servicioId, servicioNombre) {
 }
 
 .side-link:hover {
-    background: #e8f8ef;
+    background: var(--fl-accent-soft-2);
     color: var(--fl-brand);
 }
 
 .sidebar-card {
     margin-top: 2rem;
-    background: linear-gradient(145deg, #065f46, #052e22);
+    background: linear-gradient(145deg, #065f46, var(--fl-heading));
     color: white;
     padding: 1.4rem;
     border-radius: 24px;
@@ -273,7 +273,7 @@ function eliminarServicio(servicioId, servicioNombre) {
 
 .eyebrow {
     display: inline-flex;
-    background: #edfdf5;
+    background: var(--fl-accent-soft-2);
     color: var(--fl-brand-accent);
     padding: .35rem .75rem;
     border-radius: 999px;
@@ -314,7 +314,7 @@ function eliminarServicio(servicioId, servicioNombre) {
 
 .summary-card {
     background: var(--fl-surface);
-    border: 1px solid #edf2ef;
+    border: 1px solid var(--fl-border);
     border-radius: 22px;
     padding: 1.2rem;
     display: flex;
@@ -328,13 +328,13 @@ function eliminarServicio(servicioId, servicioNombre) {
     border-radius: 16px;
     display: grid;
     place-items: center;
-    background: #f1f5f9;
+    background: var(--fl-border);
     color: var(--fl-brand);
     font-size: 1.2rem;
 }
 
 .summary-card.active {
-    background: linear-gradient(145deg, #087044, #064e3b);
+    background: linear-gradient(145deg, var(--fl-brand), var(--fl-brand));
     color: white;
 }
 
@@ -363,7 +363,7 @@ function eliminarServicio(servicioId, servicioNombre) {
 
 .service-card {
     background: var(--fl-surface);
-    border: 1px solid #edf2ef;
+    border: 1px solid var(--fl-border);
     border-radius: 26px;
     overflow: hidden;
     box-shadow: 0 10px 30px rgba(15,23,42,.05);
@@ -391,7 +391,7 @@ function eliminarServicio(servicioId, servicioNombre) {
 .empty-cover {
     display: grid;
     place-items: center;
-    color: #cbd5e1;
+    color: var(--fl-text-faint);
     font-size: 2.2rem;
 }
 
@@ -414,12 +414,12 @@ function eliminarServicio(servicioId, servicioNombre) {
 
 .status-badge.pending {
     background: rgba(254,243,199,.92);
-    color: #b45309;
+    color: var(--fl-warning-text);
 }
 
 .status-badge.rejected {
     background: rgba(254,226,226,.92);
-    color: #dc2626;
+    color: var(--fl-danger-solid);
 }
 
 .status-badge.muted {
@@ -485,7 +485,7 @@ function eliminarServicio(servicioId, servicioNombre) {
 
 .btn-view {
     flex: 1;
-    background: #e8f8ef;
+    background: var(--fl-accent-soft-2);
     color: var(--fl-brand);
     padding: .75rem 1rem;
     text-align: center;
@@ -499,13 +499,13 @@ function eliminarServicio(servicioId, servicioNombre) {
 }
 
 .btn-edit {
-    background: #f1f5f9;
+    background: var(--fl-border);
     color: var(--fl-text-body);
 }
 
 .btn-delete {
-    background: #fee2e2;
-    color: #dc2626;
+    background: var(--fl-danger-soft);
+    color: var(--fl-danger-solid);
 }
 
 .btn-view:hover,
@@ -516,7 +516,7 @@ function eliminarServicio(servicioId, servicioNombre) {
 
 .empty-state-premium {
     background: var(--fl-surface);
-    border: 1px solid #edf2ef;
+    border: 1px solid var(--fl-border);
     border-radius: 28px;
     padding: 4rem 2rem;
     text-align: center;
@@ -527,7 +527,7 @@ function eliminarServicio(servicioId, servicioNombre) {
     height: 84px;
     margin: 0 auto 1rem;
     border-radius: 28px;
-    background: #dcfce7;
+    background: var(--fl-accent-soft);
     color: var(--fl-brand);
     display: grid;
     place-items: center;

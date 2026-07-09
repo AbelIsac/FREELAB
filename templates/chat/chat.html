@@ -1,0 +1,339 @@
+{% extends "base.html" %}
+
+{% block title %}Chat · {{ venta.producto.titulo }}{% endblock %}
+
+{% block content %}
+<section class="fl-chat-page">
+
+    <div class="fl-chat-shell">
+
+        <header class="fl-chat-head">
+            <a href="{{ request.referrer or url_for('dashboard') }}" class="fl-chat-back" aria-label="Volver">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+
+            <img src="{{ otro.avatar_url or 'https://api.dicebear.com/7.x/initials/svg?seed=' + otro.nombre }}"
+                 alt="{{ otro.nombre }}" class="fl-chat-avatar">
+
+            <div class="fl-chat-head-info">
+                <strong>{{ otro.nombre }}</strong>
+                <span>{{ venta.producto.titulo }} · Contratación #{{ venta.id }}</span>
+            </div>
+
+            <a href="{{ url_for('comprador.detalle_contratacion', venta_id=venta.id) if session_user.get('rol') == 'comprador' else url_for('estudiante.solicitudes_recibidas') }}"
+               class="fl-chat-detail-link">
+                Ver contratación <i class="fas fa-chevron-right"></i>
+            </a>
+        </header>
+
+        <div class="fl-chat-messages" id="chatMessages">
+            {% for m in mensajes %}
+            <div class="fl-msg {% if m.emisor_id == user_id %}mine{% else %}theirs{% endif %}" data-id="{{ m.id }}">
+                <div class="fl-msg-bubble">
+                    {{ m.contenido }}
+                    <span class="fl-msg-time">{{ m.created_at[11:16] if m.created_at else '' }}</span>
+                </div>
+            </div>
+            {% else %}
+            <div class="fl-chat-empty">
+                <i class="fas fa-comments"></i>
+                <p>Todavía no hay mensajes.<br>Escribe el primero para coordinar los detalles del servicio.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <form class="fl-chat-input-row" id="chatForm" autocomplete="off">
+            <input type="text" name="contenido" id="chatInput" placeholder="Escribe un mensaje..." maxlength="1000" required>
+            <button type="submit" aria-label="Enviar">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </form>
+
+    </div>
+
+</section>
+
+<style>
+
+.fl-chat-page {
+    max-width: 780px;
+    margin: 110px auto 3rem;
+    padding: 0 1.25rem;
+}
+
+.fl-chat-shell {
+    background: var(--fl-surface);
+    border: 1px solid var(--fl-border);
+    border-radius: 24px;
+    box-shadow: 0 10px 40px var(--fl-shadow);
+    display: flex;
+    flex-direction: column;
+    height: min(680px, calc(100vh - 180px));
+    overflow: hidden;
+}
+
+.fl-chat-head {
+    display: flex;
+    align-items: center;
+    gap: .85rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--fl-border);
+    background: var(--fl-soft-bg);
+}
+
+.fl-chat-back {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--fl-surface);
+    border: 1px solid var(--fl-border);
+    color: var(--fl-brand);
+    flex-shrink: 0;
+    text-decoration: none;
+}
+
+.fl-chat-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.fl-chat-head-info {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.25;
+    flex: 1;
+    min-width: 0;
+}
+
+.fl-chat-head-info strong {
+    font-family: var(--font-display, 'Lora', serif);
+    color: var(--fl-heading);
+    font-size: 1.02rem;
+}
+
+.fl-chat-head-info span {
+    color: var(--fl-text-muted);
+    font-size: .78rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fl-chat-detail-link {
+    font-size: .8rem;
+    font-weight: 600;
+    color: var(--fl-brand);
+    text-decoration: none;
+    white-space: nowrap;
+    display: none;
+}
+
+@media (min-width: 560px) {
+    .fl-chat-detail-link { display: inline-flex; align-items: center; gap: .3rem; }
+}
+
+.fl-chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: .55rem;
+    background: var(--fl-page-bg);
+}
+
+.fl-msg {
+    display: flex;
+    max-width: 78%;
+}
+
+.fl-msg.mine {
+    align-self: flex-end;
+    justify-content: flex-end;
+}
+
+.fl-msg.theirs {
+    align-self: flex-start;
+}
+
+.fl-msg-bubble {
+    position: relative;
+    padding: .65rem .9rem .95rem;
+    border-radius: 16px;
+    font-size: .9rem;
+    line-height: 1.45;
+    word-break: break-word;
+    box-shadow: 0 2px 10px var(--fl-shadow);
+}
+
+.fl-msg.mine .fl-msg-bubble {
+    background: var(--fl-brand);
+    color: #fff;
+    border-bottom-right-radius: 4px;
+}
+
+.fl-msg.theirs .fl-msg-bubble {
+    background: var(--fl-surface);
+    color: var(--fl-text-body);
+    border: 1px solid var(--fl-border);
+    border-bottom-left-radius: 4px;
+}
+
+.fl-msg-time {
+    position: absolute;
+    bottom: .3rem;
+    right: .7rem;
+    font-size: .62rem;
+    opacity: .65;
+}
+
+.fl-msg.theirs .fl-msg-time {
+    right: auto;
+    left: .7rem;
+}
+
+.fl-chat-empty {
+    margin: auto;
+    text-align: center;
+    color: var(--fl-text-faint);
+}
+
+.fl-chat-empty i {
+    font-size: 2.2rem;
+    margin-bottom: .75rem;
+    display: block;
+}
+
+.fl-chat-input-row {
+    display: flex;
+    gap: .6rem;
+    padding: .85rem;
+    border-top: 1px solid var(--fl-border);
+    background: var(--fl-surface);
+}
+
+.fl-chat-input-row input {
+    flex: 1;
+    border: 1px solid var(--fl-border);
+    background: var(--fl-soft-bg);
+    color: var(--fl-heading);
+    border-radius: 999px;
+    padding: .75rem 1.1rem;
+    font-size: .9rem;
+    outline: none;
+    font-family: var(--font-ui, 'DM Sans', sans-serif);
+}
+
+.fl-chat-input-row input:focus {
+    border-color: var(--fl-brand);
+}
+
+.fl-chat-input-row button {
+    width: 46px;
+    height: 46px;
+    flex-shrink: 0;
+    border: none;
+    border-radius: 50%;
+    background: var(--fl-brand);
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform .15s ease, background .2s ease;
+}
+
+.fl-chat-input-row button:hover {
+    background: var(--fl-brand-accent);
+    transform: scale(1.05);
+}
+
+@media (max-width: 700px) {
+    .fl-chat-page { margin-top: 90px; padding: 0; }
+    .fl-chat-shell { border-radius: 0; height: calc(100vh - 90px); border-left: none; border-right: none; }
+}
+
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    const ventaId = {{ venta.id }};
+    const myId = "{{ user_id }}";
+    const box = document.getElementById('chatMessages');
+    const form = document.getElementById('chatForm');
+    const input = document.getElementById('chatInput');
+
+    function scrollDown() {
+        box.scrollTop = box.scrollHeight;
+    }
+    scrollDown();
+
+    function lastId() {
+        const bubbles = box.querySelectorAll('.fl-msg[data-id]');
+        if (!bubbles.length) return 0;
+        return parseInt(bubbles[bubbles.length - 1].dataset.id, 10) || 0;
+    }
+
+    function renderMensaje(m) {
+        const empty = box.querySelector('.fl-chat-empty');
+        if (empty) empty.remove();
+
+        const wrap = document.createElement('div');
+        wrap.className = 'fl-msg ' + (m.emisor_id === myId ? 'mine' : 'theirs');
+        wrap.dataset.id = m.id;
+
+        const hora = m.created_at ? m.created_at.substring(11, 16) : '';
+        wrap.innerHTML = `<div class="fl-msg-bubble">${m.contenido.replace(/</g,'&lt;')}<span class="fl-msg-time">${hora}</span></div>`;
+        box.appendChild(wrap);
+    }
+
+    form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const contenido = input.value.trim();
+        if (!contenido) return;
+
+        input.value = '';
+        input.focus();
+
+        try {
+            const res = await fetch(`/chat/${ventaId}/enviar`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'contenido=' + encodeURIComponent(contenido)
+            });
+            const data = await res.json();
+            if (data.ok) {
+                renderMensaje(data.mensaje);
+                scrollDown();
+            }
+        } catch (err) {
+            console.error('Error enviando mensaje', err);
+        }
+    });
+
+    async function poll() {
+        try {
+            const res = await fetch(`/chat/${ventaId}/mensajes?desde_id=${lastId()}`);
+            const data = await res.json();
+            if (data.ok && data.mensajes.length) {
+                data.mensajes.forEach(renderMensaje);
+                scrollDown();
+            }
+        } catch (err) {
+            console.error('Error consultando mensajes', err);
+        }
+    }
+
+    setInterval(poll, 4000);
+})();
+</script>
+{% endblock %}

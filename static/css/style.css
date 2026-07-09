@@ -15,6 +15,20 @@
     --fl-brand-accent: #047857;
     --fl-shadow: rgba(15, 23, 42, .08);
 
+    /* ---- Acentos y estados (tema claro) ---- */
+    --fl-accent-soft: #dcfce7;
+    --fl-accent-soft-2: #e8f5ee;
+    --fl-accent-text: #065f46;
+    --fl-danger-soft: #fee2e2;
+    --fl-danger-text: #b91c1c;
+    --fl-danger-solid: #dc2626;
+    --fl-warning-soft: #fef3c7;
+    --fl-warning-text: #92400e;
+    --fl-info-soft: #dbeafe;
+    --fl-info-text: #1d4ed8;
+    --fl-purple-soft: #fae8ff;
+    --fl-purple-text: #a21caf;
+
     color-scheme: light;
 }
 
@@ -30,6 +44,20 @@
     --fl-brand: #22c58d;
     --fl-brand-accent: #4ade95;
     --fl-shadow: rgba(0, 0, 0, .35);
+
+    /* ---- Acentos y estados (tema oscuro) ---- */
+    --fl-accent-soft: rgba(34, 197, 141, .16);
+    --fl-accent-soft-2: rgba(34, 197, 141, .12);
+    --fl-accent-text: #4ade95;
+    --fl-danger-soft: rgba(239, 68, 68, .16);
+    --fl-danger-text: #fca5a5;
+    --fl-danger-solid: #ef4444;
+    --fl-warning-soft: rgba(245, 158, 11, .16);
+    --fl-warning-text: #fcd34d;
+    --fl-info-soft: rgba(59, 130, 246, .16);
+    --fl-info-text: #93c5fd;
+    --fl-purple-soft: rgba(217, 70, 239, .16);
+    --fl-purple-text: #f0abfc;
 
     color-scheme: dark;
 }
